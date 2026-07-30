@@ -1,0 +1,33 @@
+task_id: "0.0.0"
+phase: "0.0"
+status: "REVIEW"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-08-31T00:00:00Z"
+branch_pattern: "task/0.0.0-*"
+references:
+  requirements: ["NFR-OPS-001"]
+  adrs: ["ADR-0014"]
+  contracts: ["contracts/config/task-card.v1.schema.json"]
+goal: "Khởi tạo authority và structured task controls cho toàn bộ Phase 0.0."
+non_goals: ["Application code", "Migration", "Runtime configuration", "Deployment"]
+preconditions: ["Account Owner yêu cầu tạo toàn bộ hồ sơ Phase 0.0."]
+blockers: []
+allowed_globs: ["docs/**", "contracts/**", "tasks/**"]
+forbidden_globs: ["src/**", "migrations/**", "configs/**", "infra/**", "pyproject.toml", "uv.lock"]
+impact:
+  database: false
+  api: false
+  event: false
+  config: false
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "Artifact pack có index, task controls và gate record draft."
+  - "Không tạo application, migration hoặc runtime artifact."
+required_commands: ["Manual Phase 0.0 document-pack review; evidence pending"]
+evidence_path: "docs/evidence/tasks/0.0.0/"
+gate_impact: "Phase 0.0"
+rollback_or_forward_fix: "Artifact sai được sửa bằng change review; không có runtime state để rollback."
+known_risks: ["Không được đánh dấu PASS trước Account Owner review."]
+waiver_id: null

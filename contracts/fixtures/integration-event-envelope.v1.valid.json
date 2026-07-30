@@ -1,0 +1,16 @@
+{
+  "id": "018f8c7c-0040-7040-8040-000000000040",
+  "type": "execution.order_acknowledged.v1",
+  "schema_version": 1,
+  "source": "execution",
+  "occurred_at": "2026-07-31T00:00:00Z",
+  "recorded_at": "2026-07-31T00:00:01Z",
+  "correlation_id": "018f8c7c-0041-7041-8041-000000000041",
+  "causation_id": "018f8c7c-0042-7042-8042-000000000042",
+  "trace_id": "018f8c7c-0043-7043-8043-000000000043",
+  "subject_id": "018f8c7c-0044-7044-8044-000000000044",
+  "partition_key": "order:018f8c7c-0044-7044-8044-000000000044",
+  "data": {
+    "event_name": "ORDER_ACKNOWLEDGED"
+  }
+}

@@ -1,0 +1,33 @@
+task_id: "0.0.5"
+phase: "0.0"
+status: "REVIEW"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-08-31T00:00:00Z"
+branch_pattern: "task/0.0.5-*"
+references:
+  requirements: ["NFR-OPS-001", "NFR-SEC-001", "SEC-GOV-001"]
+  adrs: ["ADR-0014"]
+  contracts: ["contracts/config/task-card.v1.schema.json", "contracts/config/deployment-manifest.v1.schema.json"]
+goal: "Tạo delivery controls, templates và machine-readable task-card policy cho Phase 0 onward."
+non_goals: ["Create CI workflow implementation", "Bootstrap Python package", "Create deployment manifest instance"]
+preconditions: ["Task 0.0.0 exists."]
+blockers: ["Account Owner review of task-control policy is pending."]
+allowed_globs: ["docs/05-engineering/**", "docs/templates/**", "contracts/config/**", "tasks/**", "docs/evidence/tasks/0.0.5/**"]
+forbidden_globs: ["src/**", "migrations/**", "configs/**", "infra/**", "pyproject.toml", "uv.lock", ".github/**"]
+impact:
+  database: false
+  api: false
+  event: false
+  config: true
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "Task YAML schema and CI allowlist design align with master §13 and §16."
+  - "Templates capture task, ADR and gate fields without approval claim."
+required_commands: ["Task YAML schema validation", "Manual CI/task-control review"]
+evidence_path: "docs/evidence/tasks/0.0.5/"
+gate_impact: "Phase 0.0"
+rollback_or_forward_fix: "Update task-card schema with a new version before use by implementation tasks."
+known_risks: ["Actual CI enforcement is a Phase 0 implementation task, not completed here."]
+waiver_id: null

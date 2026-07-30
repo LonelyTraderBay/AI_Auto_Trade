@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/commands/execution/submit-order.v1.schema.json",
+  "title": "Execution submit order command v1",
+  "description": "Internal execution command emitted only after canonicalization and fresh APPROVE risk decision. It is not a strategy proposal or public manual-order API payload.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command_id",
+    "command_type",
+    "schema_version",
+    "submission_state",
+    "order_intent_id",
+    "client_order_id",
+    "account_id",
+    "venue_id",
+    "instrument_id",
+    "strategy_instance_id",
+    "deployment_id",
+    "correlation_id",
+    "causation_id",
+    "trace_id",
+    "side",
+    "order_type",
+    "quantity",
+    "limit_price",
+    "trigger_price",
+    "time_in_force",
+    "reduce_only",
+    "post_only",
+    "created_at",
+    "expires_at",
+    "strategy_version",
+    "config_hash",
+    "input_snapshot_ref",
+    "risk_decision",
+    "manual_approval_ref",
+    "venue_capability_profile_checksum",
+    "canonical_request_hash"
+  ],
+  "properties": {
+    "command_id": { "$ref": "#/$defs/uuid_v7" },
+    "command_type": { "const": "SUBMIT_ORDER" },
+    "schema_version": { "const": 1 },
+    "submission_state": { "const": "SUBMISSION_QUEUED" },
+    "order_intent_id": { "$ref": "#/$defs/uuid_v7" },
+    "client_order_id": { "$ref": "#/$defs/uuid_v7", "description": "Generated once by execution; never reused within venue/account." },
+    "account_id": { "$ref": "#/$defs/uuid_v7" },
+    "venue_id": { "$ref": "#/$defs/uuid_v7" },
+    "instrument_id": { "$ref": "#/$defs/uuid_v7" },
+    "strategy_instance_id": { "$ref": "#/$defs/uuid_v7" },
+    "deployment_id": { "$ref": "#/$defs/uuid_v7" },
+    "correlation_id": { "$ref": "#/$defs/uuid_v7" },
+    "causation_id": { "$ref": "#/$defs/uuid_v7" },
+    "trace_id": { "$ref": "#/$defs/uuid_v7" },
+    "side": { "type": "string", "enum": ["BUY", "SELL"] },
+    "order_type": { "type": "string", "enum": ["MARKET", "LIMIT", "STOP_MARKET", "STOP_LIMIT"] },
+    "quantity": { "$ref": "#/$defs/positive_decimal" },
+    "limit_price": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/positive_decimal" }] },
+    "trigger_price": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/positive_decimal" }] },
+    "time_in_force": { "type": "string", "enum": ["GTC", "IOC", "FOK", "GTD"] },
+    "reduce_only": { "type": "boolean" },
+    "post_only": { "type": "boolean" },
+    "created_at": { "$ref": "#/$defs/date_time" },
+    "expires_at": { "$ref": "#/$defs/date_time" },
+    "strategy_version": { "type": "string", "minLength": 1 },
+    "config_hash": { "$ref": "#/$defs/sha256" },
+    "input_snapshot_ref": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "risk_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "risk_policy_id",
+        "risk_policy_version",
+        "reservation_id",
+        "portfolio_snapshot_hash",
+        "market_snapshot_hash",
+        "input_hash",
+        "decided_at",
+        "expires_at"
+      ],
+      "properties": {
+        "decision": { "const": "APPROVE" },
+        "risk_policy_id": { "$ref": "#/$defs/uuid_v7" },
+        "risk_policy_version": { "type": "string", "minLength": 1 },
+        "reservation_id": { "$ref": "#/$defs/uuid_v7" },
+        "portfolio_snapshot_hash": { "$ref": "#/$defs/sha256" },
+        "market_snapshot_hash": { "$ref": "#/$defs/sha256" },
+        "input_hash": { "$ref": "#/$defs/sha256" },
+        "decided_at": { "$ref": "#/$defs/date_time" },
+        "expires_at": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "manual_approval_ref": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] },
+    "venue_capability_profile_checksum": { "$ref": "#/$defs/sha256" },
+    "canonical_request_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "order_type": { "const": "MARKET" } }, "required": ["order_type"] },
+      "then": { "properties": { "limit_price": { "type": "null" } } }
+    },
+    {
+      "if": { "properties": { "order_type": { "const": "LIMIT" } }, "required": ["order_type"] },
+      "then": { "properties": { "limit_price": { "$ref": "#/$defs/positive_decimal" }, "trigger_price": { "type": "null" } } }
+    },
+    {
+      "if": { "properties": { "order_type": { "const": "STOP_MARKET" } }, "required": ["order_type"] },
+      "then": { "properties": { "limit_price": { "type": "null" }, "trigger_price": { "$ref": "#/$defs/positive_decimal" } } }
+    },
+    {
+      "if": { "properties": { "order_type": { "const": "STOP_LIMIT" } }, "required": ["order_type"] },
+      "then": { "properties": { "limit_price": { "$ref": "#/$defs/positive_decimal" }, "trigger_price": { "$ref": "#/$defs/positive_decimal" } } }
+    },
+    {
+      "if": { "properties": { "post_only": { "const": true } }, "required": ["post_only"] },
+      "then": { "properties": { "order_type": { "const": "LIMIT" } } }
+    }
+  ],
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "date_time": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "positive_decimal": {
+      "type": "string",
+      "allOf": [
+        { "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,18})?$" },
+        { "not": { "pattern": "^0(?:\\.0{1,18})?$" } }
+      ],
+      "description": "Positive base-10 Decimal serialized as string with no more than 18 fractional digits."
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/events/platform/integration-event-envelope.v1.schema.json",
+  "title": "Platform integration event envelope v1",
+  "description": "Canonical envelope for immutable integration events. Event type is past tense and versioned; event data must be defined by a type-specific schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "schema_version",
+    "source",
+    "occurred_at",
+    "recorded_at",
+    "correlation_id",
+    "causation_id",
+    "trace_id",
+    "subject_id",
+    "partition_key",
+    "data"
+  ],
+  "properties": {
+    "id": { "$ref": "#/$defs/uuid_v7" },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$",
+      "description": "Past-tense event type, for example execution.order_acknowledged.v1."
+    },
+    "schema_version": { "const": 1 },
+    "source": {
+      "type": "string",
+      "enum": ["market", "strategy", "risk", "execution", "ledger", "reconciliation", "operations", "platform", "research", "ai_memory"]
+    },
+    "occurred_at": { "$ref": "#/$defs/date_time" },
+    "received_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] },
+    "processed_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] },
+    "recorded_at": { "$ref": "#/$defs/date_time" },
+    "correlation_id": { "$ref": "#/$defs/uuid_v7" },
+    "causation_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] },
+    "trace_id": { "$ref": "#/$defs/uuid_v7" },
+    "subject_id": { "$ref": "#/$defs/uuid_v7" },
+    "partition_key": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "data": { "type": "object", "description": "Type-specific, non-secret payload." }
+  },
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "date_time": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  }
+}

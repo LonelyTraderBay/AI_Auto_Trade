@@ -1,0 +1,33 @@
+{
+  "id": "018f8c7c-0050-7050-8050-000000000050",
+  "type": "execution.order_acknowledged.v1",
+  "schema_version": 1,
+  "source": "execution",
+  "occurred_at": "2026-07-31T00:00:00Z",
+  "received_at": "2026-07-31T00:00:00Z",
+  "processed_at": "2026-07-31T00:00:01Z",
+  "recorded_at": "2026-07-31T00:00:01Z",
+  "correlation_id": "018f8c7c-0051-7051-8051-000000000051",
+  "causation_id": "018f8c7c-0052-7052-8052-000000000052",
+  "trace_id": "018f8c7c-0053-7053-8053-000000000053",
+  "subject_id": "018f8c7c-0054-7054-8054-000000000054",
+  "partition_key": "order:018f8c7c-0054-7054-8054-000000000054",
+  "data": {
+    "order_id": "018f8c7c-0054-7054-8054-000000000054",
+    "order_intent_id": "018f8c7c-0055-7055-8055-000000000055",
+    "client_order_id": "018f8c7c-0056-7056-8056-000000000056",
+    "account_id": "018f8c7c-0057-7057-8057-000000000057",
+    "venue_id": "018f8c7c-0058-7058-8058-000000000058",
+    "instrument_id": "018f8c7c-0059-7059-8059-000000000059",
+    "state": "OPEN",
+    "previous_state": "SUBMITTING",
+    "order_version": 2,
+    "event_reason_code": "VENUE_ACKNOWLEDGED",
+    "executed_quantity": "0",
+    "canonical_request_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "venue_order_id": "redacted-venue-order-reference",
+    "terminal_reason": null,
+    "fill_id": null,
+    "submission_attempt_id": "018f8c7c-0060-7060-8060-000000000060"
+  }
+}

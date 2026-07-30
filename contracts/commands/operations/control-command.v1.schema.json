@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/commands/operations/control-command.v1.schema.json",
+  "title": "Operations control command v1",
+  "description": "Versioned command record/request for Control API. It is not a direct venue instruction and contains no credential or secret.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command_id",
+    "command_type",
+    "schema_version",
+    "status",
+    "actor_id",
+    "actor_role",
+    "route_scope",
+    "idempotency_key",
+    "request_hash",
+    "correlation_id",
+    "causation_id",
+    "trace_id",
+    "target",
+    "reason",
+    "requested_at",
+    "payload",
+    "reauthenticated_at",
+    "approval",
+    "result_ref",
+    "error_code"
+  ],
+  "properties": {
+    "command_id": { "$ref": "#/$defs/uuid_v7" },
+    "command_type": {
+      "type": "string",
+      "enum": [
+        "REQUEST_RECONCILIATION",
+        "ACTIVATE_KILL_SWITCH",
+        "RELEASE_KILL_SWITCH",
+        "ACTIVATE_STRATEGY",
+        "STOP_STRATEGY",
+        "START_BACKTEST"
+      ]
+    },
+    "schema_version": { "const": 1 },
+    "status": { "type": "string", "enum": ["ACCEPTED", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED"] },
+    "actor_id": { "$ref": "#/$defs/uuid_v7" },
+    "actor_role": { "type": "string", "enum": ["VIEWER", "TECHNICAL_OPERATOR", "RISK_APPROVER", "SECURITY_BACKUP_OWNER", "ACCOUNT_OWNER"] },
+    "route_scope": {
+      "type": "string",
+      "enum": [
+        "commands/reconciliations",
+        "commands/kill-switch-activations",
+        "commands/kill-switch-releases",
+        "commands/strategy-activations",
+        "commands/strategy-stops",
+        "commands/backtests"
+      ]
+    },
+    "idempotency_key": { "type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "request_hash": { "$ref": "#/$defs/sha256" },
+    "correlation_id": { "$ref": "#/$defs/uuid_v7" },
+    "causation_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] },
+    "trace_id": { "$ref": "#/$defs/uuid_v7" },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context", "subject_id"],
+      "properties": {
+        "context": { "type": "string", "enum": ["operations", "execution", "strategy", "risk", "deployment", "research"] },
+        "subject_id": { "$ref": "#/$defs/uuid_v7" }
+      }
+    },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "requested_at": { "$ref": "#/$defs/date_time" },
+    "payload": { "type": "object" },
+    "reauthenticated_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] },
+    "approval": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["records"],
+          "properties": {
+            "records": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/approval_record" }
+            }
+          }
+        }
+      ]
+    },
+    "result_ref": { "type": ["string", "null"], "maxLength": 2048 },
+    "error_code": { "type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]*$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "command_type": { "const": "REQUEST_RECONCILIATION" } }, "required": ["command_type"] },
+      "then": {
+        "properties": {
+          "route_scope": { "const": "commands/reconciliations" },
+          "payload": { "$ref": "#/$defs/reconciliation_payload" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "command_type": { "const": "ACTIVATE_KILL_SWITCH" } }, "required": ["command_type"] },
+      "then": {
+        "properties": {
+          "route_scope": { "const": "commands/kill-switch-activations" },
+          "payload": { "$ref": "#/$defs/kill_switch_activation_payload" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "command_type": { "const": "RELEASE_KILL_SWITCH" } }, "required": ["command_type"] },
+      "then": {
+        "properties": {
+          "route_scope": { "const": "commands/kill-switch-releases" },
+          "payload": { "$ref": "#/$defs/kill_switch_release_payload" },
+          "reauthenticated_at": { "$ref": "#/$defs/date_time" },
+          "approval": {
+            "type": "object",
+            "required": ["records"],
+            "properties": {
+              "records": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "type": "object",
+                      "required": ["approved_role"],
+                      "properties": { "approved_role": { "const": "RISK_APPROVER" } }
+                    }
+                  },
+                  {
+                    "contains": {
+                      "type": "object",
+                      "required": ["approved_role"],
+                      "properties": { "approved_role": { "const": "ACCOUNT_OWNER" } }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "command_type": { "const": "ACTIVATE_STRATEGY" } }, "required": ["command_type"] },
+      "then": {
+        "properties": { "route_scope": { "const": "commands/strategy-activations" }, "payload": { "$ref": "#/$defs/strategy_payload" } }
+      }
+    },
+    {
+      "if": { "properties": { "command_type": { "const": "STOP_STRATEGY" } }, "required": ["command_type"] },
+      "then": {
+        "properties": { "route_scope": { "const": "commands/strategy-stops" }, "payload": { "$ref": "#/$defs/strategy_payload" } }
+      }
+    },
+    {
+      "if": { "properties": { "command_type": { "const": "START_BACKTEST" } }, "required": ["command_type"] },
+      "then": {
+        "properties": { "route_scope": { "const": "commands/backtests" }, "payload": { "$ref": "#/$defs/backtest_payload" } }
+      }
+    }
+  ],
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "date_time": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "approval_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval_id", "approved_by", "approved_role", "approved_at", "reason"],
+      "properties": {
+        "approval_id": { "$ref": "#/$defs/uuid_v7" },
+        "approved_by": { "$ref": "#/$defs/uuid_v7" },
+        "approved_role": { "type": "string", "enum": ["RISK_APPROVER", "SECURITY_BACKUP_OWNER", "ACCOUNT_OWNER"] },
+        "approved_at": { "$ref": "#/$defs/date_time" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_type", "account_id", "instrument_id", "strategy_instance_id"],
+      "properties": {
+        "scope_type": { "type": "string", "enum": ["GLOBAL", "ACCOUNT", "INSTRUMENT", "STRATEGY"] },
+        "account_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] },
+        "instrument_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] },
+        "strategy_instance_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] }
+      }
+    },
+    "reconciliation_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "evidence_cutoff_at"],
+      "properties": {
+        "scope": { "$ref": "#/$defs/scope" },
+        "evidence_cutoff_at": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "kill_switch_activation_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "activation_reason_code"],
+      "properties": {
+        "scope": { "$ref": "#/$defs/scope" },
+        "activation_reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" }
+      }
+    },
+    "kill_switch_release_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kill_switch_id", "scope", "verification_evidence_ref"],
+      "properties": {
+        "kill_switch_id": { "$ref": "#/$defs/uuid_v7" },
+        "scope": { "$ref": "#/$defs/scope" },
+        "verification_evidence_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "strategy_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy_instance_id", "deployment_id"],
+      "properties": {
+        "strategy_instance_id": { "$ref": "#/$defs/uuid_v7" },
+        "deployment_id": { "$ref": "#/$defs/uuid_v7" }
+      }
+    },
+    "backtest_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dataset_version", "strategy_version", "seed"],
+      "properties": {
+        "dataset_version": { "type": "string", "minLength": 1 },
+        "strategy_version": { "type": "string", "minLength": 1 },
+        "seed": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "command_id": "018f8c7c-0010-7010-8010-000000000010",
+  "command_type": "REQUEST_RECONCILIATION",
+  "schema_version": 1,
+  "status": "ACCEPTED",
+  "actor_id": "018f8c7c-0011-7011-8011-000000000011",
+  "actor_role": "TECHNICAL_OPERATOR",
+  "route_scope": "commands/reconciliations",
+  "idempotency_key": "fixture-reconcile-0001",
+  "request_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "correlation_id": "018f8c7c-0012-7012-8012-000000000012",
+  "causation_id": null,
+  "trace_id": "018f8c7c-0013-7013-8013-000000000013",
+  "target": {
+    "context": "operations",
+    "subject_id": "018f8c7c-0014-7014-8014-000000000014"
+  },
+  "reason": "Deterministic contract fixture reconciliation request.",
+  "requested_at": "2026-07-31T00:00:00Z",
+  "payload": {
+    "scope": {
+      "scope_type": "ACCOUNT",
+      "account_id": "018f8c7c-0015-7015-8015-000000000015",
+      "instrument_id": null,
+      "strategy_instance_id": null
+    },
+    "evidence_cutoff_at": "2026-07-31T00:00:00Z"
+  },
+  "reauthenticated_at": null,
+  "approval": null,
+  "result_ref": null,
+  "error_code": null
+}

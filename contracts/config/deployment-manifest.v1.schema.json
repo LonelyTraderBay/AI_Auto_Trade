@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/config/deployment-manifest.v1.schema.json",
+  "title": "AI Auto Trade immutable deployment manifest v1",
+  "description": "Validated deployment identity. It contains hashes and secret references only; it never contains secret values. This schema does not authorize a deployment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "deployment_id",
+    "environment",
+    "run_mode",
+    "execution_target",
+    "account_class",
+    "credential_class",
+    "venue_scope",
+    "artifact",
+    "strategy",
+    "risk_policy",
+    "effective_config_hash",
+    "data_lineage",
+    "approval",
+    "created_at",
+    "rollback_target_manifest_id"
+  ],
+  "properties": {
+    "manifest_version": { "const": 1 },
+    "deployment_id": { "$ref": "#/$defs/uuid_v7" },
+    "environment": {
+      "type": "string",
+      "enum": ["local", "ci", "paper", "testnet", "canary", "live"]
+    },
+    "run_mode": {
+      "type": "string",
+      "enum": ["BACKTEST", "REPLAY", "SHADOW", "PAPER_SIMULATOR", "TESTNET", "CANARY", "FULL_LIVE"]
+    },
+    "execution_target": {
+      "type": "string",
+      "enum": ["INTERNAL_SIMULATOR", "DISABLED", "VENUE_TESTNET", "VENUE_LIVE"]
+    },
+    "account_class": {
+      "type": "string",
+      "enum": ["SIMULATED", "TESTNET", "LIVE"]
+    },
+    "credential_class": {
+      "type": "string",
+      "enum": ["NONE", "TESTNET_READ_ONLY", "TESTNET_TRADE_ONLY", "LIVE_READ_ONLY", "LIVE_TRADE_ONLY"]
+    },
+    "venue_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["venue_id", "account_id", "endpoint_class", "capability_profile_checksum"],
+      "properties": {
+        "venue_id": { "$ref": "#/$defs/uuid_v7" },
+        "account_id": { "$ref": "#/$defs/uuid_v7" },
+        "endpoint_class": { "type": "string", "enum": ["NONE", "TESTNET", "LIVE"] },
+        "capability_profile_checksum": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code_commit", "runtime_image_digest", "dependency_lock_checksum"],
+      "properties": {
+        "code_commit": { "type": "string", "pattern": "^[a-f0-9]{40,64}$" },
+        "runtime_image_digest": { "$ref": "#/$defs/sha256" },
+        "dependency_lock_checksum": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy_artifact_id", "strategy_version", "parameters_hash"],
+      "properties": {
+        "strategy_artifact_id": { "$ref": "#/$defs/uuid_v7" },
+        "strategy_version": { "type": "string", "minLength": 1 },
+        "parameters_hash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "risk_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["risk_policy_id", "risk_policy_version", "risk_policy_hash"],
+      "properties": {
+        "risk_policy_id": { "$ref": "#/$defs/uuid_v7" },
+        "risk_policy_version": { "type": "string", "minLength": 1 },
+        "risk_policy_hash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "effective_config_hash": { "$ref": "#/$defs/sha256" },
+    "data_lineage": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["dataset_version", "feature_version", "model_version", "prompt_version"],
+          "properties": {
+            "dataset_version": { "type": ["string", "null"] },
+            "feature_version": { "type": ["string", "null"] },
+            "model_version": { "type": ["string", "null"] },
+            "prompt_version": { "type": ["string", "null"] }
+          }
+        }
+      ]
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval_record_id", "approved_by", "approved_at", "approval_reason"],
+      "properties": {
+        "approval_record_id": { "$ref": "#/$defs/uuid_v7" },
+        "approved_by": { "$ref": "#/$defs/uuid_v7" },
+        "approved_at": { "$ref": "#/$defs/date_time" },
+        "approval_reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "created_at": { "$ref": "#/$defs/date_time" },
+    "rollback_target_manifest_id": {
+      "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "run_mode": { "const": "BACKTEST" } }, "required": ["run_mode"] },
+      "then": {
+        "properties": {
+          "environment": { "enum": ["local", "ci"] },
+          "account_class": { "const": "SIMULATED" },
+          "credential_class": { "const": "NONE" },
+          "execution_target": { "const": "INTERNAL_SIMULATOR" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "run_mode": { "const": "REPLAY" } }, "required": ["run_mode"] },
+      "then": {
+        "properties": {
+          "environment": { "enum": ["local", "ci"] },
+          "account_class": { "const": "SIMULATED" },
+          "credential_class": { "const": "NONE" },
+          "execution_target": { "const": "INTERNAL_SIMULATOR" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "run_mode": { "const": "SHADOW" } }, "required": ["run_mode"] },
+      "then": {
+        "properties": { "environment": { "enum": ["paper", "testnet"] }, "execution_target": { "const": "DISABLED" } },
+        "anyOf": [
+          { "properties": { "account_class": { "const": "SIMULATED" }, "credential_class": { "const": "NONE" } } },
+          { "properties": { "account_class": { "const": "TESTNET" }, "credential_class": { "const": "TESTNET_READ_ONLY" } } },
+          { "properties": { "account_class": { "const": "LIVE" }, "credential_class": { "const": "LIVE_READ_ONLY" } } }
+        ]
+      }
+    },
+    {
+      "if": { "properties": { "run_mode": { "const": "PAPER_SIMULATOR" } }, "required": ["run_mode"] },
+      "then": {
+        "properties": { "environment": { "const": "paper" }, "execution_target": { "const": "INTERNAL_SIMULATOR" } },
+        "anyOf": [
+          { "properties": { "account_class": { "const": "SIMULATED" }, "credential_class": { "const": "NONE" } } },
+          { "properties": { "account_class": { "const": "LIVE" }, "credential_class": { "const": "LIVE_READ_ONLY" } } }
+        ]
+      }
+    },
+    {
+      "if": { "properties": { "run_mode": { "const": "TESTNET" } }, "required": ["run_mode"] },
+      "then": {
+        "properties": {
+          "environment": { "const": "testnet" },
+          "account_class": { "const": "TESTNET" },
+          "credential_class": { "const": "TESTNET_TRADE_ONLY" },
+          "execution_target": { "const": "VENUE_TESTNET" },
+          "venue_scope": { "properties": { "endpoint_class": { "const": "TESTNET" } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "run_mode": { "const": "CANARY" } }, "required": ["run_mode"] },
+      "then": {
+        "properties": {
+          "environment": { "const": "canary" },
+          "account_class": { "const": "LIVE" },
+          "credential_class": { "const": "LIVE_TRADE_ONLY" },
+          "execution_target": { "const": "VENUE_LIVE" },
+          "venue_scope": { "properties": { "endpoint_class": { "const": "LIVE" } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "run_mode": { "const": "FULL_LIVE" } }, "required": ["run_mode"] },
+      "then": {
+        "properties": {
+          "environment": { "const": "live" },
+          "account_class": { "const": "LIVE" },
+          "credential_class": { "const": "LIVE_TRADE_ONLY" },
+          "execution_target": { "const": "VENUE_LIVE" },
+          "venue_scope": { "properties": { "endpoint_class": { "const": "LIVE" } } }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "uuid_v7": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "date_time": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    }
+  }
+}

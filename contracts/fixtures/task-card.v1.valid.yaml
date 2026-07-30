@@ -1,0 +1,49 @@
+task_id: "0.0.4"
+phase: "0.0"
+status: "READY"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-08-31T00:00:00Z"
+branch_pattern: "task/0.0.4-*"
+references:
+  requirements:
+    - "NFR-SEC-001"
+    - "NFR-OPS-001"
+  adrs:
+    - "ADR-0014"
+  contracts:
+    - "contracts/config/task-card.v1.schema.json"
+goal: "Review and validate the Phase 0.0 contract and security baseline."
+non_goals:
+  - "Do not create application source, migration, runtime config, or deployment."
+preconditions:
+  - "Master specification is the governing authority."
+blockers: []
+allowed_globs:
+  - "docs/**"
+  - "contracts/**"
+  - "tasks/**"
+forbidden_globs:
+  - "src/**"
+  - "migrations/**"
+  - "configs/**"
+  - "infra/**"
+  - "uv.lock"
+impact:
+  database: false
+  api: true
+  event: true
+  config: true
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "All referenced JSON Schema and OpenAPI artifacts parse successfully."
+  - "Fixtures validate without containing secret or real venue data."
+required_commands:
+  - "Phase 0.0 approved JSON Schema and OpenAPI validation procedure"
+evidence_path: "docs/evidence/tasks/0.0.4/"
+gate_impact: "phase-0.0"
+rollback_or_forward_fix: "Supersede draft contract versions; do not modify approved or implemented public v1 semantics without a new task and compatibility plan."
+known_risks:
+  - "Authentication provider remains unresolved under OD-006 and ADR-0015."
+waiver_id: null

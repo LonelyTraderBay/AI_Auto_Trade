@@ -1,0 +1,1087 @@
+openapi: 3.1.0
+x-document-control:
+  status: IN_REVIEW
+  owner: Technical Operator
+  approver: Account Owner
+  related: [FR-OPS-001, NFR-SEC-001, ADR-0014, ADR-0015]
+info:
+  title: AI Auto Trade Control Plane API
+  version: 1.0.0-draft
+  summary: Contract-first, provider-neutral control-plane API skeleton.
+  description: >-
+    Canonical HTTP wire contract for the AI Auto Trade control plane. This is an
+    IN_REVIEW Phase 0.0 skeleton; it authorizes no implementation, venue action,
+    credential use, deployment, or risk override. All POST command routes are
+    asynchronous, idempotent, audited, and never direct venue order endpoints.
+  contact:
+    name: Technical Operator
+  license:
+    name: Internal design artifact
+servers:
+  - url: https://control-api.invalid/api/v1
+    description: Non-routable design placeholder; no production endpoint is defined.
+tags:
+  - name: system
+    description: Health and runtime read models.
+  - name: orders
+    description: Sanitized order, fill, and portfolio read projections.
+  - name: commands
+    description: Asynchronous auditable control commands.
+  - name: operations
+    description: Incidents, audit events, and deployment read models.
+security:
+  - ActorAuthentication: []
+paths:
+  /health:
+    get:
+      tags: [system]
+      operationId: getHealth
+      summary: Read liveness status.
+      security: []
+      responses:
+        '200':
+          description: Liveness response without secret or venue state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /readiness:
+    get:
+      tags: [system]
+      operationId: getReadiness
+      summary: Read safe readiness state.
+      security: []
+      responses:
+        '200':
+          description: Runtime is ready for its approved mode; this does not enable a strategy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Readiness'
+        '503':
+          $ref: '#/components/responses/RuntimeNotReady'
+  /runtime:
+    get:
+      tags: [system]
+      operationId: getRuntime
+      summary: Read sanitized runtime identity and safe state.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Sanitized runtime projection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runtime'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '503':
+          $ref: '#/components/responses/RuntimeNotReady'
+  /commands/reconciliations:
+    post:
+      tags: [commands]
+      operationId: requestReconciliation
+      summary: Request one asynchronous reconciliation command.
+      description: >-
+        Requires a Technical Operator role and an idempotency key. It does not
+        submit, cancel, replace, or retry an external order.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconciliationCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+  /commands/strategy-activations:
+    post:
+      tags: [commands]
+      operationId: activateStrategy
+      summary: Request strategy activation in an approved scope.
+      description: Activation is asynchronous and remains blocked by readiness, risk, reconciliation, kill-switch, and manifest gates.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyActivationCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '423':
+          $ref: '#/components/responses/OperationBlocked'
+  /commands/strategy-stops:
+    post:
+      tags: [commands]
+      operationId: stopStrategy
+      summary: Request strategy stop in an approved scope.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyStopCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+  /commands/kill-switch-activations:
+    post:
+      tags: [commands]
+      operationId: activateKillSwitch
+      summary: Activate a kill switch for an explicit scope.
+      description: Activation blocks new submission; it does not assume in-flight venue operations failed.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KillSwitchActivationCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+  /commands/kill-switch-releases:
+    post:
+      tags: [commands]
+      operationId: releaseKillSwitch
+      summary: Request high-risk kill-switch release.
+      description: Requires Risk Approver plus Account Owner, re-authentication, reason, verification evidence and immutable audit.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KillSwitchReleaseCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '423':
+          $ref: '#/components/responses/OperationBlocked'
+  /commands/backtests:
+    post:
+      tags: [commands]
+      operationId: startBacktest
+      summary: Request deterministic backtest execution.
+      description: No venue operation is allowed; dataset, strategy, config and seed must be versioned.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BacktestCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+  /commands/{command_id}:
+    get:
+      tags: [commands]
+      operationId: getCommand
+      summary: Read asynchronous command state.
+      parameters:
+        - $ref: '#/components/parameters/CommandId'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Command state and safe result reference.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandStatus'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/CommandNotFound'
+  /orders/{order_id}:
+    get:
+      tags: [orders]
+      operationId: getOrder
+      summary: Read sanitized canonical order projection.
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Canonical order projection; venue credential/raw payload is never returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+  /orders/{order_id}/timeline:
+    get:
+      tags: [orders]
+      operationId: getOrderTimeline
+      summary: Read immutable canonical order timeline.
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Cursor-paginated order events in stable recorded-at/event-ID order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderTimelinePage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+  /fills:
+    get:
+      tags: [orders]
+      operationId: listFills
+      summary: List fills using stable cursor pagination.
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/AccountIdFilter'
+        - $ref: '#/components/parameters/InstrumentIdFilter'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Cursor-paginated sanitized fills. Offset pagination is not supported.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FillPage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+  /portfolio/snapshot:
+    get:
+      tags: [orders]
+      operationId: getPortfolioSnapshot
+      summary: Read authorized portfolio snapshot.
+      parameters:
+        - $ref: '#/components/parameters/AccountIdFilter'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Versioned sanitized snapshot; not a trading instruction.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSnapshot'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '423':
+          $ref: '#/components/responses/OperationBlocked'
+  /incidents:
+    get:
+      tags: [operations]
+      operationId: listIncidents
+      summary: List authorized incident projections.
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Cursor-paginated incident projection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentPage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+  /audit-events:
+    get:
+      tags: [operations]
+      operationId: listAuditEvents
+      summary: List immutable authorized audit-event projections.
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Cursor-paginated redacted audit events in stable recorded-at/event-ID order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEventPage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+  /deployments/{deployment_id}:
+    get:
+      tags: [operations]
+      operationId: getDeployment
+      summary: Read immutable sanitized deployment identity.
+      parameters:
+        - $ref: '#/components/parameters/DeploymentId'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Immutable deployment manifest projection without secret values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+components:
+  securitySchemes:
+    ActorAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: provider-defined
+      description: >-
+        Provider-neutral placeholder. Authentication/session implementation is
+        blocked by OD-006 and ADR-0015. Tokens/proofs must never be logged.
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: >-
+        Unique per authenticated actor and route scope for at least the approved
+        retention period. Same key with a different canonical payload returns
+        IDEMPOTENCY_KEY_REUSED.
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: '^[A-Za-z0-9._:-]+$'
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      description: Optional UUIDv7 supplied by the caller; runtime generates one if absent.
+      schema:
+        $ref: '#/components/schemas/UuidV7'
+    ReauthenticationProof:
+      name: X-Reauthentication-Proof
+      in: header
+      required: true
+      description: Provider-defined, action/scope-bound short-lived proof. It must never be logged or echoed.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 4096
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Resource version for optimistic concurrency; mismatch returns PRECONDITION_FAILED.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 256
+    CommandId:
+      name: command_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UuidV7'
+    OrderId:
+      name: order_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UuidV7'
+    DeploymentId:
+      name: deployment_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UuidV7'
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: Opaque stable cursor. Offset pagination is not supported for audit/order/feed-scale data.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 2048
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 500
+        default: 100
+    AccountIdFilter:
+      name: account_id
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/UuidV7'
+    InstrumentIdFilter:
+      name: instrument_id
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/UuidV7'
+  responses:
+    CommandAccepted:
+      description: Command accepted for asynchronous processing; acceptance is not successful execution.
+      headers:
+        Location:
+          required: true
+          schema:
+            type: string
+            format: uri-reference
+          description: Relative command status resource location.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommandAccepted'
+    ValidationFailed:
+      description: Request or contract validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    AuthenticationRequired:
+      description: Actor authentication/session is absent, expired, invalid, or re-authentication is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    AuthorizationDenied:
+      description: Authenticated actor lacks the required role or scope.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    IdempotencyKeyReused:
+      description: Idempotency key was previously used for a different canonical request payload.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    PreconditionFailed:
+      description: Resource version or safe-state precondition does not match.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    CommandNotFound:
+      description: Command is absent or not visible in the actor's authorized scope.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    ResourceNotFound:
+      description: Non-command resource is absent or not visible in the actor's authorized scope.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    RuntimeNotReady:
+      description: Runtime readiness, lease, config, or reconciliation prerequisite is not met.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    OperationBlocked:
+      description: Kill switch, reconciliation, or another safety control blocks the requested action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    InternalError:
+      description: Safe unexpected failure; no stack trace or sensitive data is returned.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    UuidV7:
+      type: string
+      format: uuid
+      pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    Timestamp:
+      type: string
+      format: date-time
+      pattern: 'Z$'
+      description: UTC ISO-8601 timestamp.
+    DecimalString:
+      type: string
+      pattern: '^-?(?:0|[1-9][0-9]*)(?:\.[0-9]{1,18})?$'
+      description: Base-10 Decimal serialized as string; never JSON number/float.
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status, observed_at]
+      properties:
+        status:
+          type: string
+          enum: [OK, DEGRADED]
+        observed_at:
+          $ref: '#/components/schemas/Timestamp'
+    Readiness:
+      type: object
+      additionalProperties: false
+      required: [ready, safe_state, observed_at, blocking_reasons]
+      properties:
+        ready:
+          type: boolean
+        safe_state:
+          type: string
+          enum: [READY, BLOCKED, FROZEN, KILL_SWITCH_ACTIVE]
+        observed_at:
+          $ref: '#/components/schemas/Timestamp'
+        blocking_reasons:
+          type: array
+          items:
+            type: string
+            pattern: '^[A-Z][A-Z0-9_]*$'
+    Runtime:
+      type: object
+      additionalProperties: false
+      required: [deployment_id, environment, run_mode, execution_target, safe_state, manifest_hash, observed_at]
+      properties:
+        deployment_id:
+          $ref: '#/components/schemas/UuidV7'
+        environment:
+          type: string
+          enum: [local, ci, paper, testnet, canary, live]
+        run_mode:
+          type: string
+          enum: [BACKTEST, REPLAY, SHADOW, PAPER_SIMULATOR, TESTNET, CANARY, FULL_LIVE]
+        execution_target:
+          type: string
+          enum: [INTERNAL_SIMULATOR, DISABLED, VENUE_TESTNET, VENUE_LIVE]
+        safe_state:
+          type: string
+          enum: [READY, BLOCKED, FROZEN, KILL_SWITCH_ACTIVE]
+        manifest_hash:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
+        observed_at:
+          $ref: '#/components/schemas/Timestamp'
+    CommandAccepted:
+      type: object
+      additionalProperties: false
+      required: [command_id, status, location, correlation_id, accepted_at]
+      properties:
+        command_id:
+          $ref: '#/components/schemas/UuidV7'
+        status:
+          const: ACCEPTED
+        location:
+          type: string
+          format: uri-reference
+        correlation_id:
+          $ref: '#/components/schemas/UuidV7'
+        accepted_at:
+          $ref: '#/components/schemas/Timestamp'
+    CommandStatus:
+      type: object
+      additionalProperties: false
+      required: [command_id, command_type, status, requested_at, correlation_id, result_ref, error]
+      properties:
+        command_id:
+          $ref: '#/components/schemas/UuidV7'
+        command_type:
+          type: string
+          enum: [REQUEST_RECONCILIATION, ACTIVATE_KILL_SWITCH, RELEASE_KILL_SWITCH, ACTIVATE_STRATEGY, STOP_STRATEGY, START_BACKTEST]
+        status:
+          type: string
+          enum: [ACCEPTED, RUNNING, SUCCEEDED, FAILED, CANCELLED]
+        requested_at:
+          $ref: '#/components/schemas/Timestamp'
+        completed_at:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Timestamp'
+        correlation_id:
+          $ref: '#/components/schemas/UuidV7'
+        result_ref:
+          type: [string, 'null']
+          maxLength: 2048
+        error:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/ErrorEnvelope'
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required: [code, message, details, correlation_id, retryable, remediation_hint]
+      properties:
+        code:
+          type: string
+          enum: [VALIDATION_FAILED, AUTHENTICATION_REQUIRED, AUTHORIZATION_DENIED, IDEMPOTENCY_KEY_REUSED, PRECONDITION_FAILED, COMMAND_NOT_FOUND, RESOURCE_NOT_FOUND, COMMAND_STATE_CONFLICT, RISK_REJECTED, RUNTIME_NOT_READY, RECONCILIATION_BLOCKED, KILL_SWITCH_ACTIVE, EXTERNAL_OUTCOME_UNKNOWN, INTERNAL_ERROR]
+        message:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        details:
+          type: object
+          additionalProperties: true
+          description: Route-specific safe structured details only; no secret, stack trace, raw vendor payload, or unneeded PII.
+        correlation_id:
+          $ref: '#/components/schemas/UuidV7'
+        retryable:
+          type: boolean
+        remediation_hint:
+          type: string
+          minLength: 1
+          maxLength: 1024
+    Order:
+      type: object
+      additionalProperties: false
+      required: [order_id, order_intent_id, client_order_id, account_id, venue_id, instrument_id, state, executed_quantity, requested_quantity, created_at, updated_at, correlation_id]
+      properties:
+        order_id:
+          $ref: '#/components/schemas/UuidV7'
+        order_intent_id:
+          $ref: '#/components/schemas/UuidV7'
+        client_order_id:
+          $ref: '#/components/schemas/UuidV7'
+        account_id:
+          $ref: '#/components/schemas/UuidV7'
+        venue_id:
+          $ref: '#/components/schemas/UuidV7'
+        instrument_id:
+          $ref: '#/components/schemas/UuidV7'
+        state:
+          type: string
+          enum: [CREATED, PENDING_MANUAL_APPROVAL, RISK_APPROVED, RISK_REJECTED, SUBMISSION_QUEUED, SUBMITTING, OPEN, PARTIALLY_FILLED, FILLED, REJECTED, CANCEL_REQUESTED, CANCELLED, EXPIRED, UNKNOWN, RECONCILING, LOST]
+        requested_quantity:
+          $ref: '#/components/schemas/DecimalString'
+        executed_quantity:
+          $ref: '#/components/schemas/DecimalString'
+        terminal_reason:
+          type: [string, 'null']
+          enum: [RISK_REJECTED, REJECTED, CANCELLED, EXPIRED, FILLED, LOST, null]
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+        correlation_id:
+          $ref: '#/components/schemas/UuidV7'
+    OrderTimelineEvent:
+      type: object
+      additionalProperties: false
+      required: [event_id, event_type, occurred_at, recorded_at, state, reason_code]
+      properties:
+        event_id:
+          $ref: '#/components/schemas/UuidV7'
+        event_type:
+          type: string
+          pattern: '^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+\.v[1-9][0-9]*$'
+        occurred_at:
+          $ref: '#/components/schemas/Timestamp'
+        recorded_at:
+          $ref: '#/components/schemas/Timestamp'
+        state:
+          type: string
+        reason_code:
+          type: string
+          pattern: '^[A-Z][A-Z0-9_]*$'
+    OrderTimelinePage:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderTimelineEvent'
+        next_cursor:
+          type: [string, 'null']
+    Fill:
+      type: object
+      additionalProperties: false
+      required: [fill_id, order_id, account_id, venue_id, instrument_id, quantity, price, fee, occurred_at, recorded_at]
+      properties:
+        fill_id:
+          $ref: '#/components/schemas/UuidV7'
+        order_id:
+          $ref: '#/components/schemas/UuidV7'
+        account_id:
+          $ref: '#/components/schemas/UuidV7'
+        venue_id:
+          $ref: '#/components/schemas/UuidV7'
+        instrument_id:
+          $ref: '#/components/schemas/UuidV7'
+        quantity:
+          $ref: '#/components/schemas/DecimalString'
+        price:
+          $ref: '#/components/schemas/DecimalString'
+        fee:
+          $ref: '#/components/schemas/DecimalString'
+        occurred_at:
+          $ref: '#/components/schemas/Timestamp'
+        recorded_at:
+          $ref: '#/components/schemas/Timestamp'
+    FillPage:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fill'
+        next_cursor:
+          type: [string, 'null']
+    PortfolioSnapshot:
+      type: object
+      additionalProperties: false
+      required: [snapshot_id, account_id, as_of_at, source_hash, positions]
+      properties:
+        snapshot_id:
+          $ref: '#/components/schemas/UuidV7'
+        account_id:
+          $ref: '#/components/schemas/UuidV7'
+        as_of_at:
+          $ref: '#/components/schemas/Timestamp'
+        source_hash:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
+        positions:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [instrument_id, quantity]
+            properties:
+              instrument_id:
+                $ref: '#/components/schemas/UuidV7'
+              quantity:
+                $ref: '#/components/schemas/DecimalString'
+    Incident:
+      type: object
+      additionalProperties: false
+      required: [incident_id, severity, status, detected_at, scope, correlation_ids]
+      properties:
+        incident_id:
+          $ref: '#/components/schemas/UuidV7'
+        severity:
+          type: string
+          enum: [CRITICAL, HIGH, MEDIUM, LOW]
+        status:
+          type: string
+          enum: [OPEN, MITIGATING, RESOLVED, CLOSED]
+        detected_at:
+          $ref: '#/components/schemas/Timestamp'
+        scope:
+          type: string
+          minLength: 1
+        correlation_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/UuidV7'
+    IncidentPage:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+        next_cursor:
+          type: [string, 'null']
+    AuditEvent:
+      type: object
+      additionalProperties: false
+      required: [audit_event_id, actor_id, action, subject_ref, recorded_at, correlation_id, before_hash, after_hash]
+      properties:
+        audit_event_id:
+          $ref: '#/components/schemas/UuidV7'
+        actor_id:
+          $ref: '#/components/schemas/UuidV7'
+        action:
+          type: string
+          pattern: '^[A-Z][A-Z0-9_]*$'
+        subject_ref:
+          type: string
+          minLength: 1
+        recorded_at:
+          $ref: '#/components/schemas/Timestamp'
+        correlation_id:
+          $ref: '#/components/schemas/UuidV7'
+        before_hash:
+          type: [string, 'null']
+          pattern: '^sha256:[0-9a-f]{64}$'
+        after_hash:
+          type: [string, 'null']
+          pattern: '^sha256:[0-9a-f]{64}$'
+    AuditEventPage:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        next_cursor:
+          type: [string, 'null']
+    Deployment:
+      type: object
+      additionalProperties: false
+      required: [deployment_id, environment, run_mode, execution_target, manifest_hash, approved_at, created_at]
+      properties:
+        deployment_id:
+          $ref: '#/components/schemas/UuidV7'
+        environment:
+          type: string
+          enum: [local, ci, paper, testnet, canary, live]
+        run_mode:
+          type: string
+          enum: [BACKTEST, REPLAY, SHADOW, PAPER_SIMULATOR, TESTNET, CANARY, FULL_LIVE]
+        execution_target:
+          type: string
+          enum: [INTERNAL_SIMULATOR, DISABLED, VENUE_TESTNET, VENUE_LIVE]
+        manifest_hash:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
+        approved_at:
+          $ref: '#/components/schemas/Timestamp'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+    ControlScope:
+      type: object
+      additionalProperties: false
+      required: [scope_type, account_id, instrument_id, strategy_instance_id]
+      properties:
+        scope_type:
+          type: string
+          enum: [GLOBAL, ACCOUNT, INSTRUMENT, STRATEGY]
+        account_id:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/UuidV7'
+        instrument_id:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/UuidV7'
+        strategy_instance_id:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/UuidV7'
+    ReconciliationCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      description: >-
+        HTTP input only. The server derives actor identity, route scope, command ID,
+        request hash and ACCEPTED status, then persists C-CMD-001.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        payload:
+          type: object
+          additionalProperties: false
+          required: [scope, evidence_cutoff_at]
+          properties:
+            scope:
+              $ref: '#/components/schemas/ControlScope'
+            evidence_cutoff_at:
+              $ref: '#/components/schemas/Timestamp'
+    StrategyActivationCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      description: HTTP input mapped by the server to ACTIVATE_STRATEGY in C-CMD-001.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        payload:
+          $ref: '#/components/schemas/StrategyCommandPayload'
+    StrategyStopCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      description: HTTP input mapped by the server to STOP_STRATEGY in C-CMD-001.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        payload:
+          $ref: '#/components/schemas/StrategyCommandPayload'
+    StrategyCommandPayload:
+      type: object
+      additionalProperties: false
+      required: [strategy_instance_id, deployment_id]
+      properties:
+        strategy_instance_id:
+          $ref: '#/components/schemas/UuidV7'
+        deployment_id:
+          $ref: '#/components/schemas/UuidV7'
+    KillSwitchActivationCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      description: HTTP input mapped by the server to ACTIVATE_KILL_SWITCH in C-CMD-001.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        payload:
+          type: object
+          additionalProperties: false
+          required: [scope, activation_reason_code]
+          properties:
+            scope:
+              $ref: '#/components/schemas/ControlScope'
+            activation_reason_code:
+              type: string
+              pattern: '^[A-Z][A-Z0-9_]*$'
+    KillSwitchReleaseCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      description: >-
+        HTTP input mapped by the server to RELEASE_KILL_SWITCH in C-CMD-001. The
+        re-authentication proof is a protected header and approval evidence is
+        recorded server-side; neither is supplied as a body identity claim.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        payload:
+          type: object
+          additionalProperties: false
+          required: [kill_switch_id, scope, verification_evidence_ref]
+          properties:
+            kill_switch_id:
+              $ref: '#/components/schemas/UuidV7'
+            scope:
+              $ref: '#/components/schemas/ControlScope'
+            verification_evidence_ref:
+              type: string
+              minLength: 1
+              maxLength: 2048
+    BacktestCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      description: HTTP input mapped by the server to START_BACKTEST in C-CMD-001.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        payload:
+          type: object
+          additionalProperties: false
+          required: [dataset_version, strategy_version, seed]
+          properties:
+            dataset_version:
+              type: string
+              minLength: 1
+            strategy_version:
+              type: string
+              minLength: 1
+            seed:
+              type: integer
+              minimum: 0

@@ -1,0 +1,33 @@
+manifest_version: 1
+deployment_id: "018f8c7c-0001-7001-8001-000000000001"
+environment: "paper"
+run_mode: "PAPER_SIMULATOR"
+execution_target: "INTERNAL_SIMULATOR"
+account_class: "SIMULATED"
+credential_class: "NONE"
+venue_scope:
+  venue_id: "018f8c7c-0002-7002-8002-000000000002"
+  account_id: "018f8c7c-0003-7003-8003-000000000003"
+  endpoint_class: "NONE"
+  capability_profile_checksum: "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+artifact:
+  code_commit: "0123456789abcdef0123456789abcdef01234567"
+  runtime_image_digest: "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  dependency_lock_checksum: "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+strategy:
+  strategy_artifact_id: "018f8c7c-0004-7004-8004-000000000004"
+  strategy_version: "example-strategy.v1"
+  parameters_hash: "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+risk_policy:
+  risk_policy_id: "018f8c7c-0005-7005-8005-000000000005"
+  risk_policy_version: "paper-risk.v1"
+  risk_policy_hash: "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+effective_config_hash: "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+data_lineage: null
+approval:
+  approval_record_id: "018f8c7c-0006-7006-8006-000000000006"
+  approved_by: "018f8c7c-0007-7007-8007-000000000007"
+  approved_at: "2026-07-31T00:00:00Z"
+  approval_reason: "Non-production simulator baseline fixture only."
+created_at: "2026-07-31T00:00:00Z"
+rollback_target_manifest_id: null

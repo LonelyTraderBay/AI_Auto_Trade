@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/events/execution/order-event.v1.schema.json",
+  "title": "Execution order event v1",
+  "description": "Order lifecycle event under the platform integration envelope. Immutable facts/corrections only; not a command and never a venue raw payload.",
+  "allOf": [
+    { "$ref": "../platform/integration-event-envelope.v1.schema.json" },
+    {
+      "type": "object",
+      "required": ["type", "source", "data"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "execution.order_created.v1",
+            "execution.order_risk_rejected.v1",
+            "execution.order_manual_approval_requested.v1",
+            "execution.order_risk_approved.v1",
+            "execution.order_submission_queued.v1",
+            "execution.order_submitting.v1",
+            "execution.order_acknowledged.v1",
+            "execution.order_rejected.v1",
+            "execution.order_partially_filled.v1",
+            "execution.order_filled.v1",
+            "execution.order_cancel_requested.v1",
+            "execution.order_cancelled.v1",
+            "execution.order_expired.v1",
+            "execution.order_unknown.v1",
+            "execution.order_reconciling.v1",
+            "execution.order_lost.v1",
+            "execution.order_terminal_corrected.v1"
+          ]
+        },
+        "source": { "const": "execution" },
+        "data": { "$ref": "#/$defs/order_event_data" }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "execution.order_created.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "CREATED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_risk_rejected.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "RISK_REJECTED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_manual_approval_requested.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "PENDING_MANUAL_APPROVAL" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_risk_approved.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "RISK_APPROVED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_submission_queued.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "SUBMISSION_QUEUED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_submitting.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "SUBMITTING" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_acknowledged.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "OPEN" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_rejected.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "REJECTED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_partially_filled.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "PARTIALLY_FILLED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_filled.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "FILLED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_cancel_requested.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "CANCEL_REQUESTED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_cancelled.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "CANCELLED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_expired.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "EXPIRED" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_unknown.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "UNKNOWN" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_reconciling.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "RECONCILING" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_lost.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "const": "LOST" } } } } } },
+        { "if": { "properties": { "type": { "const": "execution.order_terminal_corrected.v1" } }, "required": ["type"] }, "then": { "properties": { "data": { "properties": { "state": { "enum": ["FILLED", "CANCELLED", "EXPIRED", "REJECTED"] } } } } } }
+      ]
+    }
+  ],
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "nonnegative_decimal": { "type": "string", "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,18})?$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "order_event_data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "order_id",
+        "order_intent_id",
+        "client_order_id",
+        "account_id",
+        "venue_id",
+        "instrument_id",
+        "state",
+        "previous_state",
+        "order_version",
+        "event_reason_code",
+        "executed_quantity",
+        "canonical_request_hash",
+        "venue_order_id",
+        "terminal_reason",
+        "fill_id",
+        "submission_attempt_id"
+      ],
+      "properties": {
+        "order_id": { "$ref": "#/$defs/uuid_v7" },
+        "order_intent_id": { "$ref": "#/$defs/uuid_v7" },
+        "client_order_id": { "$ref": "#/$defs/uuid_v7" },
+        "account_id": { "$ref": "#/$defs/uuid_v7" },
+        "venue_id": { "$ref": "#/$defs/uuid_v7" },
+        "instrument_id": { "$ref": "#/$defs/uuid_v7" },
+        "state": { "type": "string", "enum": ["CREATED", "PENDING_MANUAL_APPROVAL", "RISK_APPROVED", "RISK_REJECTED", "SUBMISSION_QUEUED", "SUBMITTING", "OPEN", "PARTIALLY_FILLED", "FILLED", "REJECTED", "CANCEL_REQUESTED", "CANCELLED", "EXPIRED", "UNKNOWN", "RECONCILING", "LOST"] },
+        "previous_state": { "type": ["string", "null"], "enum": [null, "CREATED", "PENDING_MANUAL_APPROVAL", "RISK_APPROVED", "RISK_REJECTED", "SUBMISSION_QUEUED", "SUBMITTING", "OPEN", "PARTIALLY_FILLED", "FILLED", "REJECTED", "CANCEL_REQUESTED", "CANCELLED", "EXPIRED", "UNKNOWN", "RECONCILING", "LOST"] },
+        "order_version": { "type": "integer", "minimum": 1 },
+        "event_reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "executed_quantity": { "$ref": "#/$defs/nonnegative_decimal" },
+        "canonical_request_hash": { "$ref": "#/$defs/sha256" },
+        "venue_order_id": { "type": ["string", "null"], "maxLength": 512 },
+        "terminal_reason": { "type": ["string", "null"], "enum": [null, "RISK_REJECTED", "REJECTED", "CANCELLED", "EXPIRED", "FILLED", "LOST"] },
+        "fill_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] },
+        "submission_attempt_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }] }
+      }
+    }
+  }
+}

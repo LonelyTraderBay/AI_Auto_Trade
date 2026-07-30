@@ -1,0 +1,33 @@
+task_id: "0.0.3"
+phase: "0.0"
+status: "REVIEW"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-08-31T00:00:00Z"
+branch_pattern: "task/0.0.3-*"
+references:
+  requirements: ["FR-EXEC-001", "FR-LED-001", "FR-REC-001", "FR-RSK-001", "NFR-AUD-001", "NFR-SAFE-001"]
+  adrs: ["ADR-0003", "ADR-0004", "ADR-0005", "ADR-0007", "ADR-0011", "ADR-0012", "ADR-0013"]
+  contracts: ["contracts/events/platform/integration-event-envelope.v1.schema.json", "contracts/events/execution/order-event.v1.schema.json"]
+goal: "Tạo canonical domain, OMS/risk/accounting policy và data design đủ để review Task 0.3 persistence contract."
+non_goals: ["Alembic migration", "Database instance", "Venue adapter", "Risk value approval"]
+preconditions: ["Architecture baseline exists."]
+blockers: ["Required ADR and accounting policy approval pending."]
+allowed_globs: ["docs/03-domain/**", "docs/04-data/**", "docs/adr/0003-*.md", "docs/adr/0004-*.md", "docs/adr/0005-*.md", "docs/adr/0007-*.md", "docs/adr/0011-*.md", "docs/adr/0012-*.md", "docs/adr/0013-*.md", "docs/evidence/tasks/0.0.3/**"]
+forbidden_globs: ["src/**", "migrations/**", "configs/**", "infra/**", "pyproject.toml", "uv.lock"]
+impact:
+  database: true
+  api: false
+  event: true
+  config: false
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "OMS, accounting and transaction policies are compatible with master invariants."
+  - "ERD/data dictionary define Task 0.3 physical tables and constraints."
+required_commands: ["Manual domain-data-ADR consistency review"]
+evidence_path: "docs/evidence/tasks/0.0.3/"
+gate_impact: "Phase 0.0"
+rollback_or_forward_fix: "Amend documents/ADRs before a migration exists."
+known_risks: ["No DDL may be created until the data review is approved."]
+waiver_id: null
