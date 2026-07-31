@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
+| Version / Status | 1.1.1 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | FR-OPS-001, FR-OMS-001, FR-AI-001, NFR-SEC-001, NFR-AI-001; ADR-0004, ADR-0005, ADR-0012, ADR-0014, ADR-0016 |
-| Change summary | Registry cho Phase 0.0 baseline contracts, gồm DRAFT Phase 6 provider-neutral BYOK metadata/lifecycle contracts; implementation/validator command chưa tồn tại. |
+| Related | FR-OPS-001, FR-EXEC-001, FR-AI-001, NFR-SEC-001, NFR-AI-001; ADR-0004, ADR-0005, ADR-0012, ADR-0014, ADR-0016 |
+| Change summary | 1.1.1 (2026-07-31, Technical Operator, Pending): sửa dangling ID FR-OMS-001 -> FR-EXEC-001 tại header Related và hai row C-CMD-002/C-EVT-002. 1.1.0: registry cho Phase 0.0 baseline contracts, gồm DRAFT Phase 6 provider-neutral BYOK metadata/lifecycle contracts; implementation/validator command chưa tồn tại. |
 
 ## 1. Registry rule
 
@@ -20,9 +20,9 @@ HTTP command request body is deliberately not the durable `C-CMD-001` record: se
 | C-CFG-001 | config / v1 / IN_REVIEW | `contracts/config/task-card.v1.schema.json` | Technical Operator; task author -> CI/reviewer | No secret; task ID/branch governs diff allowlist | `contracts/fixtures/task-card.v1.valid.yaml`; JSON Schema 2020-12; task-card check evidence | NFR-OPS-001, ADR-0014 |
 | C-CFG-002 | config / v1 / IN_REVIEW | `contracts/config/deployment-manifest.v1.schema.json` | Technical Operator; release process -> runtime/gate | Secret references only; immutable deployment identity; deployment ID partition | `contracts/fixtures/deployment-manifest.v1.paper.valid.yaml`; JSON Schema 2020-12 | NFR-SEC-001, NFR-OPS-001, ADR-0010 |
 | C-CMD-001 | command / v1 / IN_REVIEW | `contracts/commands/operations/control-command.v1.schema.json` | Operations; Control API normalization -> owner handler | Durable internal command record; authenticated actor/RBAC; HTTP idempotency scope; no secret | `contracts/fixtures/control-command.v1.valid.json`; JSON Schema 2020-12 + C-API mapping parity test | FR-OPS-001, ADR-0007, ADR-0015 |
-| C-CMD-002 | command / v1 / IN_REVIEW | `contracts/commands/execution/submit-order.v1.schema.json` | Execution; risk-approved execution app -> execution adapter | Internal only; ClientOrderId unique by venue/account; request hash | `contracts/fixtures/submit-order.v1.valid.json`; JSON Schema 2020-12 | FR-OMS-001, FR-RSK-001, ADR-0005, ADR-0012 |
+| C-CMD-002 | command / v1 / IN_REVIEW | `contracts/commands/execution/submit-order.v1.schema.json` | Execution; risk-approved execution app -> execution adapter | Internal only; ClientOrderId unique by venue/account; request hash | `contracts/fixtures/submit-order.v1.valid.json`; JSON Schema 2020-12 | FR-EXEC-001, FR-RSK-001, ADR-0005, ADR-0012 |
 | C-EVT-001 | event / v1 / IN_REVIEW | `contracts/events/platform/integration-event-envelope.v1.schema.json` | Platform; contexts -> consumers | Internal immutable event; `id` dedupe, `partition_key` ordering | `contracts/fixtures/integration-event-envelope.v1.valid.json`; JSON Schema 2020-12 | ADR-0004, ADR-0014 |
-| C-EVT-002 | event / v1 / IN_REVIEW | `contracts/events/execution/order-event.v1.schema.json` | Execution; OMS -> projections/ledger/reconciliation | Internal immutable lifecycle event; event ID dedupe, order partition | `contracts/fixtures/order-event.v1.valid.json`; JSON Schema 2020-12 + parent envelope resolution | FR-OMS-001, FR-REC-001, ADR-0005 |
+| C-EVT-002 | event / v1 / IN_REVIEW | `contracts/events/execution/order-event.v1.schema.json` | Execution; OMS -> projections/ledger/reconciliation | Internal immutable lifecycle event; event ID dedupe, order partition | `contracts/fixtures/order-event.v1.valid.json`; JSON Schema 2020-12 + parent envelope resolution | FR-EXEC-001, FR-REC-001, ADR-0005 |
 | C-ERR-001 | error catalog / v1 / IN_REVIEW | `contracts/errors/error-catalog.md` | Technical Operator; Control API -> all API consumers | Safe structured public error; correlation ID, no raw sensitive data | `ErrorEnvelope` in C-API-001; route contract tests planned | NFR-SEC-001, ADR-0015 |
 | C-CFG-003 | config / v1 / IN_REVIEW | `contracts/config/ai-provider-catalog.v1.schema.json` | Security/Backup Owner; approved catalog -> Control API/ai worker | No key/URL; API-key-only provider/model/endpoint-profile capability, residency/retention and pinned adapter digest | `contracts/fixtures/ai-provider-catalog.v1.valid.json`; JSON Schema 2020-12 + provider capability/drift review | FR-AI-001, NFR-AI-001, ADR-0016 |
 | C-CFG-004 | config / v1 / IN_REVIEW | `contracts/config/ai-provider-connection.v1.schema.json` | Account Owner/operations; owner-scoped internal metadata -> Control API/ai worker | No raw key/public secret ref; internal opaque active/candidate binding, resolved policy profile/status/revision only; public API omits both bindings | `contracts/fixtures/ai-provider-connection.v1.valid.json`, `.pending-secret.v1.valid.json`, `.rotation-pending-validation.v1.valid.json`; JSON Schema 2020-12 + initial/rotation state and owner-scope test | FR-AI-001, SEC-AI-002, ADR-0016 |

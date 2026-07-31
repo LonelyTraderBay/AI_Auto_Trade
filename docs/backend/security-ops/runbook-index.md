@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
+| Version / Status | 1.2.0 / IN_REVIEW |
 | Owner / Approver | Security/Backup Owner / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
 | Related | NFR-OPS-001, NFR-AI-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; OPS-001; master §12.6–§12.8 |
-| Change summary | Index và common controls cho runbook design/drill trước paper, gồm AI BYOK provider incident Phase 6. |
+| Change summary | Bổ sung RB-010 venue rate-limit/ban, RB-011 outbox/DLQ backlog, RB-012 clock drift vào catalog theo audit supplement. |
 
 ## 1. Use policy
 
@@ -27,6 +27,9 @@ Each drill/incident evidence records runbook ID/version, UTC timeline, scope, ac
 | RB-007 | `runbooks/credential-rotation.md` | Revocation/rotation/suspected compromise | Security/Backup Owner | Testnet; canary refresh |
 | RB-008 | `runbooks/backup-restore.md` | Restore/rollback/recovery evidence | Security/Backup Owner | Paper; canary refresh |
 | RB-009 | `runbooks/ai-provider-connection-incident.md` | AI key compromise/revoke, provider outage/budget/egress incident; disable AI only | Security/Backup Owner + Account Owner | Phase 6 |
+| RB-010 | `runbooks/venue-rate-limit.md` | Venue 429/418, IP/key ban; pause submission, staged resume, no reflexive rotation | Technical Operator | Testnet (Phase 3 external-venue Go/No-Go drill, master §14) |
+| RB-011 | `runbooks/outbox-dlq-backlog.md` | Outbox relay stuck/DLQ overflow with healthy DB; no silent drop, idempotent replay only | Technical Operator | Paper (Phase 2) |
+| RB-012 | `runbooks/clock-drift.md` | Clock drift/NTP failure; fail-closed submission, supervised resync, verify lease/idempotency/audit | Technical Operator | Testnet (Phase 3) |
 
 ## 3. Common stop/escalate rules
 
@@ -35,3 +38,9 @@ Stop and escalate immediately for duplicate/unapproved order, risk bypass, unres
 ## 4. Drill cadence
 
 Runbooks are dry-run/reviewed before paper. While paper/testnet/canary is active: execute required drills and review at the cadence in OPS-001/master §12.8; retain evidence. A runbook with stale/failing evidence blocks the applicable gate.
+
+## 5. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 1.2.0 | 2026-07-31 | Thêm RB-010 (venue rate-limit/IP-ban/key-ban), RB-011 (outbox/DLQ backlog), RB-012 (clock drift/NTP failure) vào catalog với owner, trigger và required-before phase. | Technical Operator | Pending |

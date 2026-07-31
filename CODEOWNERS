@@ -1,0 +1,34 @@
+# CODEOWNERS — review matrix theo vùng (master §11.4, §13.2; docs/governance/raci.md)
+#
+# Dự án hiện một người vận hành: mọi role (Account Owner, Technical Operator,
+# Risk Approver, Security/Backup Owner) đều do @LonelyTraderBay đảm nhiệm,
+# nhưng mỗi role action phải được ghi riêng theo master §1.6. Khi có thêm
+# thành viên, thay các dòng dưới bằng đúng người giữ role tương ứng.
+# Trước canary/live, approval safety/security/risk cần reviewer human thứ hai
+# — CODEOWNERS này KHÔNG thỏa điều kiện đó khi chỉ có một người.
+
+# Mặc định — Technical Operator
+*                                   @LonelyTraderBay
+
+# Hiến pháp, governance, ADR — Account Owner approve
+/AI_AUTO_TRADE_MASTER_SPEC.md       @LonelyTraderBay
+/AGENTS.md                          @LonelyTraderBay
+/docs/governance/                   @LonelyTraderBay
+/docs/backend/adr/                  @LonelyTraderBay
+
+# Contract public (OpenAPI/schema/error catalog) — Technical Operator + reviewer theo task card
+/contracts/                         @LonelyTraderBay
+/docs/backend/contracts/            @LonelyTraderBay
+
+# Security/ops policy và runbook — Security/Backup Owner
+/SECURITY.md                        @LonelyTraderBay
+/docs/backend/security-ops/         @LonelyTraderBay
+
+# Domain nhạy cảm: risk/OMS/ledger — Risk Approver tham gia khi ảnh hưởng policy
+/docs/backend/domain/               @LonelyTraderBay
+
+# Data/migration authority — Technical Operator; Security Owner khi sensitive
+/docs/backend/data/                 @LonelyTraderBay
+
+# Task authority — reviewer ghi trong từng task card
+/tasks/                             @LonelyTraderBay

@@ -21,7 +21,7 @@ If approved:
 - Lock order is `risk limit/reservation -> execution order -> platform outbox`.
 - Mutable aggregates use non-negative version and compare-and-swap. Queue/outbox claims use short `SELECT FOR UPDATE SKIP LOCKED`, bounded lease, monotonic fencing token and CAS delivery version.
 - Serialization/deadlock retry is bounded, occurs only before external action and reruns all validation/risk. External submit is never blind-retried.
-- Verified fill/ledger and reconciliation workflows use the whitelisted unit-of-work maps in DATA-005, dedupe facts and persist outbox atomically.
+- Verified fill/ledger and reconciliation workflows use the whitelisted unit-of-work maps in DATA-005, dedupe facts and persist outbox atomically. Isolation cho `FillLedgerUnitOfWork` và `ReconciliationResolutionUnitOfWork` (DRAFT — cần phê duyệt): `READ COMMITTED` + unique-constraint dedupe (fills theo `(order_id, sequence)`/`venue_trade_id`; journal theo `source_event_id`) + compare-and-swap trên aggregate version — đủ vì mọi insert là append-only immutable và dedupe được enforce bằng constraint, không cần `SERIALIZABLE`; `TradingSubmissionUnitOfWork` giữ `SERIALIZABLE` như đã chốt. Giá trị này trở thành authority khi ADR này được APPROVED.
 - Only one execution leader claims a venue/account scope. Lease loss stops new claims; in-flight unknown request transitions to recovery/reconciliation.
 
 No 2PC, distributed transaction, in-memory mutex or global request hash uniqueness is used as safety boundary.

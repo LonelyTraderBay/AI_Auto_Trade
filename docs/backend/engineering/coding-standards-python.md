@@ -1,12 +1,12 @@
-# ENG-002 — Coding standards Python
+# ENG-PY-001 — Coding standards Python
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / IN_REVIEW |
+| Version / Status | 1.1.0 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | FR-OMS-001, FR-RSK-001, NFR-SEC-001, NFR-OPS-001; ADR-0002, ADR-0011, ADR-0012, ADR-0014 |
-| Change summary | Quy tắc Python áp dụng từ Task 0.1; chưa định nghĩa source implementation. |
+| Related | FR-EXEC-001, FR-RSK-001, NFR-SEC-001, NFR-OPS-001; ADR-0002, ADR-0011, ADR-0012, ADR-0014 |
+| Change summary | 1.1.0 (2026-07-31, Technical Operator, Pending): đổi title ID ENG-002 -> ENG-PY-001; sửa Related FR-OMS-001 -> FR-EXEC-001 (dangling ID); thêm §4a Exception taxonomy và error mapping (DRAFT). 1.0.0: quy tắc Python áp dụng từ Task 0.1; chưa định nghĩa source implementation. |
 
 ## 1. Phạm vi và toolchain
 
@@ -42,6 +42,16 @@ Domain không truy cập DB/network/env/file trực tiếp. Strategy không tạ
 - Submit order timeout, disconnect hoặc lease loss là `UNKNOWN`; không retry blind. Persist attempt/request hash trước HTTP, sau đó reconciliation.
 - Chỉ các Unit of Work được master §7.7 whitelist mới được atomic xuyên contexts: `TradingSubmissionUnitOfWork`, `FillLedgerUnitOfWork`, `ReconciliationResolutionUnitOfWork`.
 - Lock order cố định `risk -> execution -> outbox`; retry serialization chỉ trước external side effect. Không viết transaction tiện tay qua contexts.
+
+## 4a. Exception taxonomy và error mapping (DRAFT)
+
+> DRAFT — cần phê duyệt.
+
+- Base hierarchy: mỗi context domain định nghĩa exception gốc riêng (ví dụ `RiskError`, `ExecutionError`, `LedgerError`) kế thừa từ `AiAutoTradeDomainError` trong `shared_kernel`.
+- Application layer bọc domain exception thành application error có thuộc tính `code` bắt buộc, map 1-1 vào mã trong `contracts/errors/error-catalog.md`.
+- Adapter boundary dịch vendor exception thành typed adapter error; vendor exception không được leak qua port.
+- Control API layer là nơi duy nhất serialize error thành `ErrorEnvelope`.
+- Mapping table (exception class -> catalog code) sống trong một module registry duy nhất, có contract test đối chiếu error-catalog để CI fail khi drift.
 
 ## 5. Naming, comments và API design
 

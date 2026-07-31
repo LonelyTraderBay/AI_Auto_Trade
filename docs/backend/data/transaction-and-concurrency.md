@@ -2,7 +2,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner |
@@ -23,10 +23,14 @@ Only the following application workflows may atomically coordinate owner reposit
 | Unit of Work | Atomic owner tables | Isolation / purpose |
 |---|---|---|
 | `TradingSubmissionUnitOfWork` | risk decisions/reservations, execution order/submission attempt, platform outbox | `SERIALIZABLE`; approve, reserve, queue exactly once before external submit |
-| `FillLedgerUnitOfWork` | execution fill/order event, ledger journal/postings/projections, platform outbox | isolation selected/approved with ADR-0012; dedupe and book verified fill once |
-| `ReconciliationResolutionUnitOfWork` | execution case/evidence, risk reservation, ledger adjustment through owner command, platform outbox | evidence-led resolution; no history overwrite |
+| `FillLedgerUnitOfWork` | execution fill/order event, ledger journal/postings/projections, platform outbox | đề xuất DRAFT: `READ COMMITTED` + constraint dedupe + CAS (xem ghi chú isolation dưới bảng); dedupe and book verified fill once |
+| `ReconciliationResolutionUnitOfWork` | execution case/evidence, risk reservation, ledger adjustment through owner command, platform outbox | đề xuất DRAFT: `READ COMMITTED` + constraint dedupe + CAS (xem ghi chú isolation dưới bảng); evidence-led resolution; no history overwrite |
 | `OutboxPublishUnitOfWork` | platform delivery-state/attempt/DLQ only | short transaction/lease claim; not business transaction |
 | `InboxConsumeUnitOfWork` | consumer-owned local state/outbox plus platform inbox marker | atomic idempotent local effect + receipt |
+
+Ghi chú isolation cho `FillLedgerUnitOfWork` và `ReconciliationResolutionUnitOfWork` (DRAFT — cần phê duyệt): `READ COMMITTED` + unique-constraint dedupe (fills theo `(order_id, sequence)`/`venue_trade_id`; journal theo `source_event_id`) + compare-and-swap trên aggregate version — đủ vì mọi insert là append-only immutable và dedupe được enforce bằng constraint, không cần `SERIALIZABLE`; `TradingSubmissionUnitOfWork` giữ `SERIALIZABLE` như đã chốt. DRAFT — giá trị này trở thành authority khi ADR-0012 được APPROVED.
+
+`OutboxPublishUnitOfWork` và `InboxConsumeUnitOfWork` là elaboration của master §7.2 bước 2–4 (platform-internal delivery mechanics), không phải whitelist entry cross-context mới ngoài master §7.7.
 
 Any new cross-context transaction requires ADR/task amendment and a table-by-table ownership map.
 
@@ -121,4 +125,10 @@ Exactly one execution leader can claim submit work for a venue/account scope. Le
 ## 8. Verification and evidence
 
 Before Phase 1, tests/evidence must prove: competing reservation contention, version conflict, fixed lock order, publisher duplicate after crash, consumer duplicate, fill dedupe/ledger single-booking, unknown submit no blind retry, lease-loss behavior, reconciliation correction and all allowed OMS transitions. Fault injection/restart evidence must record input hash/config/version and command exit results.
+
+## 9. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | Thay deferral vòng tròn bằng đề xuất isolation cụ thể (DRAFT — cần phê duyệt) cho `FillLedgerUnitOfWork`/`ReconciliationResolutionUnitOfWork`: `READ COMMITTED` + unique-constraint dedupe + CAS trên aggregate version, `TradingSubmissionUnitOfWork` giữ `SERIALIZABLE`; làm rõ `OutboxPublishUnitOfWork`/`InboxConsumeUnitOfWork` là elaboration của master §7.2 bước 2–4, không phải whitelist entry cross-context mới. | Technical Operator | Pending |
 

@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-SEQ-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -163,7 +163,8 @@ sequenceDiagram
     participant API as Control API
     participant Auth as authorization policy
     participant Audit as audit store
-    participant Runtime as operations/trading runtime
+    participant CMD as operations.commands (PostgreSQL)
+    participant Runtime as operations/trading runtime handler
     participant Rec as reconciliation/health check
 
     Actor->>API: command + Idempotency-Key + reason + correlation ID
@@ -172,18 +173,21 @@ sequenceDiagram
         API->>Auth: re-authenticate actor
     end
     API->>Audit: append command intent/before hash
+    API->>CMD: persist durable command record ACCEPTED
     API-->>Actor: 202 ACCEPTED + command ID/location
-    API->>Runtime: authorized asynchronous command
-    Runtime->>Runtime: apply safe-state policy
+    Runtime->>CMD: poll/claim command record (owner application handler)
+    Runtime->>Runtime: apply safe-state policy / execute transition
     opt release kill switch
         Runtime->>Rec: require clean reconciliation + health
         Rec-->>Runtime: evidence result
     end
+    Runtime->>CMD: append command_events transition (terminal/progress state)
     Runtime->>Audit: append outcome/after hash/actor role
+    API->>CMD: read command status projection
     API-->>Actor: command status resource
 ~~~
 
-Same actor/route/idempotency key with a different canonical payload returns conflict; dangerous action cannot rely on UI confirmation alone.
+`operations.commands` (PostgreSQL) là mutable source of truth duy nhất cho control command (master §7.6): Control API chỉ tạo durable command record; owner application handler poll/claim và thực thi transition, transition được append vào `command_events`. Không có direct API→Runtime network call — trading node không expose public HTTP management surface (master §4.7). Same actor/route/idempotency key with a different canonical payload returns conflict; dangerous action cannot rely on UI confirmation alone.
 
 ## 7. AI provider connection enrollment, validation and activation (Phase 6 only)
 
@@ -276,9 +280,58 @@ Outbox/inbox delivery is at-least-once. Consumer deduplicates via event identity
 - AI connection validation and inference require active owner-scoped catalog/policy-profile/budget/egress checks before secret resolution/provider call.
 - Provider timeout/unknown outcome cannot cause a blind retry, silent cross-provider fallback or trading state change; DNS/redirect/private-route bypass is denied.
 
-## 11. Nhật ký thay đổi
+## 11. Cancel order sequence
+
+~~~mermaid
+sequenceDiagram
+    participant Actor as operator/strategy
+    participant Exec as execution application
+    participant DB as PostgreSQL
+    participant Venue as venue adapter / venue
+    participant Ledger as portfolio_ledger
+
+    Actor->>Exec: CancelIntent(order)
+    Exec->>Exec: validate order đang OPEN hoặc PARTIALLY_FILLED
+    alt order không ở trạng thái cancel được
+        Exec->>DB: reject cancel + audit reason; state không đổi
+    else order hợp lệ
+        Exec->>DB: persist CANCEL_REQUESTED + cancel attempt trước HTTP
+        Exec->>Venue: exactly one cancel call
+        alt venue confirms cancel
+            Venue-->>Exec: cancel confirmed
+            Exec->>DB: persist CANCELLED; release remaining reservation
+        else venue reports already filled
+            Venue-->>Exec: fill evidence
+            Exec->>Ledger: process fills first (immutable fill/fee booking)
+            Exec->>DB: persist FILLED; cancel outcome ghi nhận là vô hiệu
+        else timeout or disconnect
+            Exec->>DB: persist UNKNOWN với pending_operation=CANCEL; không blind retry
+            Note over Exec,DB: reconcile theo §4
+        end
+    end
+~~~
+
+**Guards:** cancel attempt/pending_operation được persist trước external call, giống submit path ở §3; unknown cancel outcome đi qua reconciliation (§4), không tự retry.
+
+**DRAFT rule cần owner approval:** CancelIntent KHÔNG qua full risk evaluation vì là exposure-reducing action; nó vẫn phải qua authorization/audit path và bị chặn khi kill switch scope cấm cancel-path hoặc khi reconciliation đang block order đó. Quy tắc này chưa có trong master — cần amendment master §8.6 hoặc ADR. (DRAFT — đề xuất, cần Account Owner phê duyệt.)
+
+## 12. Các flow chưa có diagram (chuẩn prose)
+
+Các flow sau là deliberate prose-only ở phase này; diagram sẽ được bổ sung khi flow được implement lần đầu:
+
+| Flow | Prose authority |
+|---|---|
+| Kill-switch activation / scope cascade | master §8.10 + runbook kill-switch.md |
+| Manual-approval continuation | master §5.4 / §8.4 |
+| Market-data gap recovery | master §9.4 + runbook stream-gap.md |
+| Lease loss mid-flight | master §6.3.11 / §8.9 |
+| Outbox relay failure | master §7.2–§7.3 |
+| Config/deploy rollout-rollback | master §6.6 |
+
+## 13. Nhật ký thay đổi
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo normative runtime sequence baseline cho core safety flows. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Thêm sequence BYOK enrollment/validation và inference failure isolation cho Phase 6. | Technical Operator | Pending |
+| 0.3.0 | 2026-07-31 | Chèn durable command store `operations.commands` vào §6 (không direct API→Runtime call, master §7.6/§4.7); thêm §11 Cancel order sequence (kèm DRAFT risk-gate rule chờ owner approval); thêm §12 danh mục flow prose-only. | Technical Operator | Pending |

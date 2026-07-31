@@ -5,7 +5,7 @@
 | Version / Status | 1.0.0 / DRAFT |
 | Trigger / Severity | Process crash, health failure, forced restart, lease heartbeat loss, configuration/image mismatch / High; Critical with in-flight external uncertainty or split brain |
 | Scope / Incident commander | Affected runtime instance/deployment/account scope / Technical Operator |
-| Related | FR-OMS-001, FR-REC-001, NFR-OPS-001; ADR-0004, ADR-0005, ADR-0012; RB-001, RB-003 |
+| Related | FR-EXEC-001, FR-REC-001, NFR-OPS-001; ADR-0004, ADR-0005, ADR-0012; RB-001, RB-003 |
 | Change summary | Restart procedure that preserves fencing/idempotency/reconciliation. |
 
 ## Safe-state objective

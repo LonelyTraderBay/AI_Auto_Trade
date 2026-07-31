@@ -2,7 +2,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Security/Backup Owner và Account Owner phê duyệt |
 | Owner | Security/Backup Owner |
 | Approver | Account Owner |
@@ -23,7 +23,7 @@ This is an operations baseline for a PostgreSQL system of record. It contains no
 | paper/testnet | isolated database and credentials | Linux container/image policy when execution begins |
 | canary | isolated database, encrypted backup/PITR scope and least-privilege credentials | no shared paper/live DB or credentials |
 
-Database role scope is defined in [database standards](database-standards.md). `db_migrator` is separate from runtime identities. Break-glass access, if later approved, needs named human identity, expiry, reason, audit and post-use review; it is not authorized by this DRAFT.
+Database role scope is defined in [database standards](database-standards.md). `db_migrator` is separate from runtime identities. DB role credentials rotate under [credential rotation runbook](../security-ops/runbooks/credential-rotation.md) (RB-007). Break-glass access, if later approved, needs named human identity, expiry, reason, audit and post-use review; it is not authorized by this DRAFT.
 
 ## 3. Required operational state and checks
 
@@ -37,6 +37,14 @@ Database role scope is defined in [database standards](database-standards.md). `
 | Backup/restore | latest successful backup/WAL, offsite encryption status, last restore drill | no canary gate if missing/stale/failed |
 
 Thresholds, alert channels and escalation times require the SLO/alert policy and owner sign-off; no numeric operational threshold is invented here.
+
+### 3.1 Connection và pool policy (DRAFT — cần phê duyệt)
+
+Mỗi process identity có pool riêng với sizing là validated operational config field (không hardcode). Tổng connection budget theo role phải nhỏ hơn `max_connections` trừ superuser reserve. `statement_timeout` và `idle_in_transaction_session_timeout` là policy field bắt buộc. pgbouncer DEFERRED — chỉ đánh giá khi đo được connection pressure, cần ADR.
+
+### 3.2 Autovacuum, bloat và index review (DRAFT — cần phê duyệt)
+
+Bảng churn cao (`outbox_delivery_state`) phải có reviewed autovacuum setting trong migration plan. Observation thêm: dead-tuple ratio, autovacuum age, txid wraparound distance. Unused/duplicate-index review vào chu kỳ monthly review.
 
 ## 4. Backup, restore and consistency set
 
@@ -54,7 +62,11 @@ Restore never resumes strategy automatically. The operator first verifies enviro
 
 Only `db_migrator` performs approved migration. Before migration: verify backup/restore point, current revision/schema snapshot, task/ADR/dictionary, lock/duration risk and forward-fix plan. During: monitor duration, lock/lag/error evidence; do not improvise destructive rollback. After: verify revision/schema, constraints/indexes/roles, compatibility tests, data counts/checksum when relevant and operation health.
 
-For DB unavailable/corruption/suspected drift: contain (stop new exposure), preserve evidence, classify scope, restore/forward-fix under approved runbook, rebuild/reconcile and only then release safe state. Never purge audit/ledger/outbox evidence to make the incident disappear.
+For DB unavailable/corruption/suspected drift: contain (stop new exposure), preserve evidence, classify scope, restore/forward-fix under approved runbook — see [database unavailable runbook](../security-ops/runbooks/database-unavailable.md) (RB-006) — rebuild/reconcile and only then release safe state. Never purge audit/ledger/outbox evidence to make the incident disappear.
+
+### 5.1 Engine version và upgrade (DRAFT — cần phê duyệt)
+
+PostgreSQL pin 16.x. Minor patch theo cadence có restore-point + validation. Major upgrade cần ADR + rehearsed restore + full reconciliation trước khi enable trading.
 
 ## 6. Logs, data protection and review cadence
 
@@ -67,4 +79,10 @@ Logs/traces must redact credentials and sensitive payload; diagnostic queries/ex
 - [ ] Backup consistency set and restore procedure have named owner/storage/retention policy.
 - [ ] Restore drill evidence includes ledger/projection/outbox/inbox/reconciliation checks.
 - [ ] Alerts/runbooks/incident ownership are approved before testnet/canary gate as applicable.
+
+## 8. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | Bổ sung ba subsection DRAFT: connection/pool policy (per-identity pool, connection budget theo role, timeout policy field, pgbouncer DEFERRED cần ADR); autovacuum/bloat/index review (reviewed autovacuum cho `outbox_delivery_state`, observation dead-tuple/wraparound, monthly index review); engine version/upgrade (pin PostgreSQL 16.x, minor patch cadence, major upgrade cần ADR + rehearsed restore + full reconciliation). Thêm pointer tới RB-006 (database-unavailable) và RB-007 (credential-rotation cho DB role credentials). | Technical Operator | Pending |
 

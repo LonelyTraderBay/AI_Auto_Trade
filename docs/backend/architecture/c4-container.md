@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-C4-002 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -46,14 +46,14 @@ flowchart TB
     U -->|one-time write-only enrollment only| ING
     CLI -->|authorized command path| CLIAPP
     CLIAPP -->|control command| API
-    API -->|authorized command / read projection| PG
-    API -->|runtime control intent| NODE
+    API -->|command record vào operations.commands<br/>+ read projection| PG
+    NODE -->|poll/claim command record<br/>từ operations.commands| PG
     API -->|alert/incident routing| ALERT
     ING -->|safe receipt/lifecycle metadata only| PG
     ING -->|direct write-only secret enrollment| VAULT
 
     DATA -->|raw feed/reference| DW
-    DW -->|normalized data / health| PG
+    DW -->|ingest/quality metadata + checkpoints<br/>raw tick ở Parquet, DB chỉ metadata/control theo master §7.6| PG
     DW -->|catalog dataset / manifest| PQ
     NODE -->|read reference/market/projection<br/>write order/risk/ledger/outbox| PG
     NODE <-->|execution / recovery query<br/>only supported modes| VENUE
@@ -64,16 +64,18 @@ flowchart TB
     AIW <-->|just-in-time binding only| VAULT
 ~~~
 
+Control command từ API tới trading node đi qua durable command record trong `operations.commands` (PostgreSQL) theo master §7.6: Control API persist command record; owner application handler của trading node poll/claim và thực thi transition. Không có direct API→node network call — trading_node không expose public HTTP management surface (master §4.7).
+
 ## 2. Process/container inventory
 
 | Container / entry point | Responsibility | Identity / credential ceiling | Storage interaction | Must not do |
 |---|---|---|---|---|
-| apps/control_api | FastAPI control plane, command intake, read projections, health/audit. | Control DB role; no venue trade key. | Controlled operations write, projection read. | Run strategy or submit venue order directly. |
-| apps/trading_node | Strategy scheduler, risk, OMS, execution, ledger/reconciliation. | Trading DB role; venue credential only per approved manifest/mode. | Owned context write/read, outbox, lease. | Public management API. |
+| apps/control_api | FastAPI control plane, command intake, read projections, health/audit. | Control DB role; no venue trade key. | Controlled operations write (durable command record vào `operations.commands` theo master §7.6), projection read. | Run strategy, submit venue order directly, hay gọi trực tiếp trading node qua network. |
+| apps/trading_node | Strategy scheduler, risk, OMS, execution, ledger/reconciliation; owner handler poll/claim command record từ `operations.commands` và thực thi transition. | Trading DB role; venue credential only per approved manifest/mode. | Owned context write/read, outbox, lease, poll/claim `operations.commands`. | Public HTTP management surface (master §4.7). |
 | apps/workers/data_worker | Market/reference ingestion, quality, catalog management. | Data DB role; public/testnet read credential if needed. | Market/reference write; catalog metadata. | Execution/risk/ledger write or trade secret. |
 | apps/workers/research_worker | Replay, backtest, report/candidate generation. | Catalog/research role; network disabled by default. | Catalog/research output; no live write model. | Read trade credential or run execution. |
 | apps/workers/ai_worker | Sanitized proposal/memory workflow at Phase 6. | Scoped machine identity; resolves one active opaque BYOK binding via short owner/connection/revision/job lease; no venue credential. | Sanitized read + policy-filtered connection metadata + ai_memory write. | Raw-key read-back, candidate binding use, execution tool, risk bypass, config promotion or arbitrary provider endpoint. |
-| apps/secret_ingress | Isolated Phase 6 one-time secret enrollment routed directly to approved secret provider. | Re-authenticated owner scope + one-time enrollment session only; no broad DB/venue credential. | Secret provider write; safe lifecycle receipt only. | Normal Control API middleware, raw-body logging/APM, command/event/outbox persistence, body hash/fingerprint or key read-back. |
+| apps/secret_ingress | Isolated Phase 6 one-time secret enrollment routed directly to approved secret provider (có authority chính thức tại master §4.7, v2.2.0). | Re-authenticated owner scope + one-time enrollment session only; no broad DB/venue credential. | Secret provider write; safe lifecycle receipt only. | Normal Control API middleware, raw-body logging/APM, command/event/outbox persistence, body hash/fingerprint or key read-back. |
 | apps/cli | Operator command client. | Caller identity through approved path. | Through command port/API; no direct privileged DB. | Bypass Control API policy. |
 | Flutter dashboard | Phase 5 client rendering/control; Phase 6 may invoke protected secret-enrollment handoff. | End-user identity only. | Through Control API and isolated approved secret-ingress boundary. | Store/read-back secret, access DB/venue or own business logic. |
 
@@ -135,3 +137,4 @@ Each process emits structured logs/metrics/traces with permitted correlation ide
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo container/process/storage baseline theo modular monolith. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Thêm secret-provider/owner-scoped BYOK binding boundary cho ai_worker Phase 6. | Technical Operator | Pending |
+| 0.3.0 | 2026-07-31 | Sửa API→NODE thành durable command record qua `operations.commands` (master §7.6, không direct HTTP call); sửa nhãn DW→PG thành ingest/quality metadata + checkpoints; ghi nhận authority master §4.7 v2.2.0 cho apps/secret_ingress. | Technical Operator | Pending |

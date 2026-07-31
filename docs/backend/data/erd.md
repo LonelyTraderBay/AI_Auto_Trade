@@ -2,7 +2,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner |
@@ -19,9 +19,9 @@ All internal keys are UUIDv7/`UUID`. Financial values are `NUMERIC(38,18)`, time
 ## 2. Context-level map
 
 ```text
-reference: venues --- accounts --- instruments --- instrument_rule_versions
+reference: venues --- accounts --- assets --- instruments --- instrument_rule_versions
                  \                         \
-                  \--> capability_profiles  \--> market_data catalog/checkpoints
+                  \--> capability_profiles  \--> market_data catalog/checkpoints/feed_health
 
 strategy: definitions --- versions --- instances --- checkpoints
                                       |
@@ -42,11 +42,13 @@ portfolio_ledger: chart_of_accounts --- journal_entries --- postings
                                         |                    |
                                         +--> balance/position projections/checkpoints
 
+research (Phase 2, inventory-only): dataset_versions --- feature_definitions --- backtest_runs --- evaluation_reports
+
 operations: deployments, runtime_leases, kill_switches, commands --- command_events
                                       \ approvals / audit_log / incidents
                                       \ ai_provider_connections --- ai_connection_events
 
-ai_memory (Phase 6 only): inference_runs --- proposals / memory_items / retrieval_runs
+ai_memory (Phase 6 only): inference_runs --- proposals / memory_items / retrieval_runs / post_mortems
        ^
        | immutable connection revision and sanitized provenance only; no raw key
 operations.ai_provider_connections
@@ -65,13 +67,13 @@ platform.outbox (1) ---- (1) platform.outbox_delivery_state
        v
 platform.inbox (dedupe receipt per consumer + event)
 
-platform.outbox_delivery_state (1) ---- (0..N) platform.dead_letters
+platform.outbox (0..1) ---- (0..N) platform.dead_letters
 ```
 
 | Relationship | Cardinality | Physical integrity | Meaning |
 |---|---|---|---|
 | outbox -> outbox_delivery_state | 1:1 | same-schema FK / unique key, proposed | one immutable message has one mutable publisher delivery state |
-| delivery_state -> dead_letters | 1:N | same-schema FK, proposed | each terminal/repeated failure is immutable evidence; no payload secret |
+| outbox -> dead_letters | 0..1:N | nullable same-schema FK (`dead_letters.outbox_id`), proposed | each terminal/repeated failure is immutable evidence; `outbox_id` null when the dead letter originates from consumer/inbox side; no payload secret |
 | inbox -> source event | N:1 conceptual | no cross-context FK | each consumer records at most one successful/committed handling of an event |
 | outbox -> domain aggregate | N:1 conceptual | no cross-context FK | `source_context`/`subject_id` are trace/audit references only |
 
@@ -150,3 +152,9 @@ Examples explicitly deferred now: all AI/BYOK entities until ADR-0008 + ADR-0016
 - [ ] All append-only facts retain event/source/effective/recorded timestamps and evidence lineage.
 - [ ] Every same-schema FK has a documented delete rule; financial/audit history never uses cascade delete.
 - [ ] Exact physical columns are sourced from [data dictionary](data-dictionary.md), not inferred from this diagram.
+
+## 8. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.3.0 | 2026-07-31 | Sửa mâu thuẫn FK `dead_letters`: quan hệ đúng là `platform.outbox (0..1) ---- (0..N) platform.dead_letters` qua `dead_letters.outbox_id` nullable (theo data dictionary, authoritative); bổ sung entity còn thiếu theo inventory: `assets` (reference), `feed_health` (market_data), context `research` (dataset_versions/feature_definitions/backtest_runs/evaluation_reports — Phase 2, inventory-only) và `post_mortems` (ai_memory). | Technical Operator | Pending |

@@ -2,7 +2,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner |
@@ -12,7 +12,7 @@
 
 ## 1. Mục đích và status
 
-Đây là framework quyết định accounting cho MVP, không phải báo cáo thuế hay tư vấn kế toán. Ledger là internal accounting truth append-only; venue là external truth của state tức thời. Hai bên phải reconciliation nhưng không ghi đè lẫn nhau.
+Đây là framework quyết định accounting cho MVP, không phải báo cáo thuế hay tư vấn kế toán. Ledger là internal accounting truth append-only; venue là external truth của state tức thời. Hai bên phải reconciliation nhưng không ghi đè lẫn nhau. Mâu thuẫn deadline giữa §7.8 (trước Phase 1) và §8.11 (Phase 3) của master đã được resolve thành "trước Phase 1" tại master v2.2.0.
 
 Tài liệu đang DRAFT. Chưa có asset/currency, cost-basis, valuation source, rounding, fee/rebate, transfer/adjustment hoặc chart-of-accounts cụ thể được Account Owner phê duyệt; vì vậy không có journal posting runtime nào được xem là approved chỉ dựa trên tài liệu này.
 
@@ -72,6 +72,7 @@ The fixed storage precision is `NUMERIC(38,18)`. Instrument/asset scale greater 
 - asset/currency scale and permitted residual/tolerance;
 - rounding mode and where it occurs (calculation, posting, display);
 - cost-basis method for realized PnL;
+- position/inventory model: net position vs lot-based (FIFO/LIFO/HIFO) và tương tác với cost-basis method — quyết định cùng ADR-0011;
 - valuation source, timestamp and stale-data behavior for unrealized PnL;
 - treatment of locked/reserved balance versus booked/exposure state;
 - fee, rebate, transfer and adjustment mapping;
@@ -97,4 +98,19 @@ ADR-0011 must specify the approved database enforcement mechanism for entry bala
 - [ ] ADR-0011 and transaction mapping ADR-0012 APPROVED; properties/fixtures/evidence linked.
 
 Until every applicable item is approved, Phase 1 ledger implementation is BLOCKED.
+
+## 11. Verification (DRAFT — mapping invariant sang test dự kiến)
+
+| Invariant (§3) | Loại test dự kiến |
+|---|---|
+| #3 — mọi entry cân bằng theo asset/convention | property test: journal balance per entry |
+| #4 — một source event/fill chỉ book một lần | property test: duplicate fill không tạo double-book |
+| §2 — projection rebuildable từ journal/posting | rebuild test: projection == replay of journal |
+| #6 — adjustment cần evidence/approval | integration test: adjustment yêu cầu approval evidence |
+
+## Nhật ký thay đổi
+
+| Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
+|---|---|---|---|---|
+| 2026-07-31 | 0.2.0 | Technical Operator | Pending | Ghi nhận resolution deadline §7.8/§8.11 thành "trước Phase 1" theo master v2.2.0 tại §1; thêm open decision position/inventory model (net vs lot-based FIFO/LIFO/HIFO) tại §7; thêm §11 Verification mapping invariant sang test dự kiến (DRAFT) |
 

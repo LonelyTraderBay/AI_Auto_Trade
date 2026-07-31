@@ -1,5 +1,7 @@
 # Ghi chú commit — Hoàn thiện hồ sơ Phase 0.0
 
+> **Addendum 2026-07-31 (sau tái cấu trúc GOV-CLASS-001):** File này là hồ sơ lịch sử của commit `15fc81a`; các đường dẫn trong đó phản ánh cấu trúc `docs/` CŨ (trước tái cấu trúc Backend/Frontend/Shared/Governance). Đường dẫn hiện hành: gate record tại `docs/governance/evidence/gates/phase-0.0/gate-record.md`, chỉ mục tại `docs/governance/DOCS_INDEX.md`. File `COMMIT_MESSAGE.txt` được nhắc ở §6 chưa từng được commit vào repo — commit message đã được nhập trực tiếp. Không sửa nội dung gốc bên dưới để giữ tính lịch sử.
+
 | Thuộc tính | Giá trị |
 |---|---|
 | Phạm vi commit | Hồ sơ tiền triển khai (pre-code) cho Phase 0.0 |

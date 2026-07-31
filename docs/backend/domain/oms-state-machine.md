@@ -2,7 +2,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner |
@@ -54,8 +54,8 @@
 | `CANCEL_REQUESTED` | venue confirms cancellation | `CANCELLED` | evidence + release remaining reservation |
 | `OPEN` / `PARTIALLY_FILLED` / `CANCEL_REQUESTED` | venue expiry evidence | `EXPIRED` | evidence + release remaining reservation |
 | `OPEN` / `PARTIALLY_FILLED` / `CANCEL_REQUESTED` | cancel timeout/outcome unknown | `UNKNOWN` | `pending_operation=CANCEL`; reconcile |
-| `UNKNOWN` | reconciliation begins | `RECONCILING` | case/evidence correlation |
-| `RECONCILING` | sufficient venue evidence | canonical proven state | preserve evidence + state event |
+| `UNKNOWN` | reconciliation begins | `RECONCILING` | case/evidence correlation; chặn intent xung đột trên cùng instrument/account theo master §5.5 |
+| `RECONCILING` | sufficient venue evidence | `OPEN` / `PARTIALLY_FILLED` / `FILLED` / `CANCELLED` / `REJECTED` / `EXPIRED` (sáu target state được phép) | preserve evidence + state event |
 | `RECONCILING` | SLA expires without sufficient evidence | `LOST` | critical incident + manual handling |
 | `CANCELLED` / `EXPIRED` | late proven fill | same terminal or `FILLED` | terminal correction; only full cumulative quantity becomes `FILLED` |
 | `LOST` | late proven terminal result | proven terminal state | approved terminal correction; retain LOST incident history |
@@ -72,7 +72,29 @@ Any event not shown is invalid and must be rejected/audited rather than guessed.
 5. Recovery queries client order ID, history, open orders and recent fills under the venue capability contract. It records evidence, never fabricates an acknowledgement.
 6. Cancellation is a distinct operation. Replace is modelled as terminal cancellation followed by a new OrderIntent/new ClientOrderId only after evidence/policy permit it.
 
-## 5. Idempotency, ordering and deduplication
+## 5. Time-in-force và ma trận expiry (DRAFT — cần owner approval cùng ADR-0005/0009)
+
+TIF values được hỗ trợ theo capability profile: `GTC` (default), `IOC`, `FOK`, `GTD`. Mỗi venue capability profile phải khai báo rõ TIF nào được hỗ trợ; TIF không được hỗ trợ bị reject trước submission theo master §5.4 (no-silent-fallback), không được thay thế ngầm.
+
+| TIF | Semantics | Terminal outcome |
+|---|---|---|
+| `GTC` | mặc định; order mở đến khi có evidence filled/cancelled/expired | theo transition contract §3 |
+| `IOC` | partial fill được phép, phần remainder do venue tự cancel | `FILLED` nếu khớp đủ; ngược lại terminal `CANCELLED` với `terminal_reason=IOC_REMAINDER_CANCELLED` |
+| `FOK` | fill-complete-or-reject | `FILLED` hoặc `REJECTED`; `PARTIALLY_FILLED` là impossible (invariant) |
+| `GTD` | venue-side expiry tại thời điểm chỉ định | `EXPIRED` theo master §5.5 |
+
+Ma trận nguồn expiry:
+
+| # | Nguồn expiry | Thời điểm kiểm tra | Kết quả | `terminal_reason` | Reservation semantics |
+|---|---|---|---|---|---|
+| 1 | Intent `expires_at` | trước submission | `EXPIRED`; không venue call | `INTENT_EXPIRED` | không có submission nên không có phần venue-side; release theo evidence nội bộ |
+| 2 | `RiskDecision` expiry | tại thời điểm queue-claim (stale decision) | không submission; `EXPIRED`/`REJECTED` theo master §5.4 | `DECISION_EXPIRED` | release reservation gắn với decision stale |
+| 3 | Manual-approval expiry | khi pending approval hết hạn | `EXPIRED` | `APPROVAL_EXPIRED` | không có reservation nào từng tồn tại |
+| 4 | Venue TIF expiry | evidence expiry từ venue | `EXPIRED` | `VENUE_TIF_EXPIRED` | release phần reservation còn lại |
+
+Chỉ có một terminal state `EXPIRED`; các trường hợp trên được phân biệt duy nhất bằng `terminal_reason`. Reservation release semantics khác nhau theo từng row như đã ghi.
+
+## 6. Idempotency, ordering and deduplication
 
 | Case | Required handling |
 |---|---|
@@ -86,17 +108,17 @@ Any event not shown is invalid and must be rejected/audited rather than guessed.
 
 `canonical_request_hash` is audit evidence, not a global idempotency key; two legitimate orders can share a payload.
 
-## 6. Manual approval contract
+## 7. Manual approval contract
 
 `REQUIRE_MANUAL_APPROVAL` persists a risk-owned pending approval with required role, reason, expiry, input snapshot hash and policy version. The approval record is immutable operations evidence; it does not mutate risk state by itself. A valid approval invokes a fresh risk evaluation. Changed/stale policy, snapshot, health, reference, exposure or expiry causes reject/expiry and requires a new intent.
 
-## 7. Reconciliation and terminal correction
+## 8. Reconciliation and terminal correction
 
 Reconciliation starts at startup, periodically, after private-stream gap/disconnect, for unknown state and on operator request. It compares balances, positions, open orders, recent fills, fee and order state. A mismatch opens a case with internal/external snapshots, window, tolerance, adapter version and actor.
 
 No procedure may overwrite order/fill history to make it look like venue state. `APPROVED_ADJUSTMENT` is only for irrecoverable original evidence and requires approval; terminal corrections retain earlier terminal reason/incident/evidence history.
 
-## 8. Required invariants and verification
+## 9. Required invariants and verification
 
 - Exactly one execution leader claims a venue/account queue; lease loss stops new claims.
 - The database transaction is committed before venue I/O. External I/O is never inside a long PostgreSQL transaction.
@@ -105,7 +127,13 @@ No procedure may overwrite order/fill history to make it look like venue state. 
 - A `LOST` order blocks conflicting exposure until reconciliation resolves its external impact.
 - Tests must enumerate all allowed/forbidden transitions, duplicate/out-of-order evidence, crash points before/after request, restart, stale approval and terminal correction.
 
-## 9. Change control
+## 10. Change control
 
 Changing a state, transition, terminal meaning, submission retry or cancel/replace behavior is a breaking domain/data change. It requires ADR, updated event/schema compatibility plan, migration/forward-fix plan, property/contract tests and Account Owner approval.
+
+## Nhật ký thay đổi
+
+| Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
+|---|---|---|---|---|
+| 2026-07-31 | 0.2.0 | Technical Operator | Pending | Thêm §5 Time-in-force và ma trận expiry (DRAFT, cần ADR-0005/0009); bổ sung side effect "block conflicting intent" cho `UNKNOWN -> RECONCILING` và liệt kê rõ sáu target state của `RECONCILING` tại §3; đánh số lại §5–§9 cũ thành §6–§10 |
 

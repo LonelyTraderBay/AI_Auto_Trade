@@ -5,7 +5,7 @@
 | Version / Status | 1.0.0 / DRAFT |
 | Trigger / Severity | Order state `UNKNOWN`, cancel outcome unknown, or age > `unknown_order_sla_s` / Critical after SLA |
 | Scope / Incident commander | Affected venue-account-instrument-order / Technical Operator; Risk Approver for exposure decision |
-| Related | FR-OMS-001, FR-REC-001, NFR-OPS-001; ADR-0005, ADR-0007, ADR-0012; OPS-001 |
+| Related | FR-EXEC-001, FR-REC-001, NFR-OPS-001; ADR-0005, ADR-0007, ADR-0012; OPS-001 |
 | Change summary | Design procedure; execute only after Control API/runtime is approved. |
 
 ## Safe-state objective

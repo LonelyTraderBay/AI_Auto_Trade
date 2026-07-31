@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / DRAFT |
+| Version / Status | 1.2.0 / DRAFT |
 | Owner / Approver | Security/Backup Owner / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | NFR-OPS-001, NFR-SEC-001, NFR-AI-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0016; runbooks RB-001–RB-009 |
-| Change summary | Định nghĩa SLI/alert semantics và ownership, gồm BYOK provider/egress/budget. Numeric thresholds là policy fields phải chốt trước runtime. |
+| Related | NFR-OPS-001, NFR-SEC-001, NFR-AI-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0016; runbooks RB-001–RB-012 |
+| Change summary | Bổ sung escalation logic (DRAFT), policy fields `slow_query_threshold_ms`/`alert_ack_timeout_s`/`clock_drift_threshold_ms`, dashboard views bắt buộc trước testnet (DRAFT) và weekly audit-event review. |
 
 ## 1. Principles
 
@@ -36,7 +36,7 @@ Alert severity is based on safety/integrity first, then availability. Alert supp
 
 ## 3. Operational policy fields
 
-The following values must be present in a validated operations/risk policy before their runtime feature starts: `market_data_max_age_ms`, `private_stream_max_age_ms`, `reconciliation_interval_s`, `unknown_order_sla_s`, `lease_ttl_s`, `heartbeat_interval_s`, retry/circuit-breaker bounds, `alert_deadline_s`, backup/retention/restore-drill cadence and daily-loss reset timezone. Phase 6 additionally requires owner/connection/provider/model/environment/purpose-scoped AI daily/monthly budget, concurrency, RPM/TPM, maximum tokens, timeout, validation probe limit, circuit thresholds, egress-denial alert policy, binding-lease/cache TTL and suspend/revoke propagation SLA.
+The following values must be present in a validated operations/risk policy before their runtime feature starts: `market_data_max_age_ms`, `private_stream_max_age_ms`, `reconciliation_interval_s`, `unknown_order_sla_s`, `lease_ttl_s`, `heartbeat_interval_s`, retry/circuit-breaker bounds, `alert_deadline_s`, `slow_query_threshold_ms`, `alert_ack_timeout_s`, `clock_drift_threshold_ms`, backup/retention/restore-drill cadence and daily-loss reset timezone. Phase 6 additionally requires owner/connection/provider/model/environment/purpose-scoped AI daily/monthly budget, concurrency, RPM/TPM, maximum tokens, timeout, validation probe limit, circuit thresholds, egress-denial alert policy, binding-lease/cache TTL and suspend/revoke propagation SLA.
 
 Values are deliberately not invented in this document. Owner approval and runtime evidence are required before paper/testnet/canary. A metric label must not include raw secret, free-form user PII or unbounded-cardinality IDs.
 
@@ -51,6 +51,24 @@ Values are deliberately not invented in this document. Owner approval and runtim
 
 Notification channel, escalation roster and paging integration are OD-005/operations decisions before Phase 3. No alert integration is created by this draft.
 
+### 4.1 Escalation logic (DRAFT — channel/roster là OD-005)
+
+- Critical: primary responder (Technical Operator) → nếu không ack trong `alert_ack_timeout_s` (policy field mới, §3) → Security/Backup Owner → Account Owner.
+- High: primary responder → fallback sang Security/Backup Owner sau 2× `alert_ack_timeout_s`.
+- Medium/Low: ghi nhận vào review cadence (§5); không page.
+
+Mọi alert Critical chưa được ack là blocker cho submission mới nếu alert liên quan execution/ledger path (fail-closed). Kênh thông báo, roster và paging integration cụ thể là OD-005; logic này chưa hiệu lực cho tới khi OD-005 được chốt — DRAFT, cần phê duyệt.
+
+### 4.2 Dashboard views bắt buộc trước testnet (DRAFT — cần phê duyệt)
+
+Trước testnet, dashboard/operations view tối thiểu phải hiển thị: `UNKNOWN` orders và tuổi của từng order; reconciliation queue/case đang mở; lease/leader state; outbox/inbox/DLQ backlog (count và age); kill-switch state theo từng scope; backup age và last restore drill; AI budget/egress (Phase 6). Thiếu view bắt buộc là gap đối với testnet gate evidence.
+
 ## 5. Evidence and review
 
-Dashboard/alert output must carry environment, deployment/manifest hash when applicable, scope, metric window, threshold/policy version, correlation/incident ID and safe-state action. AI alerts may include provider/model/catalog/connection revision and safe normalized status/usage, but never key, secret reference, authorization header, raw prompt/response or raw vendor payload. Review per master §12.8: every deploy, daily while runtime runs, weekly health/security/backup age, monthly drill/rotation trend, and after critical incident.
+Dashboard/alert output must carry environment, deployment/manifest hash when applicable, scope, metric window, threshold/policy version, correlation/incident ID and safe-state action. AI alerts may include provider/model/catalog/connection revision and safe normalized status/usage, but never key, secret reference, authorization header, raw prompt/response or raw vendor payload. Review per master §12.8: every deploy, daily while runtime runs, weekly health/security/backup age, weekly audit-event review by Security/Backup Owner, monthly drill/rotation trend, and after critical incident.
+
+## 6. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 1.2.0 | 2026-07-31 | Thêm §4.1 escalation logic (DRAFT, roster/channel là OD-005) với `alert_ack_timeout_s` và fail-closed cho Critical chưa ack trên execution/ledger path; thêm `slow_query_threshold_ms`, `alert_ack_timeout_s`, `clock_drift_threshold_ms` vào §3; thêm §4.2 dashboard views bắt buộc trước testnet (DRAFT); thêm weekly audit-event review by Security/Backup Owner vào §5. | Technical Operator | Pending |

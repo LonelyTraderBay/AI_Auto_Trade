@@ -1,7 +1,37 @@
-# docs/frontend/ — chưa có nội dung
+# docs/frontend/ — Bộ tài liệu Frontend (Flutter dashboard)
 
-Thư mục này được tạo có chủ đích ở trạng thái **rỗng**. Đây không phải một mục lỗi hay bị bỏ quên.
+| Thuộc tính | Giá trị |
+|---|---|
+| Document ID | FE-INDEX-001 |
+| Phiên bản | 0.2.0 |
+| Trạng thái | DRAFT |
+| Owner | Technical Operator |
+| Approver | Account Owner (pending) |
+| Rà soát gần nhất | 2026-07-31 |
+| Phase hiệu lực | Phase 5 (dashboard core), Phase 6 (BYOK screens) |
 
-Theo `docs/governance/documentation-layer-classification.md` (GOV-CLASS-001), tại thời điểm 2026-07-31 không có bất kỳ tài liệu Frontend độc lập nào tồn tại trong dự án: Flutter dashboard được chủ đích hoãn tới Phase 5+ (xem `AI_AUTO_TRADE_MASTER_SPEC.md` §2.3, §3.4, §14) và hệ thống hiện tại là API/CLI-first. Toàn bộ ràng buộc liên quan tới dashboard hiện sống dưới dạng các đoạn văn phụ bên trong tài liệu Backend/Shared (`docs/backend/architecture/c4-container.md`, `docs/shared/product/non-functional-requirements.md`, §11.5 của master spec, v.v.), không phải một đặc tả UI/UX độc lập.
+> **Bộ tài liệu này là input thiết kế cho Phase 5/6 — không cho phép bắt đầu code frontend** trước khi gate các phase trước PASS và task card Phase 5 chuyển READY (master §14, §2.3). Mọi nội dung được trích xuất/neo trực tiếp vào contract backend (`contracts/api/openapi.yaml` là canonical duy nhất cho HTTP); khi mâu thuẫn, backend contract thắng. Mọi lựa chọn công nghệ trong pack đánh dấu DRAFT chờ Account Owner phê duyệt.
 
-Thư mục này sẽ được cấp nội dung (product/UX requirements, design system, component contract, client architecture...) khi Phase 5 thực sự bắt đầu thiết kế Flutter dashboard, theo đúng document-control.md.
+## Thứ tự đọc
+
+1. **[product/frontend-charter.md](product/frontend-charter.md)** (FE-CHARTER-001) — dashboard là gì/không là gì, 5 role và capability gating, FR-FE-001..007, phase gating.
+2. **[product/screen-inventory.md](product/screen-inventory.md)** (FE-SCREEN-001) — kiến trúc thông tin + từng màn hình map chính xác vào route API, kèm **GAP register** các route OpenAPI còn thiếu phải bổ sung trước Phase 5.
+3. **[architecture/api-integration-contract.md](architecture/api-integration-contract.md)** (FE-API-001) — hợp đồng tích hợp bắt buộc: wire types, async command 202+polling, idempotency, If-Match, re-auth, bảng 26 error code → hành vi UI.
+4. **[architecture/flutter-app-architecture.md](architecture/flutter-app-architecture.md)** (FE-ARC-001) — thin client, layer structure, state management, generated API client, session placeholder (ADR-0015).
+5. **[design/design-system.md](design/design-system.md)** (FE-DS-001) — semantic color cho 16 OMS states/severity/safe_state, quy tắc hiển thị Decimal/timestamp, terminology theo glossary.
+6. **[security/frontend-security-policy.md](security/frontend-security-policy.md)** (FE-SEC-001) — không secret ở client, session/CSRF, dangerous-action UX, BYOK UI rules, threat mapping.
+7. **[engineering/frontend-testing-strategy.md](engineering/frontend-testing-strategy.md)** (FE-TEST-001) — test pyramid, contract test với OpenAPI, error-path coverage, authorization/re-auth tests (evidence gate Phase 5).
+
+## Ràng buộc bất biến (từ backend, không thương lượng)
+
+- Flutter **chỉ là client của Control API** (master §11.5) — không business/risk/execution logic, không secret, không gọi venue/DB trực tiếp.
+- Authorization **luôn** đánh giá server-side; "a dashboard/client claim never grants access by itself" (SEC-002 §1).
+- Mất kết nối dashboard không được ảnh hưởng trading node; dữ liệu cũ phải có nhãn stale, không che giấu trạng thái xấu.
+- BYOK: key chỉ nhập một lần qua enrollment UI write-only, không read-back, không lưu, mất response → đọc status, không resubmit.
+
+## Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | Thay placeholder rỗng bằng chỉ mục bộ tài liệu frontend 7 artifact (FE-CHARTER/SCREEN/API/ARC/DS/SEC/TEST-001), soạn từ audit trích xuất contract backend. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Placeholder có chủ đích — thư mục rỗng chờ Phase 5. | Technical Operator | Pending |

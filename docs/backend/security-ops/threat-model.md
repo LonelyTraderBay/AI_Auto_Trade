@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
+| Version / Status | 1.2.0 / IN_REVIEW |
 | Owner / Approver | Security/Backup Owner / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
 | Related | NFR-SEC-001, NFR-OPS-001, NFR-AI-001, SEC-AUTH-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0015, ADR-0016 |
-| Change summary | Threat baseline cho Phase 0.0, gồm BYOK AI key/egress threats Phase 6; không chọn authentication provider hoặc topology production. |
+| Change summary | Bổ sung T-017 (Control API DoS/resource exhaustion) và T-018 (insider/single-operator) vào threat register theo audit supplement. |
 
 ## 1. Scope và security objectives
 
@@ -50,6 +50,8 @@ Safe state nghĩa là strategy disabled/frozen, submission blocked, risk/kill-sw
 | T-014 | Cross-owner connection use or secret-binding enumeration | Unauthorized provider use/data egress | Owner-scope authorization before existence disclosure, opaque binding, machine job scope, no shared environment key | Cross-scope authorization test, audit correlation, denied-access alert | Security/Backup Owner |
 | T-015 | Arbitrary provider URL/model/proxy, DNS/redirect/private-route bypass or silent fallback | SSRF, key/data exfiltration, duplicate egress/cost | Approved catalog/endpoint profile, egress gateway hostname/SNI/TLS/DNS/redirect policy, adapter capability review, default no fallback | Endpoint/model/proxy/DNS/redirect deny test, egress audit, adapter/catalog evidence | Security + Technical |
 | T-016 | Budget abuse, capability drift, provider timeout/unknown outcome or stale/revoked binding in flight | Cost exhaustion, invalid proposal, duplicated external data egress | Atomic quota reservation, model/catalog/adapter digest pin, circuit breaker, structured validation, short binding lease/recheck/zeroization, no blind retry/fallback | Usage/quota/circuit/revoke alerts, outage/budget drill, provenance test | Technical + Account Owner |
+| T-017 | Control API DoS/resource exhaustion, kể cả vô ý từ script lỗi (retry loop, runaway client) | Control plane unavailable during incident; safe-state command starved | Rate limit theo master §11.3, request size/timeout limits, authorization before expensive work | Request-rate/error-rate metric per OPS-001 | Technical Operator; required before Phase 3 |
+| T-018 | Insider/single-operator sai sót hoặc lạm quyền khi một người giữ nhiều role | Unauthorized/unsafe action passes as approved; audit blind spot | Dual-role recording master §1.6, independent approver for safety/security/live actions, append-only audit, second human reviewer before canary/live (no waiver) | Audit review cadence (OPS-001/master §12.8) | Security/Backup Owner; applies every phase, hard requirement from Phase 4 |
 
 ## 4. Control principles
 
@@ -67,3 +69,9 @@ Before external venue: authorization/re-auth/idempotency/error-redaction/secret 
 Before Phase 6 BYOK: ADR-0008/0016 and OD-008 approved/resolved; fake-provider default test; isolated no-store/no-hash secret-enrollment/no-read-back/redaction test; owner-scope denial; provider/model/endpoint/policy-profile deny; egress/data classification and DNS/redirect/private-route deny; budget/rate/circuit; initial/rotation candidate/cutover/rollback; dual-role validation/activation; revoke lease/in-flight; outage/unknown-outcome/no-fallback; and zero-execution-tool evidence.
 
 Residual risks such as provider choice, legal requirement, venue-specific control and operational thresholds remain `OPEN` in the relevant ADR/OD. No Phase 3/4 gate can pass on this draft alone.
+
+## 6. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 1.2.0 | 2026-07-31 | Thêm T-017 (Control API DoS/resource exhaustion, kể cả vô ý) và T-018 (insider/single-operator sai sót hoặc lạm quyền) vào §3 threat register. | Technical Operator | Pending |

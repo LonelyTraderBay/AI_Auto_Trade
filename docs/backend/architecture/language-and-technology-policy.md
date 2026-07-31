@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-TECH-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -39,6 +39,7 @@
 | uv + pyproject.toml + lock file | Repository/package environment. | Reproducible dependency resolution. | Unlocked runtime dependency. |
 | Ruff | CI/local formatting and lint. | Python quality baseline. | Replacing type/invariant test. |
 | Pyright strict | CI/local type checking. | One type checker for MVP. | Introducing mypy in parallel. |
+| Import Linter | CI/local architecture/import rule enforcement, cùng cấp Ruff/Pyright (master §13.1). | Enforce layer/context/adapter import contract. | Thay thế architecture test hoặc code review. |
 | Pytest + Hypothesis | Test/property test. | Unit through chaos/golden evidence. | Replacing contract/integration test with mocks only. |
 | OpenTelemetry-compatible tracing | Adapter/operations layer. | Structured trace/metrics correlation. | Raw secret or sensitive payload export. |
 | Docker/Linux container | Testnet/canary runtime image. | Reproducible runtime/deploy. | Mutable-tag deployment. |
@@ -121,7 +122,23 @@ Detailed repository/coding/CI enforcement is owned by the Phase 0.0 engineering 
 
 Exact command profile follows master §13.2 and the approved task card. A command cannot be claimed as passing before the project exposes it and evidence includes exit result.
 
-## 8. Decision triggers
+## 8. Runtime và tooling decisions bổ sung (DRAFT — cần Account Owner phê duyệt trước Task 0.1/0.2)
+
+Các quyết định dưới đây là đề xuất bổ sung theo audit, chưa được phê duyệt; toàn bộ bảng mang trạng thái DRAFT — đề xuất, cần Account Owner phê duyệt.
+
+| Chủ đề | Đề xuất | Phạm vi | Lý do ngắn |
+|---|---|---|---|
+| Concurrency model | asyncio (stdlib), không thêm anyio/trio; ports khai báo sync/async rõ ràng theo context; trading_node hot path đơn luồng theo venue/account với Clock inject; mọi periodic loop (reconciliation_interval_s, lease heartbeat, outbox polling) là in-process asyncio task — không external scheduler/cron cho runtime loop. | Toàn bộ runtime process. | Determinism, một concurrency paradigm duy nhất, không dependency mới. |
+| HTTP/WebSocket client | httpx (HTTP) + websockets (stream) — chỉ được import trong adapters/ và apps/cli; cấm trong domain/application. | Adapters và CLI. | Async-native, giữ hexagonal boundary. |
+| ASGI server | uvicorn; FastAPI/Pydantic major upgrade cần task + compatibility evidence. | apps/control_api. | Chuẩn de-facto cho FastAPI, upgrade có kiểm soát. |
+| Logging | stdlib logging + JSON formatter trong shared_kernel (không structlog — tránh dependency mới không ADR); schema chi tiết theo docs/backend/engineering/logging-standard.md. | Toàn bộ process. | Structured log không thêm dependency ngoài stdlib. |
+| OpenTelemetry | opentelemetry-python SDK; exporter/collector topology chốt cùng OD-005 trước Phase 3. | Adapter/operations layer. | Trace/metrics chuẩn, hoãn topology tới OD-005. |
+| Integration-test DB | PostgreSQL container ephemeral qua docker-compose test profile, image pin digest; không testcontainers-python khi chưa có ADR dependency. | tests/integration. | Test trên PostgreSQL thật, pin digest, không dependency mới. |
+| Alembic | Một environment duy nhất, một linear branch (không multiple heads); SQLAlchemy naming_convention dict khai báo tường minh trong migration env; autogenerate chỉ là draft — revision áp dụng phải được review tay từng dòng so với data dictionary. | migrations/. | Migration history tuyến tính, deterministic và review được. |
+| CLI framework | argparse (stdlib) cho Task 0.1 skeleton; nâng cấp typer/click cần dependency review theo CONTRIBUTING §3. | apps/cli. | Skeleton không cần dependency; nâng cấp có kiểm soát. |
+| Canonical JSON/SHA-256 | Implement trong shared_kernel với golden fixtures; cấm third-party canonicalization dependency khi chưa có ADR. | shared_kernel + contract/hash path. | Hash/idempotency ổn định, kiểm soát toàn bộ canonicalization logic. |
+
+## 9. Decision triggers
 
 Create or amend ADR before:
 
@@ -131,7 +148,7 @@ Create or amend ADR before:
 - changing PostgreSQL/Parquet ownership, public contract semantics, data retention, authentication/session or deployment topology;
 - weakening a safety/security restriction.
 
-## 9. Review checklist
+## 10. Review checklist
 
 - [ ] Choices agree with Master §3.5 and no deferred technology is implicitly added.
 - [ ] Boundaries preserve pure domain and global adapter topology.
@@ -139,9 +156,10 @@ Create or amend ADR before:
 - [ ] Data/format rules agree with planned contract/data documents.
 - [ ] Any unresolved selection is recorded as OD/ADR, not fabricated in code.
 
-## 10. Nhật ký thay đổi
+## 11. Nhật ký thay đổi
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo technology/language/repository baseline bám master v2.0. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Làm rõ provider-neutral BYOK: OpenAI SDK chỉ là adapter tùy chọn ở Phase 6. | Technical Operator | Pending |
+| 0.3.0 | 2026-07-31 | Thêm §8 Runtime và tooling decisions bổ sung (DRAFT — cần Account Owner phê duyệt trước Task 0.1/0.2); thêm Import Linter vào technology matrix §2 (master §13.1). | Technical Operator | Pending |

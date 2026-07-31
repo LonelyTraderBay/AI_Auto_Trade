@@ -2,7 +2,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner |
@@ -55,7 +55,7 @@ Các timestamp chuẩn là `occurred_at`, `received_at`, `processed_at`, `record
 | Venue | nhà cung cấp/sàn có capability profile đã version | account hoặc environment |
 | Account | phạm vi balance/order do venue quản lý | tenant chung hoặc credential raw |
 | Instrument | cặp/tài sản giao dịch canonical cùng rule version theo thời gian | symbol string không version |
-| Proposal | output chưa được phép giao dịch của strategy | order đã submit |
+| Strategy proposal (`ProposedOrderIntent`) | output chưa được phép giao dịch của strategy; phân biệt rõ với "AI proposal" bên dưới — hai nghĩa "proposal" không được dùng lẫn | order đã submit |
 | `ProposedOrderIntent` | đề xuất strategy, chưa có `ClientOrderId` | aggregate execution |
 | `OrderIntent` | yêu cầu chuẩn hóa của execution, có đúng một `ClientOrderId` | venue order/acknowledgement |
 | Order | aggregate OMS nội bộ có lifecycle canonical | request HTTP đơn lẻ |
@@ -63,6 +63,8 @@ Các timestamp chuẩn là `occurred_at`, `received_at`, `processed_at`, `record
 | Fill | bằng chứng khớp lệnh immutable, deduplicate được | projection balance |
 | Reservation | phần balance/exposure được khóa logic trước submit | fill/exposure đã xảy ra |
 | Risk decision | verdict synchronous, versioned và có expiry | approval UI có thể bypass |
+| Verdict | enum bên trong `RiskDecision`: `APPROVE`, `REJECT` hoặc `REQUIRE_MANUAL_APPROVAL` | một aggregate/record độc lập ngoài `RiskDecision` |
+| `CancelIntent` | action yêu cầu hủy order; có identity riêng, không sinh `ClientOrderId` mới; exposure-reducing | một `OrderIntent` mới hoặc thao tác replace |
 | Reconciliation case | sai khác cần evidence/điều tra | thao tác overwrite local history |
 | Ledger | accounting truth nội bộ append-only | số dư venue tức thời |
 | Projection | state dẫn xuất có thể rebuild | source of truth tài chính |
@@ -88,6 +90,8 @@ Các timestamp chuẩn là `occurred_at`, `received_at`, `processed_at`, `record
 
 `VenueOrderId` và venue fill/trade ID là external identifiers: có thể nullable trước acknowledgment, không được thay internal ID.
 
+Theo master §5.2, các value object bắt buộc còn bao gồm `VenueId`, `AccountId`, `CorrelationId`, `CausationId` và `TraceId` — tất cả là immutable value object (không phải aggregate) và xuất hiện trong contract/event tương ứng.
+
 ## 6. Luồng chuẩn từ strategy đến ledger
 
 ```text
@@ -101,7 +105,7 @@ NormalizedMarketEvent
   -> projections, reconciliation và audit evidence
 ```
 
-Không bước nào được bỏ qua qua UI, CLI, AI worker hoặc adapter. Venue call chỉ xảy ra sau transaction persist durable order/attempt/outbox; outcome không chắc chắn đi vào `UNKNOWN` rồi reconciliation.
+Không bước nào được bỏ qua qua UI, CLI, AI worker hoặc adapter. Venue call chỉ xảy ra sau transaction persist durable order/attempt/outbox; outcome không chắc chắn đi vào `UNKNOWN` rồi reconciliation. Fill trong pipeline này phải tuân thủ contract tối thiểu tại §7.5.
 
 ## 7. Contract dữ liệu tối thiểu
 
@@ -122,6 +126,12 @@ RiskDecision chỉ là `APPROVE`, `REJECT` hoặc `REQUIRE_MANUAL_APPROVAL`; ph�
 ### 7.4 Event envelope
 
 Mọi integration event có `id`, `type`, `schema_version`, `source`, `occurred_at`, `correlation_id`, `causation_id`, `trace_id`, `subject_id` và `data`. Tên event là quá khứ; command là động từ; query bắt đầu bằng `Get`, `List` hoặc `Search`.
+
+### 7.5 Fill (contract tối thiểu) — DRAFT, chờ owner review
+
+Fill phải có `fill_id` (UUIDv7), `order_id`, `client_order_id`, `venue_trade_id` (nullable khi venue không cung cấp — khi đó dedupe dùng khóa thay thế bên dưới), `price` (Decimal), `quantity` (Decimal), `fee_amount` (Decimal), `fee_asset`, `liquidity_flag` (`MAKER` | `TAKER` | `UNKNOWN`; `UNKNOWN` khi venue không báo), bốn timestamp `occurred_at`/`received_at`/`processed_at`/`recorded_at`, `sequence` (monotonic theo order, `UNIQUE(order_id, sequence)`) và `correlation_id`.
+
+Fill là immutable. Khóa phát hiện duplicate là `venue_trade_id` trong phạm vi venue/account khi có; nếu venue không cung cấp thì dùng `(order_id, sequence)`. Fee fields là bắt buộc cho ledger booking theo [accounting policy](accounting-policy.md) (DOM-004): fill thiếu thông tin fee phải được book với `fee = 0` tường minh kèm quality flag, không bao giờ được đoán ngầm.
 
 ## 8. Invariant domain không được waiver
 
@@ -146,3 +156,9 @@ NautilusTrader không sở hữu canonical domain; chỉ có thể được thê
 - [ ] State/lifecycle chi tiết dùng [OMS state machine](oms-state-machine.md).
 - [ ] Risk/ledger chi tiết dùng [risk policy](risk-policy.md) và [accounting policy](accounting-policy.md).
 - [ ] Account Owner phê duyệt cùng ADR bắt buộc trước khi dùng làm input Task 0.4/Phase 1.
+
+## Nhật ký thay đổi
+
+| Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
+|---|---|---|---|---|
+| 2026-07-31 | 0.3.0 | Technical Operator | Pending | Bổ sung §7.5 Fill contract tối thiểu (DRAFT), ghi chú value object master §5.2 tại §5, thêm glossary Verdict/`CancelIntent` và disambiguate hai nghĩa "proposal" tại §4, tham chiếu Fill contract từ pipeline §6 |

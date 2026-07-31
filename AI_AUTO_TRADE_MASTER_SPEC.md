@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.1.1 |
+| Phiên bản | 2.2.0 |
 | Trạng thái | Phase 0.0 — Documentation Closure (IN_REVIEW) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
@@ -14,6 +14,7 @@
 | Lần rà soát gần nhất | 2026-07-31 |
 | Thay đổi chính v2.1 | Bổ sung thiết kế DRAFT cho AI đa provider/BYOK: user chọn provider/model đã duyệt, secret ingress write-only, provider catalog, egress/budget và zero-execution boundary |
 | Thay đổi chính v2.1.1 | Cập nhật §1.5 artifact pack tree và các tham chiếu đường dẫn docs/ theo tái cấu trúc lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001); không đổi quyết định kiến trúc/domain/risk/security nào |
+| Thay đổi chính v2.2.0 | Sửa mâu thuẫn nội bộ do audit sâu phát hiện: §8.11 deadline accounting policy thống nhất "trước Phase 1" (khớp §7.8); §7.6 bổ sung `outbox_delivery_state` vào platform inventory; §4.6 bổ sung `tests/state_machine/`; §4.7 bổ sung `apps/secret_ingress` (Phase 6) và làm rõ ai_worker binding lease; §4.8 chốt fixture format theo registry. Chỉ sửa nhất quán, không thêm capability mới |
 
 ---
 
@@ -551,6 +552,7 @@ ai-auto-trade/
     architecture/
     unit/
     property/
+    state_machine/
     contract/
     integration/
     replay/
@@ -571,8 +573,9 @@ Một process chỉ có một responsibility và một machine identity. Composi
 | `apps/trading_node` | strategy scheduler, risk, OMS, execution, ledger/reconciliation | DB trading role; venue credential theo manifest/mode | không expose public HTTP management surface |
 | `apps/workers/data_worker` | market/reference ingest, catalog/quality | DB data role; public/testnet read credential nếu cần | không execution/risk/ledger write |
 | `apps/workers/research_worker` | replay/backtest/report | catalog/research role; network disabled mặc định | không đọc trade credential hoặc OLTP write model |
-| `apps/workers/ai_worker` | proposal/memory Phase 6 | sanitized read + ai_memory write; provider key riêng | không execution tool, venue credential hoặc config promotion |
+| `apps/workers/ai_worker` | proposal/memory Phase 6 | sanitized read + ai_memory write; binding lease ngắn hạn theo owner/connection/revision/job — không wholesale provider key | không execution tool, venue credential hoặc config promotion |
 | `apps/cli` | operator command có audit/authorization path | caller identity; không bypass Control API policy | không truy cập DB/venue trực tiếp ngoài command port được duyệt |
+| `apps/secret_ingress` | BYOK secret ingress write-only, Phase 6 (ADR-0016) | secret-provider write path riêng; không đọc lại secret, không DB role khác | không expose read/list secret, không log payload, không chạy trước Phase 6 gate |
 
 `trading_node` được phép chạy ở SHADOW, PAPER_SIMULATOR, TESTNET và CANARY; chỉ process này mới được wire `ExecutionVenuePort`. Ở SHADOW, port execution phải là disabled/fail-closed adapter và không có permission submit; ở PAPER_SIMULATOR, nó chỉ wire simulator adapter. Venue execution adapter chỉ được wire ở TESTNET/CANARY theo manifest. Testnet/canary phải chạy Linux container image đã pin digest; Windows chỉ được hỗ trợ cho local developer tooling.
 
@@ -581,7 +584,7 @@ Một process chỉ có một responsibility và một machine identity. Composi
 - Thư mục/module Python dùng `snake_case`; class/type dùng `PascalCase`; function/field/contract key dùng `snake_case`; enum value wire dùng `SCREAMING_SNAKE_CASE`.
 - Mỗi aggregate/policy/port có module rõ nghĩa. Không dùng `utils.py`, `helpers.py`, `common.py` hay `misc.py` như nơi chứa logic không có owner.
 - `domain/` chỉ chứa logic thuần; `application/` đặt use case theo capability; `ports/` đặt Protocol/interface. Concrete adapter đặt đúng `adapters/<kind>/<provider>/`.
-- Test mirror source/capability: ví dụ `tests/unit/contexts/risk/...`, `tests/contract/adapters/venues/...`; fixture dùng suffix `.fixture.<version>.json` hoặc định dạng đã đăng ký trong contract registry.
+- Test mirror source/capability: ví dụ `tests/unit/contexts/risk/...`, `tests/contract/adapters/venues/...`; fixture dùng định dạng đã đăng ký trong contract registry (`<name>.v<major>.valid.<ext>` là định dạng đã đăng ký hiện hành).
 - File contract/config mang version rõ ràng (`<name>.v1.schema.json`); breaking change tạo major version mới, không overwrite v1.
 - Migration dùng Alembic revision immutable, message chứa Task ID và intent; không rename/sửa migration đã apply.
 - Generated artifact vào `generated/` hoặc đường dẫn task chỉ định, có banner/source link; không dùng generated file làm nơi sửa tay.
@@ -1009,7 +1012,7 @@ Alembic migration đã apply là physical schema source of truth. Data dictionar
 | market_data | catalog_partitions, ingestion_checkpoints, feed_health, data_quality_issues | raw tick lớn nằm ở Parquet, DB chỉ metadata/control |
 | research | dataset_versions, feature_definitions, backtest_runs, evaluation_reports | research không query trực tiếp OLTP write model |
 | operations | deployments, runtime_leases, kill_switches, commands, command_events, approvals, audit_log, incidents, ai_provider_connections, ai_connection_events | connection chỉ lưu metadata/internal active-candidate binding opaque; không lưu raw API key hoặc secret blob |
-| platform | outbox, inbox, dead_letters, idempotency_keys | platform là bounded context infrastructure, không phải context ẩn |
+| platform | outbox, outbox_delivery_state, inbox, dead_letters, idempotency_keys | platform là bounded context infrastructure, không phải context ẩn |
 | ai_memory | memory_items, retrieval_runs, inference_runs, proposals, post_mortems | chỉ Phase 6; không tạo sớm; raw prompt/response theo policy riêng |
 
 #### Ownership của control command và approval
@@ -1360,7 +1363,7 @@ Mọi fill, fee, funding, interest, rebate, transfer hoặc verified adjustment 
 - Adjustment chỉ khi không thể phục hồi original event, có evidence và approval.
 - Sàn là external truth cho state tức thời; ledger là internal accounting truth. Hai bên được đối soát, không ghi đè lẫn nhau.
 
-Accounting policy cũng là immutable/versioned artifact. Trước Phase 3, owner phải chốt asset/currency scale, fee asset treatment, cost-basis cho realized PnL, valuation source/timestamp cho unrealized PnL, rounding, locked balance/reservation và xử lý external transfer. Tax engine không thuộc MVP, nhưng hệ thống không được để các quy tắc accounting này ngầm định trong code.
+Accounting policy cũng là immutable/versioned artifact. Trước Phase 1 (thống nhất với §7.8 và DOM-004; bản trước ghi "Trước Phase 3" là mâu thuẫn đã được sửa ở v2.2.0), owner phải chốt asset/currency scale, fee asset treatment, cost-basis cho realized PnL, valuation source/timestamp cho unrealized PnL, rounding, locked balance/reservation và xử lý external transfer. Tax engine không thuộc MVP, nhưng hệ thống không được để các quy tắc accounting này ngầm định trong code.
 
 ---
 

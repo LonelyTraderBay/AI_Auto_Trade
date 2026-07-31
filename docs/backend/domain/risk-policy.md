@@ -2,7 +2,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Risk Approver và Account Owner phê duyệt |
 | Owner | Risk Approver |
 | Approver | Account Owner |
@@ -37,7 +37,7 @@ Scope cha áp dụng cho scope con; rule nghiêm ngặt hơn thắng. Nếu có 
 | Runtime health | kill switch, execution lease, feed/private account health, deployment approval |
 | Time | injected UTC clock, dùng cho daily reset/expiry/freshness |
 
-`RiskDecision` lưu policy, snapshot versions/hashes, input hash, decision time và expiry. Commit phải phát hiện snapshot/limit state stale; không được approve trên snapshot cũ rồi submit khi exposure đã đổi.
+Theo master §5.6, `RiskDecision` lưu tối thiểu: `verdict`, `approved_quantity`, policy ID/version, portfolio/reference/market snapshot version, `reservation_id` (nullable), machine-readable reason, input hash, decision time và expiry. Ngoài ra tài liệu này lưu thêm snapshot hashes (bổ sung so với master §5.6 — additive, cần được phản ánh vào master trong lần sửa tới). Commit phải phát hiện snapshot/limit state stale; không được approve trên snapshot cũ rồi submit khi exposure đã đổi.
 
 ## 4. Required pre-trade checks
 
@@ -61,7 +61,7 @@ Leverage, margin, derivatives and automatic flatten are out of MVP. Không thêm
 |---|---|
 | `APPROVE` | persist immutable decision và required reservation; execution mới có thể queue submit |
 | `REJECT` | persist machine-readable reason; không tạo submission queue |
-| `REQUIRE_MANUAL_APPROVAL` | persist risk-owned pending approval; không reservation/queue trừ khi policy nói rõ reservation pre-approval và đã được ADR phê duyệt |
+| `REQUIRE_MANUAL_APPROVAL` | persist risk-owned pending approval; không reservation/queue trừ khi policy nói rõ reservation pre-approval và đã được ADR phê duyệt [ghi chú: extension "reservation pre-approval" không tồn tại trong master §5.4 và INACTIVE cho đến khi một ADR bật nó một cách tường minh; hành vi mặc định là của master: không reservation, không submission queue] |
 
 Approved quantity, worst-case price/fee/slippage treatment, policy currency/asset scale và rounding phải được policy version ghi rõ. `RiskDecision` expiry làm submit blocked nếu stale.
 
@@ -77,6 +77,17 @@ Reservation là lock logic trên balance/exposure trước submission, không ph
 | reconciliation proves no order | release theo audited resolution |
 | stale reservation | alert + reconcile; không silent clear |
 | unknown/lost | giữ/block scope theo policy cho đến evidence/resolution |
+
+Template công thức reservation (DRAFT — tham số hóa; mọi giá trị buffer là symbolic và là owner-decision input theo §10, không phải giá trị được duyệt):
+
+```text
+BUY:  reserved_quote = quantity × worst_case_price × (1 + fee_buffer_rate)
+      worst_case_price = limit_price                                        (limit order)
+      worst_case_price = reference_price × (1 + slippage_buffer_rate)       (market order)
+SELL: reserved_base = quantity
+```
+
+`fee_buffer_rate` và `slippage_buffer_rate` là policy field bắt buộc (§10), không có default ngầm. Partial fill: release đúng phần tương ứng theo tỷ lệ filled quantity; phần fee buffer chưa dùng được release khi order đạt terminal state.
 
 ## 7. Manual approval
 
@@ -104,4 +115,10 @@ Các mục sau cố ý chưa có giá trị: policy currency/asset scale, valuat
 - [ ] Policy schema/version/fixture và hash/expiry rules được contract registry ghi nhận.
 - [ ] Tests cover reject by each class, stale snapshot, reservation races, approval re-evaluation, kill scope and no-bypass path.
 - [ ] Risk Approver/Account Owner phê duyệt parameters áp dụng cho environment/scope; nếu chưa có thì runtime trading blocked.
+
+## Nhật ký thay đổi
+
+| Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
+|---|---|---|---|---|
+| 2026-07-31 | 0.2.0 | Technical Operator | Pending | Align danh sách field `RiskDecision` với master §5.6 (đánh dấu snapshot hashes là additive) tại §3; ghi chú escape hatch "reservation pre-approval" INACTIVE vì không có trong master §5.4 tại §5; thêm template công thức reservation tham số hóa (DRAFT) tại §6 |
 

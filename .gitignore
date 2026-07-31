@@ -1,0 +1,46 @@
+# --- Secrets / environment (không bao giờ commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# --- Tooling caches ---
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.pyright/
+.coverage
+coverage.xml
+htmlcov/
+
+# --- Data / generated (chính sách: generated/ có banner, không sửa tay; artifact local không commit) ---
+data/catalog/**
+!data/catalog/.gitkeep
+*.parquet
+*.duckdb
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# --- Logs / dumps ---
+*.log
+*.dump
+*.sql.gz

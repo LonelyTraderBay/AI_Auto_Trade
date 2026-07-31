@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-DOC-001 |
-| Phiên bản | 0.3.0 |
+| Phiên bản | 0.3.1 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -90,7 +90,7 @@ Không sửa lịch sử approval để phản ánh quyết định mới. Tạo
 | Backend product/architecture/domain/data/engineering/security-ops | docs/backend/{product,architecture,domain,data,engineering,security-ops}/ | Tên kebab-case, Markdown, header bắt buộc. |
 | Frontend (chưa có nội dung; khởi tạo khi Phase 5 bắt đầu) | docs/frontend/ | Tên kebab-case, Markdown, header bắt buộc. |
 | ADR — registry/index | docs/governance/adr/ | README.md là registry; xem GOV-CLASS-001 cho lý do tách khỏi nội dung ADR. |
-| ADR — nội dung quyết định | docs/backend/adr/ | ADR-NNNN-<slug>.md; số không tái sử dụng. |
+| ADR — nội dung quyết định | docs/backend/adr/ | Tên file NNNN-<slug>.md (ID tham chiếu dạng ADR-NNNN); số không tái sử dụng. |
 | Contract | contracts/ (không di chuyển theo tái cấu trúc docs/); registry tại docs/backend/contracts/contract-registry.md | File versioned; canonical path ghi trong contract registry. |
 | Task card authority | tasks/active hoặc tasks/completed | YAML validate bằng task-card schema; Markdown chỉ là readable render. |
 | Gate/task evidence | docs/governance/evidence/gates hoặc docs/governance/evidence/tasks | Có hash/path, runner, UTC time và liên kết Task/Gate ID. |
@@ -124,6 +124,7 @@ Vị trí chuẩn trên có hiệu lực kể từ v0.3.0 (tái cấu trúc theo
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.3.1 | 2026-07-31 | Sửa quy ước tên file ADR ở §6 cho khớp thực tế (NNNN-slug.md, ID tham chiếu ADR-NNNN); ghi nhận các artifact governance mới: waiver-register (GOV-WAIVER-001), compliance-register (GOV-COMPL-001), template incident-record (GOV-TPL-INC-001). | Technical Operator | Pending |
 | 0.3.0 | 2026-07-31 | Cập nhật bảng "Vị trí chuẩn" (§6) theo tái cấu trúc docs/ sang lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001); không đổi quy tắc lifecycle/version/RACI nào khác. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Cập nhật register/control references cho hồ sơ DRAFT AI đa provider/BYOK; không phê duyệt runtime hay key. | Technical Operator | Pending |
 | 0.1.0 | 2026-07-31 | Tạo baseline kiểm soát tài liệu cho Phase 0.0. | Technical Operator | Pending |

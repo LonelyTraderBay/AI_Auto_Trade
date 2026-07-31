@@ -3,12 +3,12 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-INDEX-001 |
-| Phiên bản | 0.3.0 |
+| Phiên bản | 0.6.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày tạo | 2026-07-31 |
-| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.1.1 |
+| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.2.0 |
 
 ## Mục đích và trạng thái
 
@@ -38,6 +38,9 @@ Kể từ v0.3.0, cây thư mục `docs/` được tổ chức theo lớp **Back
 | GOV-RAID-001 | [RAID register](raid-register.md) | IN_REVIEW |
 | GOV-TRACE-001 | [Requirements traceability](requirements-traceability.md) | IN_REVIEW |
 | GOV-CLASS-001 | [Documentation layer classification (Backend/Frontend/Shared/Governance)](documentation-layer-classification.md) | DRAFT |
+| GOV-WAIVER-001 | [Waiver register](waiver-register.md) | DRAFT |
+| GOV-COMPL-001 | [Compliance & data-privacy register](compliance-register.md) | DRAFT — chờ OD-007 |
+| GOV-TPL-INC-001 | [Incident record / post-mortem template](templates/incident-record.md) | DRAFT |
 
 ### Shared (cross-cutting) — `docs/shared/`
 
@@ -88,19 +91,28 @@ Kể từ v0.3.0, cây thư mục `docs/` được tổ chức theo lớp **Back
 | ENG-TEST-001 | [Test strategy](../backend/engineering/test-strategy.md) | IN_REVIEW |
 | ENG-CI-001 | [CI/CD design](../backend/engineering/ci-cd-design.md) | IN_REVIEW |
 | ENG-AI-001 | [AI coding protocol](../backend/engineering/ai-coding-protocol.md) | IN_REVIEW |
+| ENG-VER-001 | [Versioning và release policy](../backend/engineering/versioning-release-policy.md) | DRAFT |
+| ENG-LOG-001 | [Logging standard](../backend/engineering/logging-standard.md) | DRAFT |
 | SEC-THREAT-001 | [Threat model](../backend/security-ops/threat-model.md) | IN_REVIEW |
 | SEC-ACCESS-001 | [Access-control matrix](../backend/security-ops/access-control-matrix.md) | IN_REVIEW |
 | SEC-AUTH-001 | [Auth/session policy](../backend/security-ops/auth-session-policy.md) | DRAFT |
 | SEC-SECRETS-001 | [Secrets/key management](../backend/security-ops/secrets-and-key-management.md) | IN_REVIEW |
 | SEC-AI-POL-001 | [AI BYOK security and data-egress policy](../backend/security-ops/ai-byok-security-policy.md) | DRAFT |
 | OPS-SLO-001 | [SLO/SLI/alert policy](../backend/security-ops/slo-sli-alert-policy.md) | DRAFT |
-| OPS-RUN-001 | [Runbook index](../backend/security-ops/runbook-index.md) | IN_REVIEW |
+| OPS-RUN-001 | [Runbook index](../backend/security-ops/runbook-index.md) | IN_REVIEW — RB-001..RB-012, gồm 3 runbook mới: [rate-limit](../backend/security-ops/runbooks/venue-rate-limit.md) · [outbox/DLQ](../backend/security-ops/runbooks/outbox-dlq-backlog.md) · [clock-drift](../backend/security-ops/runbooks/clock-drift.md) |
 
-### Frontend — `docs/frontend/`
+### Frontend — `docs/frontend/` (input Phase 5/6; không cho phép code trước gate)
 
 | ID | Artifact | Status |
 |---|---|---|
-| — | [docs/frontend/README.md](../frontend/README.md) — placeholder có chủ đích, chưa có nội dung; xem GOV-CLASS-001 | N/A |
+| FE-INDEX-001 | [Frontend pack index](../frontend/README.md) | DRAFT |
+| FE-CHARTER-001 | [Frontend charter — scope, roles, FR-FE-001..007, phase gating](../frontend/product/frontend-charter.md) | DRAFT |
+| FE-SCREEN-001 | [Screen inventory + GAP register route OpenAPI còn thiếu](../frontend/product/screen-inventory.md) | DRAFT |
+| FE-API-001 | [API integration contract — wire types, async command, idempotency, 26 error codes](../frontend/architecture/api-integration-contract.md) | DRAFT |
+| FE-ARC-001 | [Flutter app architecture — thin client, layers, state, generated client](../frontend/architecture/flutter-app-architecture.md) | DRAFT |
+| FE-DS-001 | [Design system — semantic colors 16 OMS states, data display, terminology](../frontend/design/design-system.md) | DRAFT |
+| FE-SEC-001 | [Frontend security policy — client secret rules, session/CSRF, BYOK UI](../frontend/security/frontend-security-policy.md) | DRAFT |
+| FE-TEST-001 | [Frontend testing strategy — contract/authorization/re-auth tests](../frontend/engineering/frontend-testing-strategy.md) | DRAFT |
 
 ### Contracts, ADRs, controls and evidence
 
@@ -114,7 +126,8 @@ Kể từ v0.3.0, cây thư mục `docs/` được tổ chức theo lớp **Back
 | ADR set (registry) | [ADR register](adr/README.md) | IN_REVIEW — individual ADRs remain DRAFT until Account Owner approval |
 | ADR set (content, 0001–0016) | [docs/backend/adr/](../backend/adr/) | IN_REVIEW/DRAFT theo từng ADR |
 | Templates | [docs/governance/templates/](templates/) | IN_REVIEW |
-| Task controls | [tasks/active/](../../tasks/active/) | IN_REVIEW |
+| Task controls | [tasks/active/](../../tasks/active/) | IN_REVIEW — 0.0.x REVIEW; [0.1-bootstrap.yaml](../../tasks/active/0.1-bootstrap.yaml) BLOCKED chờ gate |
+| Repo-root controls | [README](../../README.md) · [AGENTS.md](../../AGENTS.md) · [SECURITY.md](../../SECURITY.md) · [CONTRIBUTING.md](../../CONTRIBUTING.md) · [CODEOWNERS](../../CODEOWNERS) | IN_REVIEW — bổ sung trước Task 0.1 theo audit hoàn thiện hồ sơ |
 | Gate evidence | [gate record](evidence/gates/phase-0.0/gate-record.md) · [review checklist](evidence/gates/phase-0.0/review-checklist.md) | IN_REVIEW — not passed |
 | Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — placeholder only; no validation result recorded |
 
@@ -126,6 +139,9 @@ Update this register and `docs/governance/document-control.md` in the same revie
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.6.0 | 2026-07-31 | Khởi tạo bộ tài liệu Frontend 8 artifact (FE-INDEX/CHARTER/SCREEN/API/ARC/DS/SEC/TEST-001, DRAFT) — trích xuất từ contract backend, input Phase 5/6; docs/frontend/ không còn là placeholder rỗng. | Technical Operator | Pending |
+| 0.5.0 | 2026-07-31 | Bổ sung theo audit sâu backend: logging standard (ENG-LOG-001), 3 runbook mới RB-010/011/012; master authority v2.2.0; ~20 tài liệu backend được bổ sung nội dung (Fill contract, TIF matrix, isolation proposal, tech decisions, escalation logic...) và sửa nhất quán (FR-OMS-001, dead_letters FK, doc-ID scheme). | Technical Operator | Pending |
+| 0.4.0 | 2026-07-31 | Bổ sung theo audit hoàn thiện hồ sơ: waiver register, compliance register, incident template, versioning/release policy, task card 0.1 (BLOCKED), bộ repo-root controls (README/AGENTS/SECURITY/CONTRIBUTING/CODEOWNERS/.editorconfig/.gitignore). | Technical Operator | Pending |
 | 0.3.0 | 2026-07-31 | Tái cấu trúc docs/ theo lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001): cập nhật toàn bộ đường dẫn register, thêm mục Frontend placeholder; không đổi status/nội dung artifact nào. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Bổ sung architecture, security policy và full provider/policy/connection contract baseline cho AI đa provider/BYOK DRAFT; cập nhật master authority v2.1.0. | Technical Operator | Pending |
 | 0.1.0 | 2026-07-31 | Tạo chỉ mục artifact pack Phase 0.0. | Technical Operator | Pending |

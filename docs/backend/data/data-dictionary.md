@@ -2,12 +2,12 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt; không phải DDL |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày soạn | 2026-07-31 |
-| Liên quan | FR-EXEC-001, FR-OPS-001, FR-AI-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0012, ADR-0016 |
+| Liên quan | FR-EXEC-001, FR-OPS-001, FR-AI-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0012, ADR-0013, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.1, §7.4–§7.13, §13; [Data architecture](data-architecture.md); [ERD](erd.md) |
 
 ## 1. Authority and scope
@@ -68,6 +68,8 @@ Constraints/indexes proposed:
 - CHECK `payload_hash` matches `^[0-9a-f]{64}$`; CHECK `event_type` and `partition_key` are non-empty; CHECK `recorded_at >= occurred_at` except a separately approved documented clock-skew handling path.
 - Index `outbox_event_id_uq` is implicit from unique; add non-unique audit index on `(source_context, source_aggregate_id, recorded_at)` only if query budget confirms it.
 - Row is append-only: runtime publisher does not mutate it. Delivery state lives in `platform.outbox_delivery_state`.
+
+Growth/partitioning note (DRAFT — cần phê duyệt): expected-volume owner là Technical Operator; khi `outbox`/`outbox_delivery_state` vượt ngưỡng size/row được ghi trong operational policy, tạo partitioning task theo expand-phase migration dưới ADR-0013; khoảng trống giữa Task 0.3 và Phase 2 được chấp nhận có chủ đích với ngưỡng cảnh báo backlog/size trong SLO policy.
 
 ## 4. Task 0.3 physical table: `platform.outbox_delivery_state`
 
@@ -182,7 +184,7 @@ Constraints/indexes proposed:
 | risk | policy/decision/reservation/pending approval/limits | Phase 1 | inventory only | ADR-0007/0012 + risk policy approved |
 | execution | orders/events/attempts/fills/reconciliation | Phase 1 | inventory only | ADR-0005/0012 + OMS contract approved |
 | portfolio_ledger | chart/journal/postings/projections | Phase 1 | inventory only | ADR-0011 accounting policy/database enforcement approved |
-| operations | deployment/lease/kill/command/approval/audit/incident/AI provider connection metadata | Task 0.5 / Phase 1 / Phase 6 | inventory only | AI additions require ADR-0008 + ADR-0016, auth/RBAC, secret topology and catalog/egress policy approved |
+| operations | deployment/lease/kill/command/approval/audit/incident/AI provider connection metadata | Task 0.5 / Phase 1 / Phase 6 | inventory only | control tables (deployments, commands, approvals, audit_log…) unlock tại Task 0.5 sau khi OpenAPI/config/authorization design được approve; AI additions thêm điều kiện ADR-0008 + ADR-0016, auth/RBAC, secret topology and catalog/egress policy approved |
 | platform | `idempotency_keys` | Task 0.5 | inventory only | OpenAPI idempotency semantics and auth actor identity approved |
 | research | dataset/feature/backtest/report | Phase 2 | inventory only | dataset manifest/retention/no-look-ahead contracts approved |
 | ai_memory | memory/retrieval/inference run/proposal/post-mortem | Phase 6 | forbidden early | ADR-0008 + ADR-0016 APPROVED and AI security/BYOK gates pass |
@@ -213,3 +215,9 @@ Each future entry must provide: schema/context owner; purpose/classification/ret
 - [ ] Migration plan creates only tables in §§3–6 and no unapproved schema/table/index.
 - [ ] Role grants protect immutable rows; test plan proves uniqueness, CAS/lease, crash retry and no payload/secret leak.
 - [ ] Dictionary, ERD, contract registry and task card links are reviewed by required roles.
+
+## 10. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.3.0 | 2026-07-31 | Bổ sung điều kiện unlock non-AI cho inventory row `operations` (control tables unlock tại Task 0.5 sau khi OpenAPI/config/authorization design được approve); thêm ADR-0013 vào danh sách Liên quan (retention gating phụ thuộc ADR này); thêm growth/partitioning note (DRAFT) cho `outbox`/`outbox_delivery_state` với expected-volume owner, ngưỡng theo operational policy và partitioning task theo expand-phase migration dưới ADR-0013. | Technical Operator | Pending |

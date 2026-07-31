@@ -1,12 +1,12 @@
-# ENG-001 — Quy ước repository và ownership
+# ENG-REPO-001 — Quy ước repository và ownership
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / IN_REVIEW |
+| Version / Status | 1.0.2 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
 | Related | NFR-OPS-001, NFR-SEC-001; ADR-0001, ADR-0002, ADR-0014; Phase 0.0.5 |
-| Change summary | Thiết lập topology, naming, ownership và quy tắc review trước khi tạo application code. |
+| Change summary | 1.0.2 (2026-07-31, Technical Operator, Pending): đổi title ID ENG-001 -> ENG-REPO-001 khớp DOCS_INDEX; bổ sung `chaos/` vào topology tests/ theo master §4.6 v2.2.0. 1.0.1: cập nhật bảng ownership §3 theo cấu trúc docs/ mới (GOV-CLASS-001). 1.0.0: thiết lập topology, naming, ownership và quy tắc review trước khi tạo application code. |
 
 ## 1. Mục đích và authority
 
@@ -37,7 +37,7 @@ AI_Auto_Trade/
     adapters/
     shared/
     bootstrap/
-  tests/{unit,property,state_machine,architecture,contract,integration,replay,golden,e2e,fixtures,factories}/
+  tests/{unit,property,state_machine,chaos,architecture,contract,integration,replay,golden,e2e,fixtures,factories}/
   migrations/
   generated/
 ~~~
@@ -48,7 +48,7 @@ AI_Auto_Trade/
 
 | Khu vực | Owner | Quy tắc chính |
 |---|---|---|
-| `docs/00-*` đến `docs/06-*`, `adr/`, evidence | Owner được nêu trong header | Có ID, version, status, link requirement/ADR/task. |
+| `docs/governance/`, `docs/shared/`, `docs/backend/` (gồm `adr/`), evidence | Owner được nêu trong header | Có ID, version, status, link requirement/ADR/task. |
 | `contracts/` | Technical Operator | Versioned; fixture và compatibility evidence bắt buộc. |
 | `tasks/` | Technical Operator | YAML là authority cho allowed paths; trạng thái và expiry phải hợp lệ. |
 | `src/.../contexts/<context>` | Context owner | Không import framework/vendor vào domain. |

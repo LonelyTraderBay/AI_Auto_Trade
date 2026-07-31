@@ -5,7 +5,7 @@
 | Version / Status | 1.0.0 / DRAFT |
 | Trigger / Severity | Internal order/fill/balance/position/open-order state differs from approved external evidence / High; Critical when unsafe exposure or SLA breach |
 | Scope / Incident commander | Affected environment/account/venue/instrument / Technical Operator with Risk Approver |
-| Related | FR-REC-001, FR-OMS-001, NFR-OPS-001; ADR-0004, ADR-0005, ADR-0007, ADR-0012; RB-001 |
+| Related | FR-REC-001, FR-EXEC-001, NFR-OPS-001; ADR-0004, ADR-0005, ADR-0007, ADR-0012; RB-001 |
 | Change summary | Design procedure for read-only evidence first, canonical correction second. |
 
 ## Safe-state objective

@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
+| Version / Status | 1.2.0 / IN_REVIEW |
 | Owner / Approver | Security/Backup Owner / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
 | Related | NFR-SEC-001, NFR-AI-001, SEC-AUTH-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0015, ADR-0016; contracts/api/openapi.yaml |
-| Change summary | RBAC baseline independent of authentication provider, gồm owner-scoped AI BYOK connection lifecycle; provider selection remains OD-006/OD-008. |
+| Change summary | Bổ sung machine identity `cli` (caller passthrough) và `dashboard` (read-only Phase 5); chuẩn hóa tên `secret-ingress` = `secret_ingress` theo master §4.7/§12.3. |
 
 ## 1. Rules
 
@@ -49,10 +49,11 @@ No role has an MVP manual-order endpoint, direct venue console through Control A
 | data-worker | Market/reference ingest, data quality/catalog write | Trade credential, risk/ledger/execution write |
 | research-worker | Catalog/read research candidate write | Trading OLTP write, external network by default, trade credential |
 | ai-worker | Sanitized projection read, policy-filtered connection metadata, AI-memory proposal write; just-in-time active binding resolution for authorized owner/job | Execution tool/write, venue credential, raw-key read-back, cross-owner binding, manifest/config promotion, arbitrary endpoint |
-| secret-ingress | One-time re-authenticated enrollment-session validation, direct provider-secret write and safe lifecycle receipt only | Normal command/event/outbox/audit body persistence, raw-body log/hash/fingerprint, provider inference, venue credential or broad DB access |
-| CI | Validate/build in ephemeral environment | Real secret, real venue, canary/live DB/account |
+| secret-ingress (= `secret_ingress` theo master §4.7/§12.3) | One-time re-authenticated enrollment-session validation, direct provider-secret write and safe lifecycle receipt only | Normal command/event/outbox/audit body persistence, raw-body log/hash/fingerprint, provider inference, venue credential or broad DB access |
+| cli | Caller identity passthrough only: every permission is the permission of the authenticated actor evaluated by Control API policy | Standing credential of its own, direct DB access, direct venue access, any right beyond the authenticated actor's |
+| dashboard | Read-only API client (Phase 5); displays metadata according to the authorization of the authenticated user session | DB role, venue credential, any secret, write/command path of its own |
 
-Each process uses a separate database role. Database superuser is reserved for controlled infrastructure administration and never application runtime.
+Each process with database access uses a separate database role; `cli` and `dashboard` have none. Database superuser is reserved for controlled infrastructure administration and never application runtime.
 
 ## 4. Enforcement requirements
 
@@ -67,3 +68,9 @@ Each process uses a separate database role. Database superuser is reserved for c
 ## 5. Review and test evidence
 
 Policy tests must cover deny-by-default, cross-environment/account/owner denial, role escalation denial, stale session/re-auth denial, machine/human impersonation denial, kill-switch release dual-role condition, AI validate/activate dual-role condition, emergency suspend/revoke notification path, AI connection read/use/rotate/revoke cross-owner denial, no raw key read-back/hash/fingerprint, secret-like reason rejection and audit completeness. Provider-specific mappings are blocked until ADR-0015 and ADR-0016 are `APPROVED`.
+
+## 6. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 1.2.0 | 2026-07-31 | Thêm machine identity `cli` (caller identity passthrough, không standing credential, không direct DB/venue access) và `dashboard` (read-only API client Phase 5, không DB role/venue credential/secret) vào §3; chuẩn hóa `secret-ingress` (= `secret_ingress` theo master §4.7/§12.3). | Technical Operator | Pending |

@@ -1,12 +1,12 @@
-# ENG-005 — AI coding protocol
+# ENG-AI-001 — AI coding protocol
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / IN_REVIEW |
+| Version / Status | 1.0.1 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
 | Related | NFR-SEC-001, NFR-OPS-001; ADR-0014; master §1.5, §13, §16 |
-| Change summary | Operational protocol chống AI suy đoán/sửa vượt scope. |
+| Change summary | 1.0.1 (2026-07-31, Technical Operator, Pending): đổi title ID ENG-005 -> ENG-AI-001 khớp DOCS_INDEX; nội dung không đổi. 1.0.0: operational protocol chống AI suy đoán/sửa vượt scope. |
 
 ## 1. Authority và phạm vi
 
