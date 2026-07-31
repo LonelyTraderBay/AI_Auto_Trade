@@ -2,17 +2,17 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / IN_REVIEW |
+| Version / Status | 1.1.0 / IN_REVIEW |
 | Owner / Approver | Security/Backup Owner / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | NFR-SEC-001, NFR-OPS-001, SEC-AUTH-001, SEC-OPS-001; ADR-0007, ADR-0010, ADR-0012, ADR-0015 |
-| Change summary | Threat baseline cho Phase 0.0; không chọn authentication provider hoặc topology production. |
+| Related | NFR-SEC-001, NFR-OPS-001, NFR-AI-001, SEC-AUTH-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0015, ADR-0016 |
+| Change summary | Threat baseline cho Phase 0.0, gồm BYOK AI key/egress threats Phase 6; không chọn authentication provider hoặc topology production. |
 
 ## 1. Scope và security objectives
 
 Scope bao gồm control plane, trading node, data/research/AI worker, PostgreSQL/Parquet/evidence, CI supply chain, dashboard và external venue boundary. Mục tiêu: không có lệnh trái phép/trùng, không lộ secret, risk/audit/ledger không bị bypass, mutation có actor/evidence và incident đưa runtime về safe state.
 
-Out of scope hiện tại: chọn provider authentication/session (OD-006, ADR-0015), venue/account thật, live topology, legal/compliance locale và full-live. Chúng là blocker cho phase liên quan, không phải assumption ngầm.
+Out of scope hiện tại: chọn provider authentication/session (OD-006, ADR-0015), venue/account thật, live topology, legal/compliance locale, full-live và concrete AI BYOK catalog/vault/egress policy (OD-008, ADR-0016). Chúng là blocker cho phase liên quan, không phải assumption ngầm.
 
 ## 2. Asset, trust boundary và safe state
 
@@ -25,6 +25,8 @@ Out of scope hiện tại: chọn provider authentication/session (OD-006, ADR-0
 | Market/reference data | Integrity/availability | Quality flags, checksum, freshness/gap gates, provenance. |
 | CI artifact/dependency | Supply-chain integrity | Lock/digest/SBOM/scan/review; no external trade operation. |
 | AI memory/prompt/output | Untrusted data | Sanitized projection, structured schema validation, no execution credential/tool. |
+| AI provider key / credential binding | Restricted secret / opaque metadata | Write-only enrollment, secret provider only, owner-scope binding, no read-back/log/persist. |
+| AI provider/model/endpoint catalog | Security/egress integrity | Versioned capability/adapter/endpoint/data policy allowlist; no arbitrary URL/model. |
 
 Safe state nghĩa là strategy disabled/frozen, submission blocked, risk/kill-switch/reconciliation state preserved, no blind retry, forensic evidence retained. Safe state không tự xóa/cancel venue order khi outcome chưa biết.
 
@@ -44,6 +46,10 @@ Safe state nghĩa là strategy disabled/frozen, submission blocked, risk/kill-sw
 | T-010 | Malicious/vulnerable dependency or build artifact | Code compromise | Lock pinning, license/vuln/SAST/secret scan, SBOM/digest, review | CI artifact scan, checksum mismatch | Technical Operator |
 | T-011 | Clock manipulation / non-determinism | Wrong expiry/replay/audit | Injected Clock/RandomSource, UTC, NTP/clock-drift alert, persisted seed | Replay result, drift metric | Technical Operator |
 | T-012 | Alert/runbook/backup failure during incident | Prolonged unsafe state | SLO policy, tested runbooks, restore drills, escalation ownership | Drill report, incident closure evidence | Security/Backup Owner |
+| T-013 | BYOK enrollment leak, raw key/body hash/fingerprint in HTTP log/audit/event/DB/fixture/browser/proxy/WAF/APM | Provider/account takeover, billing/data exposure | One-time isolated no-store enrollment, no Idempotency-Key/body hash, secret provider, body/log suppression, no read-back, scan/redaction/rotation | Secret-leak/no-hash negative test, access audit, RB-AI-001 drill | Security/Backup Owner |
+| T-014 | Cross-owner connection use or secret-binding enumeration | Unauthorized provider use/data egress | Owner-scope authorization before existence disclosure, opaque binding, machine job scope, no shared environment key | Cross-scope authorization test, audit correlation, denied-access alert | Security/Backup Owner |
+| T-015 | Arbitrary provider URL/model/proxy, DNS/redirect/private-route bypass or silent fallback | SSRF, key/data exfiltration, duplicate egress/cost | Approved catalog/endpoint profile, egress gateway hostname/SNI/TLS/DNS/redirect policy, adapter capability review, default no fallback | Endpoint/model/proxy/DNS/redirect deny test, egress audit, adapter/catalog evidence | Security + Technical |
+| T-016 | Budget abuse, capability drift, provider timeout/unknown outcome or stale/revoked binding in flight | Cost exhaustion, invalid proposal, duplicated external data egress | Atomic quota reservation, model/catalog/adapter digest pin, circuit breaker, structured validation, short binding lease/recheck/zeroization, no blind retry/fallback | Usage/quota/circuit/revoke alerts, outage/budget drill, provenance test | Technical + Account Owner |
 
 ## 4. Control principles
 
@@ -52,10 +58,12 @@ Safe state nghĩa là strategy disabled/frozen, submission blocked, risk/kill-sw
 3. Only execution context submits/cancels; direct venue replace is not MVP; AI/UI never calls venue directly.
 4. Facts are append-only where audit/financial semantics require it. Evidence is retained, not rewritten.
 5. Security boundaries are checked at API, process, database, network and deployment layers; one check never replaces another.
+6. AI provider keys, egress and usage are independent of venue credentials/trading authority; AI failure is contained to the AI capability.
 
 ## 5. Verification plan and residual risk
 
 Before external venue: authorization/re-auth/idempotency/error-redaction/secret scan tests, negative credential injection test, unknown-order/stream-gap/reconciliation/kill-switch/DB/restore runbook drills. Before canary: independent human reviewer, approved topology/credential/backup ADR and gate evidence.
 
-Residual risks such as provider choice, legal requirement, venue-specific control and operational thresholds remain `OPEN` in the relevant ADR/OD. No Phase 3/4 gate can pass on this draft alone.
+Before Phase 6 BYOK: ADR-0008/0016 and OD-008 approved/resolved; fake-provider default test; isolated no-store/no-hash secret-enrollment/no-read-back/redaction test; owner-scope denial; provider/model/endpoint/policy-profile deny; egress/data classification and DNS/redirect/private-route deny; budget/rate/circuit; initial/rotation candidate/cutover/rollback; dual-role validation/activation; revoke lease/in-flight; outage/unknown-outcome/no-fallback; and zero-execution-tool evidence.
 
+Residual risks such as provider choice, legal requirement, venue-specific control and operational thresholds remain `OPEN` in the relevant ADR/OD. No Phase 3/4 gate can pass on this draft alone.

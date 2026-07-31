@@ -1,0 +1,14 @@
+{
+  "profile_version": 1,
+  "endpoint_profile_id": "private_gateway_paper",
+  "status": "ACTIVE",
+  "network_route_id": "approved_egress_route_paper",
+  "network_zone": "APPROVED_PRIVATE_GATEWAY",
+  "approved_hostnames": ["ai-gateway.example.invalid"],
+  "approved_tls_server_names": ["ai-gateway.example.invalid"],
+  "https_port": 443,
+  "redirect_policy": "DENY",
+  "dns_resolution_policy": "EGRESS_GATEWAY_ONLY",
+  "private_address_policy": "APPROVED_PRIVATE_ROUTE_ONLY",
+  "approval_evidence_ref": "docs/evidence/phase-6/provider-private-gateway-review"
+}

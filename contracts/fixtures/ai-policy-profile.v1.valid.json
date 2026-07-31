@@ -1,0 +1,18 @@
+{
+  "profile_version": 1,
+  "policy_profile_id": "private_gateway_paper_proposal",
+  "status": "ACTIVE",
+  "owner_scope_type": "ACCOUNT_OWNER",
+  "catalog_id": "018f8c7c-0100-7100-8100-000000000100",
+  "catalog_version": 1,
+  "provider_id": "private_gateway",
+  "allowed_model_ids": ["example-structured-model"],
+  "allowed_environments": ["paper"],
+  "endpoint_profile_id": "private_gateway_paper",
+  "endpoint_profile_version": 1,
+  "data_egress_policy_id": "sanitized_proposal_only",
+  "data_egress_policy_version": 1,
+  "usage_policy_id": "paper_ai_usage_v1",
+  "usage_policy_version": 1,
+  "approval_evidence_ref": "docs/evidence/phase-6/private-gateway-paper-policy-profile"
+}

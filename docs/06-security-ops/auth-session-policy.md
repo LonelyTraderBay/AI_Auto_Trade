@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.1.0 / DRAFT |
 | Owner / Approver | Security/Backup Owner / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | SEC-AUTH-001, NFR-SEC-001; OD-006; ADR-0015; SEC-002 |
-| Change summary | Provider-neutral mandatory controls. Không phải quyết định provider/session implementation. |
+| Related | SEC-AUTH-001, SEC-AI-002, SEC-AI-003, NFR-SEC-001, NFR-AI-001; OD-006, OD-008; ADR-0015, ADR-0016; SEC-002 |
+| Change summary | Provider-neutral mandatory controls, gồm re-auth/owner scope cho BYOK AI connection. Không phải quyết định provider/session implementation. |
 
 ## 1. Decision boundary
 
@@ -35,7 +35,7 @@ Shared human accounts, static never-expiring sessions, credentials in URLs/logs 
 
 ## 4. Re-authentication
 
-Re-auth is mandatory for kill-switch release, canary approval, risk policy change, credential/topology rotation, deployment promotion and other policy-defined dangerous actions. Re-auth proof must be bound to actor, action class, target scope, issued/expiry time and correlation ID; it cannot be replayed for another action.
+Re-auth is mandatory for kill-switch release, canary approval, risk policy change, credential/topology rotation, deployment promotion, AI provider key enrollment/rotation/revoke, AI connection validation/activation and other policy-defined dangerous actions. Re-auth proof must be bound to actor, action class, target scope, issued/expiry time and correlation ID; it cannot be replayed for another action.
 
 If re-auth fails/expired/uncertain, return safe authorization error, keep safe state and audit denial without recording the proof itself.
 
@@ -43,9 +43,10 @@ If re-auth fails/expired/uncertain, return safe authorization error, keep safe s
 
 Audit records capture actor ID, active role, action, target scope, decision, reason, correlation ID, timestamp and before/after hashes where relevant. They never capture raw password, token, MFA code, cookie, authorization header or secret reference resolution.
 
+For AI BYOK, target scope includes the owner scope and opaque connection ID. Authorization must deny connection enumeration/use outside that scope without disclosing whether another connection exists. Secret enrollment itself is handled by the isolated one-time ingress/vault handoff, not stored as an audit request body or Idempotency-Key/body hash; audit records only safe lifecycle/result metadata. Secret-like text in reason/note is rejected before audit persistence.
+
 Suspected session compromise: revoke/disable according to provider procedure, activate safe state where scope could trade, open incident, assess commands since last trusted auth and re-authenticate only after Security/Backup Owner review. The provider-specific procedure is a Phase 3 dependency.
 
 ## 6. Acceptance before Phase 3
 
-ADR-0015 must select provider/model and define identity provisioning/deprovisioning, human and machine authentication, session/re-auth TTL, CSRF/replay defense, key rotation, audit fields, emergency revocation, test strategy and failure behavior. Tests must prove the SEC-002 matrix, deny conditions and no secret/session artifact leakage.
-
+ADR-0015 must select provider/model and define identity provisioning/deprovisioning, human and machine authentication, session/re-auth TTL, CSRF/replay defense, key rotation, audit fields, emergency revocation, test strategy and failure behavior. ADR-0016 must additionally define owner-scoped AI connection lifecycle handoff, dual-role validation/activation and emergency suspend/revoke notification. Tests must prove the SEC-002 matrix, deny conditions, cross-owner AI connection denial and no secret/session artifact leakage.

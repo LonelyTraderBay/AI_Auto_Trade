@@ -2,12 +2,12 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt; không phải DDL |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày soạn | 2026-07-31 |
-| Liên quan | FR-EXEC-001, FR-OPS-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001; ADR-0003, ADR-0004, ADR-0012 |
+| Liên quan | FR-EXEC-001, FR-OPS-001, FR-AI-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0012, ADR-0016 |
 | Nguồn policy | [Master specification](../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.1, §7.4–§7.13, §13; [Data architecture](data-architecture.md); [ERD](erd.md) |
 
 ## 1. Authority and scope
@@ -182,12 +182,25 @@ Constraints/indexes proposed:
 | risk | policy/decision/reservation/pending approval/limits | Phase 1 | inventory only | ADR-0007/0012 + risk policy approved |
 | execution | orders/events/attempts/fills/reconciliation | Phase 1 | inventory only | ADR-0005/0012 + OMS contract approved |
 | portfolio_ledger | chart/journal/postings/projections | Phase 1 | inventory only | ADR-0011 accounting policy/database enforcement approved |
-| operations | deployment/lease/kill/command/approval/audit/incident | Task 0.5 / Phase 1 | inventory only | API/auth/command contract and owner access matrix approved |
+| operations | deployment/lease/kill/command/approval/audit/incident/AI provider connection metadata | Task 0.5 / Phase 1 / Phase 6 | inventory only | AI additions require ADR-0008 + ADR-0016, auth/RBAC, secret topology and catalog/egress policy approved |
 | platform | `idempotency_keys` | Task 0.5 | inventory only | OpenAPI idempotency semantics and auth actor identity approved |
 | research | dataset/feature/backtest/report | Phase 2 | inventory only | dataset manifest/retention/no-look-ahead contracts approved |
-| ai_memory | memory/retrieval/proposal/post-mortem | Phase 6 | forbidden early | ADR-0008 APPROVED and AI security gates pass |
+| ai_memory | memory/retrieval/inference run/proposal/post-mortem | Phase 6 | forbidden early | ADR-0008 + ADR-0016 APPROVED and AI security/BYOK gates pass |
 
 No “placeholder” table, generic entity-value table, unowned JSONB store or early migration is allowed to bypass a deferred entry.
+
+### 7.1 Phase 6 AI/BYOK deferred-table policy
+
+The following are logical targets only. They are **not** DDL authorization and must not be created before a Phase 6 task has an approved dictionary entry, contract, migration plan and gate evidence.
+
+| Logical table | Context owner | Purpose / permitted metadata | Explicit prohibition |
+|---|---|---|---|
+| `operations.ai_provider_connections` | operations | opaque connection ID, owner scope, environment, provider/model/catalog/adapter artifact version, resolved policy-profile/endpoint/egress/usage IDs, internal active/candidate binding IDs, status/revision, safe timestamps | raw API key, encrypted key blob, authorization header, public `secret_ref` or vendor raw response |
+| `operations.ai_connection_events` | operations | append-only create/enroll/validate/activate/suspend/rotate/expire/revoke audit metadata, actor/reason/correlation and normalized result | secret enrollment body, raw key, key fingerprint/length/body hash or raw provider error |
+| `ai_memory.inference_runs` | ai_memory | connection revision, provider/model/profile/prompt-policy/schema version, sanitized input hash/classification, timing, usage/cost and normalized status | raw credential, raw prompt/response by default, execution/risk/config action |
+| `ai_memory.proposals` / `memory_items` | ai_memory | validated structured content, provenance/review/retention/point-in-time fields under policy | automatic live promotion, secret, unreviewed instruction or future-memory replay leakage |
+
+Internal active/candidate binding IDs are opaque metadata only. The binding-to-secret mapping remains inside the approved secret provider boundary and is never a column exposed through dashboard, public API, event or evidence. A schema fixture may use a synthetic opaque UUID solely to validate lifecycle shape; it is not a secret reference and cannot resolve to a real vault object. Owner scope is single Account Owner/account environment in the current MVP; a future tenant/workspace field requires a separate approved scope/authorization design.
 
 ## 8. Mandatory dictionary fields for future tables
 

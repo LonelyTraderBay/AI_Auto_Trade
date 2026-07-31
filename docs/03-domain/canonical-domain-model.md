@@ -2,14 +2,14 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày soạn | 2026-07-31 |
 | Rà soát tiếp theo | Trước khi Task 0.4 bắt đầu |
-| Liên quan | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-RSK-001, FR-LED-001, FR-REC-001, NFR-DET-001, NFR-AUD-001, NFR-SAFE-001; ADR-0002, ADR-0003, ADR-0005, ADR-0007, ADR-0011, ADR-0012 |
-| Nguồn policy | [Master specification](../../AI_AUTO_TRADE_MASTER_SPEC.md), §4, §5, §7, §8 |
+| Liên quan | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-RSK-001, FR-LED-001, FR-REC-001, FR-AI-001, NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-AI-001; ADR-0002, ADR-0003, ADR-0005, ADR-0007, ADR-0011, ADR-0012, ADR-0016 |
+| Nguồn policy | [Master specification](../../AI_AUTO_TRADE_MASTER_SPEC.md), §4, §5, §7, §8, §10.6 |
 
 ## 1. Mục đích và phạm vi
 
@@ -27,10 +27,10 @@ Phạm vi là một venue crypto spot, một account và các instrument do Acco
 | `risk` | policy version, decision, reservation, pending approval, limit state | canonical `OrderIntent`, snapshots | `RiskDecision`, reservation/rejection | submit venue order |
 | `execution` | OMS order, attempts, venue evidence, fills, reconciliation case | approved intent, venue/private event | order/fill lifecycle event | risk policy, accounting history |
 | `portfolio_ledger` | journal/posting immutable và projection dẫn xuất | verified fill/fee/adjustment command | journal/projection event | overwrite venue/execution history |
-| `operations` | command lifecycle, approval/audit, deployment/lease/kill switch | authorized command | command/audit event | trading business decision |
+| `operations` | command lifecycle, approval/audit, deployment/lease/kill switch, AI provider connection metadata | authorized command / owner-scoped connection lifecycle request | command/audit event | raw AI key or trading business decision |
 | `platform` | outbox/inbox/DLQ/idempotency delivery metadata | committed event/command result | delivery outcome | domain/risk policy |
 | `research` | dataset/backtest/evaluation | immutable catalog snapshot | report/candidate | live write model |
-| `ai_memory` | proposal/memory Phase 6 | sanitized projection | proposal only | execution credential or write path |
+| `ai_memory` | proposal/memory/inference provenance Phase 6 | sanitized projection + active connection policy | proposal only | raw AI key, execution credential or write path |
 
 Cross-context liên kết chỉ dùng immutable canonical ID, event hoặc read projection. Không có context nào đọc/ghi trực tiếp private ORM model/table của context khác.
 
@@ -67,6 +67,9 @@ Các timestamp chuẩn là `occurred_at`, `received_at`, `processed_at`, `record
 | Ledger | accounting truth nội bộ append-only | số dư venue tức thời |
 | Projection | state dẫn xuất có thể rebuild | source of truth tài chính |
 | EXTERNAL | classification order/evidence chỉ thấy ở venue | một OMS state |
+| AI provider connection | owner-scoped metadata chọn provider/model/policy/binding revision | raw API key, generic venue credential hoặc permission execution |
+| Credential binding | opaque reference giữa connection và secret provider | giá trị key hoặc secret reference public |
+| AI proposal | structured output đã validation/provenance, vẫn chưa là strategy/risk/order approval | lệnh, risk decision hoặc action có quyền runtime |
 
 ## 5. Aggregate và identity chuẩn
 
@@ -81,6 +84,7 @@ Các timestamp chuẩn là `occurred_at`, `received_at`, `processed_at`, `record
 | Journal entry/posting | `JournalEntryId`, `PostingId` | entry/posting append-only và cân bằng theo accounting policy |
 | Dataset/deployment | `DatasetVersionId`, `DeploymentId` | có manifest/hash và lineage đủ để replay |
 | Command/approval/audit | `CommandId`, `ApprovalId`, `AuditLogId` | actor, subject, reason, correlation và recorded time luôn có |
+| AI provider connection | `AIProviderConnectionId` | owner scope + provider/model/catalog/policy-profile version + active/candidate opaque binding revision; raw key không thuộc aggregate |
 
 `VenueOrderId` và venue fill/trade ID là external identifiers: có thể nullable trước acknowledgment, không được thay internal ID.
 
@@ -129,6 +133,7 @@ Mọi integration event có `id`, `type`, `schema_version`, `source`, `occurred_
 6. Outcome submit không rõ không được retry blind; phải `UNKNOWN` và reconcile.
 7. Projection không được là accounting truth, và reconciliation không overwrite history để “khớp” sàn.
 8. Thiếu/stale reference, market, portfolio, lease hoặc policy state phải fail closed, trừ emergency reduce-only policy đã phê duyệt riêng.
+9. AI provider connection chỉ được AI worker dùng khi ACTIVE, đúng owner scope/policy; không có field/domain event nào mang raw key hoặc tạo execution capability.
 
 ## 9. Phần hoãn và điều kiện thay đổi
 
@@ -141,4 +146,3 @@ NautilusTrader không sở hữu canonical domain; chỉ có thể được thê
 - [ ] State/lifecycle chi tiết dùng [OMS state machine](oms-state-machine.md).
 - [ ] Risk/ledger chi tiết dùng [risk policy](risk-policy.md) và [accounting policy](accounting-policy.md).
 - [ ] Account Owner phê duyệt cùng ADR bắt buộc trước khi dùng làm input Task 0.4/Phase 1.
-

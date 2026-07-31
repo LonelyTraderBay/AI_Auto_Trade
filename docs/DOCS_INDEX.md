@@ -3,12 +3,12 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-INDEX-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày tạo | 2026-07-31 |
-| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../AI_AUTO_TRADE_MASTER_SPEC.md) v2.0.0 |
+| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../AI_AUTO_TRADE_MASTER_SPEC.md) v2.1.0 |
 
 ## Mục đích và trạng thái
 
@@ -19,7 +19,7 @@ Khi có mâu thuẫn, áp dụng hierarchy ở §1.5 của master. Physical sche
 ## Trình tự review bắt buộc
 
 1. Governance, scope, requirements và RACI.
-2. ADR 0001–0005, 0007, 0011, 0012 và 0014.
+2. ADR 0001–0005, 0007, 0011, 0012, 0014 và các ADR theo phase (gồm 0016 trước Phase 6).
 3. Architecture/domain/data policy và data dictionary cho Task 0.3.
 4. Contract registry, OpenAPI, JSON Schema và task-card control.
 5. Engineering/CI/security/operations policy.
@@ -53,6 +53,7 @@ Khi có mâu thuẫn, áp dụng hierarchy ở §1.5 của master. Physical sche
 | ARC-C4-002 | [C4 container](02-architecture/c4-container.md) | IN_REVIEW |
 | ARC-SEQ-001 | [Runtime sequences](02-architecture/runtime-sequences.md) | IN_REVIEW |
 | ARC-TECH-001 | [Language and technology policy](02-architecture/language-and-technology-policy.md) | IN_REVIEW |
+| ARC-AI-001 | [AI provider-neutral/BYOK architecture](02-architecture/ai-provider-byok-architecture.md) | DRAFT |
 | DOM-MODEL-001 | [Canonical domain model](03-domain/canonical-domain-model.md) | DRAFT |
 | DOM-OMS-001 | [OMS state machine](03-domain/oms-state-machine.md) | DRAFT |
 | DOM-RISK-001 | [Risk policy](03-domain/risk-policy.md) | DRAFT |
@@ -83,6 +84,7 @@ Khi có mâu thuẫn, áp dụng hierarchy ở §1.5 của master. Physical sche
 | SEC-ACCESS-001 | [Access-control matrix](06-security-ops/access-control-matrix.md) | IN_REVIEW |
 | SEC-AUTH-001 | [Auth/session policy](06-security-ops/auth-session-policy.md) | DRAFT |
 | SEC-SECRETS-001 | [Secrets/key management](06-security-ops/secrets-and-key-management.md) | IN_REVIEW |
+| SEC-AI-POL-001 | [AI BYOK security and data-egress policy](06-security-ops/ai-byok-security-policy.md) | DRAFT |
 | OPS-SLO-001 | [SLO/SLI/alert policy](06-security-ops/slo-sli-alert-policy.md) | DRAFT |
 | OPS-RUN-001 | [Runbook index](06-security-ops/runbook-index.md) | IN_REVIEW |
 
@@ -93,13 +95,21 @@ Khi có mâu thuẫn, áp dụng hierarchy ở §1.5 của master. Physical sche
 | Contract registry | [docs/contract-registry.md](contract-registry.md) | IN_REVIEW |
 | HTTP contract | [contracts/api/openapi.yaml](../contracts/api/openapi.yaml) | IN_REVIEW |
 | Command/event/config schemas | [contracts/](../contracts/) | IN_REVIEW |
+| AI BYOK provider/policy/connection schemas | [catalog](../contracts/config/ai-provider-catalog.v1.schema.json) · [endpoint](../contracts/config/ai-endpoint-profile.v1.schema.json) · [egress](../contracts/config/ai-data-egress-policy.v1.schema.json) · [usage](../contracts/config/ai-usage-policy.v1.schema.json) · [profile](../contracts/config/ai-policy-profile.v1.schema.json) · [connection](../contracts/config/ai-provider-connection.v1.schema.json) · [lifecycle command](../contracts/commands/ai/provider-connection-command.v1.schema.json) · [lifecycle event](../contracts/events/ai/provider-connection-event.v1.schema.json) | IN_REVIEW — Phase 6 DRAFT |
 | Error catalog | [contracts/errors/error-catalog.md](../contracts/errors/error-catalog.md) | IN_REVIEW |
-| ADR set | [ADR register](adr/README.md) | DRAFT — Account Owner approval pending |
+| ADR set | [ADR register](adr/README.md) | IN_REVIEW — individual ADRs remain DRAFT until Account Owner approval |
 | Templates | [docs/templates/](templates/) | IN_REVIEW |
 | Task controls | [tasks/active/](../tasks/active/) | IN_REVIEW |
 | Gate evidence | [gate record](evidence/gates/phase-0.0/gate-record.md) · [review checklist](evidence/gates/phase-0.0/review-checklist.md) | IN_REVIEW — not passed |
-| Task evidence | [docs/evidence/tasks/](evidence/tasks/) | NOT_STARTED |
+| Task evidence | [docs/evidence/tasks/](evidence/tasks/) | IN_REVIEW — placeholder only; no validation result recorded |
 
 ## Approval rule
 
 Update this register and `docs/00-governance/document-control.md` in the same review change. A file changing to `APPROVED` must record approver identity, UTC timestamp, decision evidence and any supersession link. Never mark an ADR or gate `APPROVED` merely because its draft exists.
+
+## Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | Bổ sung architecture, security policy và full provider/policy/connection contract baseline cho AI đa provider/BYOK DRAFT; cập nhật master authority v2.1.0. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Tạo chỉ mục artifact pack Phase 0.0. | Technical Operator | Pending |

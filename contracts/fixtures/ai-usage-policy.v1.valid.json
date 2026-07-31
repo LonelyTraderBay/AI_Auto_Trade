@@ -1,0 +1,28 @@
+{
+  "policy_version": 1,
+  "usage_policy_id": "paper_ai_usage_v1",
+  "status": "ACTIVE",
+  "scope_dimensions": ["OWNER", "CONNECTION", "PROVIDER_MODEL", "ENVIRONMENT", "PURPOSE"],
+  "hard_limits": {
+    "window_seconds": 86400,
+    "max_requests": 100,
+    "max_concurrent_requests": 2,
+    "max_input_tokens_per_request": 4096,
+    "max_output_tokens_per_request": 1024,
+    "max_cost_minor_units": 1000,
+    "currency": "USD"
+  },
+  "timeout_rate_circuit": {
+    "request_timeout_ms": 30000,
+    "max_requests_per_minute": 10,
+    "failure_threshold": 3,
+    "circuit_open_seconds": 60
+  },
+  "retry_policy": {
+    "max_attempts": 1,
+    "require_provider_idempotency": true,
+    "unknown_outcome_action": "DO_NOT_RETRY"
+  },
+  "fallback_mode": "DISABLED",
+  "approval_evidence_ref": "docs/evidence/phase-6/usage-policy-review"
+}

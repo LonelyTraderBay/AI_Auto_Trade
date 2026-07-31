@@ -3,14 +3,14 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | PRD-FR-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §2.2, §5, §8–§11 và §14 |
-| Related requirements | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001 |
+| Related requirements | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001, FR-AI-001 |
 | Related ADR | ADR-0001–0005, ADR-0007, ADR-0011, ADR-0012, ADR-0014; phase-dependent ADR khác theo GOV-TRACE-001 |
 
 > Mỗi requirement bên dưới còn DRAFT/IN_REVIEW cho tới khi approver xác nhận. Implementation chỉ dùng requirement đã có task card, ADR/contract applicable APPROVED và gate cho phép.
@@ -33,6 +33,7 @@
 | FR-REC-001 | Crash recovery, unknown order handling và reconciliation. | MVP | 1 | execution, operations, platform |
 | FR-RSK-001 | Pre-trade risk, reservation, manual approval và kill-switch hierarchy. | MVP | 1 | risk, operations |
 | FR-OPS-001 | API/CLI control plane cho vận hành, audit, reconciliation và deployment. | MVP | 0–3 | operations, platform |
+| FR-AI-001 | User quản lý AI provider connection/BYOK, chọn provider/model đã duyệt và dùng AI proposal an toàn. | Deferred | 6 | operations, ai_memory |
 
 ## 3. FR-MKT-001 — Market data chuẩn hóa, lineage và quality
 
@@ -140,7 +141,25 @@
 
 **Dependencies:** ADR-0002, ADR-0014, ADR-0015 trước Phase 3; OpenAPI/command/config/error contracts; NFR-AUD-001, NFR-SEC-001, NFR-OPS-001, SEC-AUTH-001, SEC-CRED-001.
 
-## 10. Mapping chức năng tới quality/security
+## 10. FR-AI-001 — User-managed AI provider connection và BYOK
+
+**Mô tả:** Khi và chỉ khi Phase 6 được mở, Account Owner trong owner scope MUST có thể chọn provider/model và policy profile đã được phê duyệt, tạo/validate/activate/suspend/rotate/revoke một AI provider connection dùng API key của họ. BYOK v1 chỉ nhận profile `API_KEY`; không provider nào, bao gồm OpenAI, là bắt buộc.
+
+**Scope và acceptance criteria:**
+
+- Catalog chỉ hiển thị provider/model/endpoint/policy profile `ACTIVE` đã có pinned adapter artifact, capability, residency/retention, security/egress review và version rõ ràng; UI/API MUST từ chối arbitrary URL, provider, model hoặc component policy ID chưa được catalog/profile duyệt.
+- Connection metadata MUST gắn owner scope, environment, provider/model/catalog/adapter version, policy-profile đã resolve, opaque active/candidate binding và lifecycle revision; `PENDING_SECRET` không có binding, candidate không bao giờ inference, public API/event không trả binding; không lưu raw API key hoặc secret reference public.
+- API key MUST chỉ được submit một lần qua isolated secret enrollment write-only có transport protection và `no-store`. Ingress không dùng normal Idempotency-Key/body hash/fingerprint; nếu response bị mất, client chỉ đọc status an toàn thay vì tự submit lại key. Key không được trả lại, log, trace, persist trong command/event/audit/DB/config/fixture/browser storage hay gửi vào prompt.
+- Create/rotate/revoke/validate/activate MUST có authenticated actor, owner-scope authorization, re-auth, explicit reason đã secret-scan/reject và audit metadata không chứa secret. Validate/activate cần Account Owner + Security/Backup Owner role record; Security/Backup Owner chỉ được unilateral suspend/revoke trong emergency đã audit và phải notification/review sau đó. Không role nào đọc raw key.
+- Rotation MUST giữ active binding cũ cho inference, enroll/validate candidate bằng synthetic/sanitized probe, rồi cutover atomically; candidate failure không được làm gián đoạn active binding. Revocation/suspension phải invalidate lease/cache binding, re-check revision trước outbound, zeroize và discard in-flight result nếu revoke thắng.
+- Validation MUST dùng probe tối thiểu không có dữ liệu trading; uncertain/invalid/revoked result không được activate connection.
+- `ai_worker` MUST kiểm trạng thái connection, owner scope, provider/model capability, policy profile, data-egress policy và hard budget/quota trước request; outbound chỉ qua approved egress gateway/hostname/SNI/TLS profile (deny redirect/DNS/private-address bypass). Nó chỉ đọc sanitized projection, chỉ ghi proposal/memory đã qua structured validation và không có execution/trade/risk/config/deployment capability.
+- Provider/model/key failure, quota exhausted, timeout, circuit open hoặc output invalid MUST chỉ disable/fail AI capability; không được block hoặc thay đổi trading/risk/OMS/ledger. Không có silent fallback sang provider/key khác.
+- Disconnect MUST chặn use trong platform ngay; upstream revoke chỉ được báo là thành công khi có evidence từ procedure/capability của provider.
+
+**Dependencies:** ADR-0008, ADR-0015, ADR-0016; AI provider/catalog/endpoint/egress/usage/policy-profile and connection lifecycle contracts, isolated secret policy, access matrix, threat model, provider incident runbook; NFR-AI-001, NFR-SEC-001, NFR-OPS-001, SEC-AI-001, SEC-AI-002, SEC-AI-003.
+
+## 11. Mapping chức năng tới quality/security
 
 | Functional requirement | NFR bắt buộc | SEC bắt buộc |
 |---|---|---|
@@ -151,13 +170,15 @@
 | FR-REC-001 | NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001 | SEC-AUD-001, SEC-CRED-001 |
 | FR-RSK-001 | NFR-DET-001, NFR-AUD-001, NFR-SAFE-001 | SEC-AUTH-001, SEC-AUD-001 |
 | FR-OPS-001 | NFR-AUD-001, NFR-SEC-001, NFR-OPS-001 | SEC-AUTH-001, SEC-CRED-001, SEC-AUD-001 |
+| FR-AI-001 | NFR-AI-001, NFR-SEC-001, NFR-OPS-001 | SEC-AI-001, SEC-AI-002, SEC-AI-003, SEC-CRED-001, SEC-AUD-001 |
 
-## 11. Điều kiện review
+## 12. Điều kiện review
 
 Mỗi FR cần có contract versioned, data dictionary hoặc domain policy khi applicable, task card, test evidence và gate mapping trong GOV-TRACE-001 trước khi được coi là implemented. Thay đổi semantic hoặc breaking acceptance cần ADR/versioning, không sửa âm thầm requirement đã được dùng.
 
-## 12. Nhật ký thay đổi
+## 13. Nhật ký thay đổi
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Chuẩn hóa acceptance criteria cho baseline functional requirements. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Thêm FR-AI-001 cho BYOK đa provider, lifecycle kết nối và zero-execution boundary. | Technical Operator | Pending |

@@ -44,6 +44,13 @@
 - [ ] CI design binds PR Task-ID to machine-readable allowlist/expiry/reviewer.
 - [ ] ADR/template/gate record fields match master Appendix C.
 
+## 0.0.6 AI provider-neutral/BYOK baseline (Phase 6 deferred)
+
+- [ ] Master, FR/NFR/SEC traceability, ADR-0016 and ARC-AI-001 agree: OpenAI is optional; user only selects approved API-key provider/model/policy-profile catalog entries.
+- [ ] BYOK raw key has exactly one isolated write-only/no-store enrollment path; it is absent from durable command/event/audit/log/proxy/WAF/APM/fixture/config/database metadata, never body-hashed/fingerprinted and cannot be read back.
+- [ ] Owner scope, re-auth, dual-role validate/activate, emergency suspend/revoke, provider/model/endpoint/policy-profile allowlist, data-egress/DNS/redirect policy, budget/quota, rotation/revoke lease, outage/unknown-outcome and no-silent-fallback behavior are reviewable.
+- [ ] AI remains proposal-only, off the trading hot path, without venue credential or execution tool; Task 0.0.6 remains REVIEW and Phase 6 remains blocked until ADR/OD/security evidence is approved.
+
 ## Final decision
 
 Only after every checkbox is backed by a dated evidence path may Account Owner change `GATE-0.0-001` to `PASS`. Any material amendment to an approved Phase 0.0 artifact reopens the affected section and may revoke the gate.

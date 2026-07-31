@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/events/ai/provider-connection-event.v1.schema.json",
+  "title": "AI provider connection lifecycle event v1",
+  "description": "Immutable safe lifecycle event for a BYOK AI provider connection. It contains no raw key, credential binding, secret reference, authorization header or raw provider payload.",
+  "allOf": [
+    { "$ref": "../platform/integration-event-envelope.v1.schema.json" },
+    {
+      "type": "object",
+      "required": ["type", "source", "data"],
+      "properties": {
+        "type": { "type": "string", "enum": ["operations.ai_provider_connection_created.v1", "operations.ai_provider_connection_credential_enrolled.v1", "operations.ai_provider_connection_credential_enrollment_failed.v1", "operations.ai_provider_connection_validation_failed.v1", "operations.ai_provider_connection_validated.v1", "operations.ai_provider_connection_activated.v1", "operations.ai_provider_connection_suspended.v1", "operations.ai_provider_connection_rotated.v1", "operations.ai_provider_connection_expired.v1", "operations.ai_provider_connection_revoked.v1", "operations.ai_provider_budget_exhausted.v1"] },
+        "source": { "const": "operations" },
+        "data": { "$ref": "#/$defs/connection_event_data" }
+      }
+    }
+  ],
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "connection_event_data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["connection_id", "owner_principal_id", "account_id", "environment", "provider_id", "model_id", "catalog_version", "adapter_version", "connection_status", "connection_revision", "event_reason_code", "data_egress_policy_hash", "usage_policy_id", "normalized_result_code"],
+      "properties": {
+        "connection_id": { "$ref": "#/$defs/uuid_v7" },
+        "owner_principal_id": { "$ref": "#/$defs/uuid_v7" },
+        "account_id": { "$ref": "#/$defs/uuid_v7" },
+        "environment": { "type": "string", "enum": ["paper", "testnet", "canary", "live"] },
+        "provider_id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "model_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "catalog_version": { "type": "integer", "minimum": 1 },
+        "adapter_version": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "connection_status": { "type": "string", "enum": ["DRAFT", "PENDING_SECRET", "PENDING_VALIDATION", "ACTIVE", "ROTATION_PENDING_SECRET", "ROTATION_PENDING_VALIDATION", "SUSPENDED", "VALIDATION_FAILED", "EXPIRED", "REVOKED"] },
+        "connection_revision": { "type": "integer", "minimum": 1 },
+        "event_reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "data_egress_policy_hash": { "$ref": "#/$defs/sha256" },
+        "usage_policy_id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "normalized_result_code": { "type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]*$" }
+      }
+    }
+  }
+}

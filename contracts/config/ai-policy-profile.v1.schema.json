@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/config/ai-policy-profile.v1.schema.json",
+  "title": "Approved AI connection policy profile v1",
+  "description": "Security-approved server-resolved profile that binds one catalog provider/model family to endpoint, egress and usage policies. A user selects an approved profile ID, never individual unrestricted policy IDs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_version", "policy_profile_id", "status", "owner_scope_type", "catalog_id", "catalog_version", "provider_id", "allowed_model_ids", "allowed_environments", "endpoint_profile_id", "endpoint_profile_version", "data_egress_policy_id", "data_egress_policy_version", "usage_policy_id", "usage_policy_version", "approval_evidence_ref"],
+  "properties": {
+    "profile_version": { "const": 1 },
+    "policy_profile_id": { "$ref": "#/$defs/identifier" },
+    "status": { "type": "string", "enum": ["DRAFT", "ACTIVE", "SUSPENDED", "RETIRED"] },
+    "owner_scope_type": { "const": "ACCOUNT_OWNER" },
+    "catalog_id": { "$ref": "#/$defs/uuid_v7" },
+    "catalog_version": { "type": "integer", "minimum": 1 },
+    "provider_id": { "$ref": "#/$defs/identifier" },
+    "allowed_model_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 256 } },
+    "allowed_environments": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "enum": ["paper", "testnet", "canary", "live"] } },
+    "endpoint_profile_id": { "$ref": "#/$defs/identifier" },
+    "endpoint_profile_version": { "const": 1 },
+    "data_egress_policy_id": { "$ref": "#/$defs/identifier" },
+    "data_egress_policy_version": { "const": 1 },
+    "usage_policy_id": { "$ref": "#/$defs/identifier" },
+    "usage_policy_version": { "const": 1 },
+    "approval_evidence_ref": { "type": "string", "minLength": 1, "maxLength": 2048 }
+  },
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" }
+  }
+}

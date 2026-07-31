@@ -17,7 +17,7 @@
 - [x] Artifact paths trong §1.5 của master đã được tạo hoặc đang được tạo trong change set này.
 - [x] Task control bootstrap được ghi tại `tasks/active/`.
 - [ ] ADR 0001–0005, 0007, 0011, 0012, 0014 được Account Owner review/approve.
-- [ ] Link/structure/schema validation được chạy và evidence được lưu.
+- [x] Link/structure/schema validation được chạy và evidence được lưu (technical-local validation only; không phải approval).
 - [ ] Account Owner xác nhận scope, RACI, threat model và review order.
 
 ## Required procedures
@@ -26,8 +26,8 @@
 |---|---|---|---|---|
 | Document register review | Mọi file required có header, owner, status và index link | Chưa chạy | TBD | NOT_RUN |
 | ADR review | Required ADR có decision được Account Owner phê duyệt | Chưa chạy | TBD | NOT_RUN |
-| Contract/schema validation | JSON/OpenAPI/YAML fixtures parse/validate theo procedure | Chưa chạy | TBD | NOT_RUN |
-| Task-card control review | Task YAML schema, allowlist và CI design được review | Chưa chạy | TBD | NOT_RUN |
+| Contract/schema validation | JSON/OpenAPI/YAML fixtures parse/validate theo procedure | PASS cục bộ: 14 schema, 16 fixture, OpenAPI 3.1 và 120 local links | [EV-0.0.6-2026-07-30-01](../../tasks/0.0.6/validation-2026-07-30.md) | LOCAL_PASS — không phải approval |
+| Task-card control review | Task YAML schema, allowlist và CI design được review | Schema PASS cục bộ: 7 active task cards; manual allowlist/CI review còn pending | [EV-0.0.6-2026-07-30-01](../../tasks/0.0.6/validation-2026-07-30.md) | PARTIAL |
 | Data design review | ERD/dictionary/transaction design đủ cho Task 0.3 | Chưa chạy | TBD | NOT_RUN |
 
 ## Gate decision

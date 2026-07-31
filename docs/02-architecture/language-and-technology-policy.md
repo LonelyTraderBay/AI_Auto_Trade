@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-TECH-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -11,7 +11,7 @@
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §3, §4.3–§4.8, §6, §7, §13 và §15.1 |
 | Related requirements | NFR-DET-001, NFR-SEC-001, NFR-OPS-001, SEC-SUP-001 |
-| Related ADR | ADR-0001, ADR-0002, ADR-0003, ADR-0014; ADR-0006/0008 only when applicable |
+| Related ADR | ADR-0001, ADR-0002, ADR-0003, ADR-0014; ADR-0006/0008/0016 only when applicable |
 
 > Chính sách này chốt technology baseline cho MVP nhưng chưa là approval sử dụng package/version cụ thể. Version lock, security/license review và task approval vẫn bắt buộc trước khi dependency xuất hiện trong runtime.
 
@@ -57,7 +57,7 @@
 | CCXT | Prototype, capability discovery or read tooling only; not default live execution core. |
 | TimescaleDB | Deferred until measured time-series need and ADR; domain must not depend on extension. |
 | pgvector | Phase AI/memory only, with ADR/scope. |
-| LLM provider / OpenAI SDK | Phase 6 only through ai_worker/adapter; proposal-only and no trade credential. |
+| AI provider SDK/HTTP client | Phase 6 only through `ai_worker` and `adapters/llm/<approved-provider>`; provider-neutral BYOK catalog/connection policy; proposal-only and no trade credential. OpenAI SDK is optional, never required. |
 | Redis, Kafka, NATS, Kubernetes, extra database or orchestration framework | Forbidden by default; require ADR, owner, threat/operations impact, dependency review and phase gate. |
 
 ## 4. Code and repository topology
@@ -126,7 +126,8 @@ Exact command profile follows master §13.2 and the approved task card. A comman
 Create or amend ADR before:
 
 - adding language, database, service, broker, framework or runtime not listed as allowed;
-- introducing NautilusTrader, TimescaleDB, pgvector, LLM provider or a new venue execution boundary;
+- introducing NautilusTrader, TimescaleDB, pgvector, an AI provider/endpoint family/SDK or a new venue execution boundary;
+- changing AI provider catalog, BYOK credential ingress, secret boundary, model capability, data egress, budget/fallback or owner-scope semantics;
 - changing PostgreSQL/Parquet ownership, public contract semantics, data retention, authentication/session or deployment topology;
 - weakening a safety/security restriction.
 
@@ -143,3 +144,4 @@ Create or amend ADR before:
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo technology/language/repository baseline bám master v2.0. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Làm rõ provider-neutral BYOK: OpenAI SDK chỉ là adapter tùy chọn ở Phase 6. | Technical Operator | Pending |

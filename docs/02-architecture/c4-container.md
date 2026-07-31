@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-C4-002 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §3, §4.6–§4.7, §6, §7, §11–§13 |
-| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-OPS-001; NFR-SEC-001, NFR-OPS-001 |
-| Related ADR | ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0012, ADR-0014, ADR-0015 |
+| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-OPS-001, FR-AI-001; NFR-SEC-001, NFR-OPS-001, NFR-AI-001 |
+| Related ADR | ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0012, ADR-0014, ADR-0015, ADR-0016 |
 
 > Đây là view dự kiến trước implementation. Port, endpoint, DB schema, authentication provider và deployment topology chi tiết phải theo contract/ADR/manifest được phê duyệt, không suy ra từ diagram này.
 
@@ -24,7 +24,8 @@ flowchart TB
     VENUE[Venue / testnet]
     DATA[Market data source]
     ALERT[Alert channel]
-    LLM[LLM provider<br/>Phase 6]
+    LLM[Approved AI provider/gateway<br/>Phase 6]
+    VAULT[Approved secret provider<br/>opaque BYOK binding]
 
     subgraph PLATFORM[AI Auto Trade modular monolith deployment]
         API[Control API process<br/>FastAPI]
@@ -32,6 +33,7 @@ flowchart TB
         DW[Data worker<br/>market/reference ingest]
         RW[Research worker<br/>replay/backtest]
         AIW[AI worker<br/>Phase 6]
+        ING[Isolated secret_ingress<br/>Phase 6 write-only path]
         CLIAPP[CLI application]
     end
 
@@ -41,11 +43,14 @@ flowchart TB
     end
 
     U -->|HTTPS control/read API| API
+    U -->|one-time write-only enrollment only| ING
     CLI -->|authorized command path| CLIAPP
     CLIAPP -->|control command| API
     API -->|authorized command / read projection| PG
     API -->|runtime control intent| NODE
     API -->|alert/incident routing| ALERT
+    ING -->|safe receipt/lifecycle metadata only| PG
+    ING -->|direct write-only secret enrollment| VAULT
 
     DATA -->|raw feed/reference| DW
     DW -->|normalized data / health| PG
@@ -55,7 +60,8 @@ flowchart TB
     RW <-->|read catalog / write report metadata| PQ
     RW -->|candidate/report metadata only| PG
     AIW -->|sanitized read / proposal-memory write| PG
-    AIW <-->|structured request only| LLM
+    AIW <-->|structured request only, catalog endpoint| LLM
+    AIW <-->|just-in-time binding only| VAULT
 ~~~
 
 ## 2. Process/container inventory
@@ -66,9 +72,10 @@ flowchart TB
 | apps/trading_node | Strategy scheduler, risk, OMS, execution, ledger/reconciliation. | Trading DB role; venue credential only per approved manifest/mode. | Owned context write/read, outbox, lease. | Public management API. |
 | apps/workers/data_worker | Market/reference ingestion, quality, catalog management. | Data DB role; public/testnet read credential if needed. | Market/reference write; catalog metadata. | Execution/risk/ledger write or trade secret. |
 | apps/workers/research_worker | Replay, backtest, report/candidate generation. | Catalog/research role; network disabled by default. | Catalog/research output; no live write model. | Read trade credential or run execution. |
-| apps/workers/ai_worker | Sanitized proposal/memory workflow at Phase 6. | AI provider key only; no venue credential. | Sanitized read + ai_memory write. | Execution tool, risk bypass or config promotion. |
+| apps/workers/ai_worker | Sanitized proposal/memory workflow at Phase 6. | Scoped machine identity; resolves one active opaque BYOK binding via short owner/connection/revision/job lease; no venue credential. | Sanitized read + policy-filtered connection metadata + ai_memory write. | Raw-key read-back, candidate binding use, execution tool, risk bypass, config promotion or arbitrary provider endpoint. |
+| apps/secret_ingress | Isolated Phase 6 one-time secret enrollment routed directly to approved secret provider. | Re-authenticated owner scope + one-time enrollment session only; no broad DB/venue credential. | Secret provider write; safe lifecycle receipt only. | Normal Control API middleware, raw-body logging/APM, command/event/outbox persistence, body hash/fingerprint or key read-back. |
 | apps/cli | Operator command client. | Caller identity through approved path. | Through command port/API; no direct privileged DB. | Bypass Control API policy. |
-| Flutter dashboard | Phase 5 client rendering/control. | End-user identity only. | Through Control API. | Store secret, access DB/venue or own business logic. |
+| Flutter dashboard | Phase 5 client rendering/control; Phase 6 may invoke protected secret-enrollment handoff. | End-user identity only. | Through Control API and isolated approved secret-ingress boundary. | Store/read-back secret, access DB/venue or own business logic. |
 
 ## 3. Storage/container ownership
 
@@ -106,12 +113,13 @@ Physical schema, roles, backup and retention are defined by data/security artifa
 - Testnet/canary target is a Linux container image pinned by digest; Windows is supported for local developer tooling only.
 - One process has one primary responsibility and one machine identity.
 - Each environment/account uses separate credential and database role; application never runs as DB superuser.
+- AI credential binding is scoped by owner/environment/provider connection/revision/job, short-lived and not injected wholesale into the worker environment or deployment manifest. Candidate binding is validation-only; suspend/revoke invalidates new lease issuance.
 - Config/deployment identity must be validated/hashed and immutable for a running deployment.
 - Network/secret topology and auth provider are pending OD-005/OD-006 and ADR-0015 before Phase 3.
 
 ## 7. Observability and failure boundaries
 
-Each process emits structured logs/metrics/traces with permitted correlation identity. A failure in UI, research or AI worker must not block trading hot path. Failure in execution state, lease, DB, credential, market freshness or reconciliation must follow fail-closed/safe-state policy, not silent degradation.
+Each process emits structured logs/metrics/traces with permitted correlation identity. A failure in UI, research or AI worker must not block trading hot path. AI telemetry includes only safe provider/model/connection-revision/policy/usage/status metadata, never key/raw prompt-response by default. Failure in execution state, lease, DB, credential, market freshness or reconciliation must follow fail-closed/safe-state policy, not silent degradation.
 
 ## 8. Review checklist
 
@@ -126,3 +134,4 @@ Each process emits structured logs/metrics/traces with permitted correlation ide
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo container/process/storage baseline theo modular monolith. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Thêm secret-provider/owner-scoped BYOK binding boundary cho ai_worker Phase 6. | Technical Operator | Pending |

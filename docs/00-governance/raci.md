@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-RACI-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.6, §11.3, §11.4, §14 và §15 |
-| Related requirements | FR-OPS-001, NFR-AUD-001, NFR-SEC-001, SEC-AUTH-001, SEC-AUD-001 |
-| Related ADR | ADR-0014, ADR-0015 (DRAFT/required by phase) |
+| Related requirements | FR-OPS-001, FR-AI-001, NFR-AUD-001, NFR-SEC-001, NFR-AI-001, SEC-AUTH-001, SEC-AUD-001, SEC-AI-002, SEC-AI-003 |
+| Related ADR | ADR-0014, ADR-0015, ADR-0016 (DRAFT/required by phase) |
 
 > Ma trận này diễn giải trách nhiệm thành role. Nó không tự cấp quyền runtime, không thay thế permission matrix tại Master §11.3 và chưa có hiệu lực khi còn DRAFT hoặc IN_REVIEW.
 
@@ -30,10 +30,10 @@ Nếu một người giữ nhiều role ở Phase 0 đến paper/testnet, record
 
 | Role | Trách nhiệm chính | Không được làm |
 |---|---|---|
-| Account Owner | Sở hữu account/capital; phê duyệt scope, venue, legal/terms, canary cap và ADR/gate thuộc thẩm quyền. | Override regulatory constraint, immutable audit hoặc safety invariant. |
+| Account Owner | Sở hữu account/capital; phê duyệt scope, venue, legal/terms, canary cap, ADR/gate và BYOK AI connection trong owner scope. | Override regulatory constraint, immutable audit/safety invariant hoặc đọc raw API key sau submit. |
 | Technical Operator | Thiết kế/triển khai, chạy CI, vận hành runtime, đề nghị reconciliation và kích hoạt kill switch. | Tự cấp approval risk/canary khi role độc lập là bắt buộc. |
 | Risk Approver | Sở hữu risk policy, pending-risk approval, kill-switch release và canary risk cap. | Bypass risk evaluation hoặc audit. |
-| Security/Backup Owner | Secrets, machine identity, topology, access, backup/restore và escalation. | Chia sẻ credential hoặc đặt trade key cho AI/UI. |
+| Security/Backup Owner | Secrets, machine identity, topology, access, backup/restore, AI provider catalog/egress review và escalation; emergency suspend/revoke AI connection với audit/notification rule. | Chia sẻ credential, đặt trade key cho AI/UI hoặc đọc raw user API key. |
 | Viewer | Đọc sanitized projection/audit trong quyền được cấp. | Gửi command nguy hiểm hoặc truy cập secret. |
 | Worker | Machine identity với quyền tối thiểu cho một process. | Dùng shared human token hoặc vượt process scope. |
 | AI Coding Agent | Sửa artifact/code đúng task, contract và allowed path. | Phê duyệt, deploy, dùng production credential hoặc tự mở rộng scope. |
@@ -49,6 +49,7 @@ Nếu một người giữ nhiều role ở Phase 0 đến paper/testnet, record
 | ADR-0007, risk policy, OMS/risk review | R | A | R/C | C | R trong task được cấp |
 | ADR-0011, accounting policy | R | A | R/C | I | R trong task được cấp |
 | ADR-0012, concurrency/execution-leader policy | R | A | C | C | R trong task được cấp |
+| ADR-0016, AI provider catalog/BYOK/egress boundary | R | A | I | R/C | R trong task được cấp |
 | Data architecture, ERD, dictionary, DB operations | R | A | C | C | R trong task được cấp |
 | OpenAPI/schema/error catalog/fixtures | R | A | C | C | R trong task được cấp |
 | Threat model, access matrix, auth-session, secrets, SLO/runbooks | R | A | C | R | R trong task được cấp |
@@ -66,6 +67,7 @@ R trong cột AI Coding Agent chỉ có nghĩa là agent có thể soạn file t
 | Risk policy hoặc manual approval | Risk Approver | Risk Approver | Technical Operator | Account Owner |
 | OMS/ledger semantic | Technical Operator | Account Owner | Risk Approver | Security/Backup Owner |
 | Credential/topology/backup | Security/Backup Owner | Security/Backup Owner | Technical Operator | Account Owner, Risk Approver khi ảnh hưởng canary |
+| AI provider catalog/BYOK connection/egress/budget | Technical Operator + Security/Backup Owner | Account Owner | Security/Backup Owner, Technical Operator | Risk Approver khi proposal affects policy; Viewer |
 | Deployment manifest | Technical Operator | Technical Operator | Risk Approver, Security/Backup Owner | Account Owner |
 | Kill switch activation | Technical Operator | Technical Operator | Risk Approver nếu scope/policy yêu cầu | Account Owner |
 | Kill switch release | Risk Approver | Account Owner | Technical Operator | Security/Backup Owner |
@@ -85,6 +87,10 @@ RACI là governance; runtime authorization phải thực thi permission matrix c
 | Approve pending risk intent | Risk Approver | Có | Fresh risk evaluation, actor, reason |
 | Thay risk policy/deployment | Risk Approver + Account Owner theo scope | Có | Version/hash, approval, reason |
 | Rotate credential/topology | Security/Backup Owner | Có | Rotation/audit verification |
+| Create/rotate connection or enroll candidate AI provider key | Account Owner | Có | Owner scope, reason, lifecycle result; isolated ingress never stores/hashes raw key |
+| Validate/activate AI provider connection/egress policy | Account Owner + Security/Backup Owner | Có | Catalog/policy/version, bounded probe, two role records, approval/audit |
+| Suspend/revoke own AI provider connection | Account Owner | Có | Owner scope, reason, safe lifecycle result |
+| Emergency suspend/revoke AI provider connection | Security/Backup Owner | Có | Incident reason, re-auth, Account Owner notification/review; never raw key |
 
 Không có UI confirmation, shared token hoặc dashboard session nào tự thay cho authorization, re-auth và audit record.
 
@@ -104,3 +110,4 @@ RACI phải được rà soát khi thay đổi role owner, thêm venue/account, 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo RACI baseline cho Phase 0.0 và các action trọng yếu. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Thêm trách nhiệm/approval BYOK AI connection, catalog và egress Phase 6. | Technical Operator | Pending |

@@ -6,7 +6,7 @@
 | Date | 2026-07-31 |
 | Owner | Technical Operator |
 | Approver | Account Owner |
-| Related | NFR-SEC-001, NFR-DET-001, NFR-SAFE-001; [Master](../../AI_AUTO_TRADE_MASTER_SPEC.md) §4.1–§4.5, §10.6–§10.8, §14 Phase 6 |
+| Related | NFR-SEC-001, NFR-DET-001, NFR-SAFE-001, ADR-0016; [Master](../../AI_AUTO_TRADE_MASTER_SPEC.md) §4.1–§4.5, §10.6–§10.8, §14 Phase 6 |
 | Supersedes / superseded by | None / None |
 
 ## Context and decision drivers
@@ -15,7 +15,7 @@ LLM output is probabilistic, may be unavailable, may leak sensitive context and 
 
 ## Proposed decision
 
-Until this ADR is approved, no LLM/provider dependency/runtime exists. If later approved, `ai_worker` has a separate machine identity/provider key, reads only sanitized projection and writes only proposal/memory context. It can produce structured, schema-validated proposals that enter the normal candidate/backtest/review workflow. It has zero venue trade credential, no execution port, no risk/config promotion privilege and no direct tool/API route that can place/cancel order.
+Until this ADR is approved, no LLM/provider dependency/runtime exists. If later approved, `ai_worker` has a separate machine identity and resolves only a scoped opaque AI credential binding just-in-time; it never receives a venue credential or raw provider key. It reads only sanitized projection and writes only proposal/memory context. It can produce structured, schema-validated proposals that enter the normal candidate/backtest/review workflow. It has zero execution port, no risk/config promotion privilege and no direct tool/API route that can place/cancel order. Provider selection, BYOK lifecycle, catalog, egress and budget controls are defined by ADR-0016.
 
 Trading remains functional when AI is disabled, slow, invalid or unavailable. Memory has provenance, review status, effective time/retention and point-in-time retrieval; replay cannot use future memory. No self-modification, auto-promotion or live-code/risk/config change is authorized.
 
@@ -30,7 +30,7 @@ Trading remains functional when AI is disabled, slow, invalid or unavailable. Me
 
 ## Consequences
 
-AI is optional advisory capability, not an execution component. It needs provider/redaction/budget/structured-output contract, threat model, zero-credential test and controlled learning gates. A fake/disabled provider is the first allowed provider. No enablement before paper/canary core stability.
+AI is optional advisory capability, not an execution component. It needs provider/redaction/budget/structured-output contract, owner-scoped BYOK catalog/connection controls (ADR-0016), threat model, zero-credential test and controlled learning gates. A fake/disabled provider is the first allowed provider. No enablement before paper/canary core stability.
 
 ## Migration, rollout and rollback/forward-fix
 
@@ -41,4 +41,3 @@ No rollout now. Future rollout is disabled -> fake provider -> sanitized proposa
 - [ ] Phase 6 entry conditions and core stability evidence exist.
 - [ ] Security review proves zero execution/venue credential path.
 - [ ] Structured-output, redaction, budget, provenance/retention and no-future-memory tests pass.
-

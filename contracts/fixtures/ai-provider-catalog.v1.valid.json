@@ -1,0 +1,39 @@
+{
+  "catalog_version": 1,
+  "catalog_id": "018f8c7c-0100-7100-8100-000000000100",
+  "status": "ACTIVE",
+  "created_at": "2026-07-31T00:00:00Z",
+  "entries": [
+    {
+      "provider_id": "private_gateway",
+      "display_name": "Approved private AI gateway",
+      "adapter_id": "private_gateway",
+      "adapter_version": "1.0.0",
+      "adapter_artifact_digest": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "endpoint_profile_id": "private_gateway_paper",
+      "lifecycle_status": "ACTIVE",
+      "auth_mode": "API_KEY",
+      "allowed_environments": ["paper"],
+      "data_egress_class": "PRIVATE_GATEWAY_ONLY",
+      "data_residency_class": "APPROVED_PRIVATE_REGION",
+      "retention_training_policy_ref": "policy://ai/retention/private-gateway-v1",
+      "capabilities": {
+        "structured_generation": true,
+        "embeddings": false,
+        "provider_idempotency": true,
+        "tool_calling_allowed": false
+      },
+      "models": [
+        {
+          "model_id": "example-structured-model",
+          "model_revision": "2026-07-31",
+          "lifecycle_status": "ACTIVE",
+          "structured_output_supported": true,
+          "max_input_tokens": 8192,
+          "max_output_tokens": 1024
+        }
+      ],
+      "approval_evidence_ref": "docs/evidence/providers/private-gateway-paper.md"
+    }
+  ]
+}

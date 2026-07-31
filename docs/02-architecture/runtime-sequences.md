@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-SEQ-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
-| Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §5, §6, §7.2–§7.7, §8 và §11 |
-| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001; NFR-DET-001, NFR-AUD-001, NFR-SAFE-001 |
-| Related ADR | ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012 |
+| Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §5, §6, §7.2–§7.7, §8, §10.6 và §11 |
+| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001, FR-AI-001; NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-AI-001 |
+| Related ADR | ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012, ADR-0016 |
 
 > Diagram thể hiện normative flow ở mức architecture. Message/event field phải do schema versioned xác định. Không có sequence nào cho phép giữ DB transaction mở trong external call, blind retry hoặc bypass risk.
 
@@ -185,11 +185,83 @@ sequenceDiagram
 
 Same actor/route/idempotency key with a different canonical payload returns conflict; dangerous action cannot rely on UI confirmation alone.
 
-## 7. Event delivery and projection rebuild
+## 7. AI provider connection enrollment, validation and activation (Phase 6 only)
+
+~~~mermaid
+sequenceDiagram
+    participant Owner as Account Owner
+    participant API as Control API
+    participant Policy as RBAC/catalog/egress policy
+    participant Meta as operations metadata/audit
+    participant Ingress as isolated secret_ingress
+    participant Vault as approved secret provider
+    participant Worker as ai_worker validation identity
+    participant Provider as approved provider adapter
+
+    Owner->>API: create connection metadata + provider/model/policy profile + reason
+    API->>Policy: authenticate, owner-scope authorize, re-auth, validate ACTIVE catalog/profile compatibility
+    API->>Meta: persist PENDING_SECRET connection; no raw key
+    API-->>Owner: safe connection ID + isolated one-time enrollment session
+    Owner->>Ingress: submit provider key; no Idempotency-Key/body hash
+    Ingress->>Vault: direct write-only candidate enrollment
+    Vault-->>Ingress: opaque binding receipt only
+    Ingress->>Meta: record PENDING_VALIDATION safe lifecycle event; no body/fingerprint
+    Owner->>API: validation/activation request + reason + re-auth
+    API->>Policy: require Account Owner + Security/Backup Owner role records
+    API->>Worker: scoped validation job
+    Worker->>Policy: verify scope/catalog/egress/bounded probe budget
+    Worker->>Vault: resolve one binding just-in-time
+    Worker->>Provider: minimal synthetic/sanitized capability probe
+    Provider-->>Worker: normalized capability result; no raw vendor payload
+    alt valid and policy-approved
+        Worker->>Meta: mark ACTIVE with revision/audit metadata
+    else invalid, uncertain or policy denied
+        Worker->>Meta: mark VALIDATION_FAILED or SUSPENDED; no activation
+    end
+    API-->>Owner: safe status only; never raw key, secret ref or provider response
+~~~
+
+**Guards:** Provider/model/endpoint/policy profile cannot be arbitrary. Enrollment body never enters Control API middleware, command, outbox, event, audit, proxy/WAF/APM or trace persistence; response is no-store and lost response is resolved by safe status query, not retry. No role can read back the provider key. The secret provider is external to PostgreSQL and a connection only stores internal opaque binding metadata.
+
+## 8. AI inference, budget and controlled failure (Phase 6 only)
+
+~~~mermaid
+sequenceDiagram
+    participant Worker as ai_worker
+    participant Policy as scope/catalog/egress/budget policy
+    participant Vault as approved secret provider
+    participant Adapter as adapters/llm/<provider>
+    participant Provider as approved AI provider
+    participant Memory as ai_memory proposal/memory store
+
+    Worker->>Policy: verify active binding state/revision + owner scope + model/profile + egress + quota reservation
+    alt policy fails
+        Policy-->>Worker: deny without provider call
+    else policy passes
+        Worker->>Vault: resolve short owner/connection/revision/job binding lease just-in-time
+        Worker->>Policy: recheck revision immediately before egress
+        Worker->>Adapter: canonical sanitized request + structured schema; tools disabled
+        Adapter->>Provider: bounded request through approved host/SNI/TLS/DNS/redirect policy
+        alt structured valid response
+            Provider-->>Adapter: provider response
+            Adapter-->>Worker: canonical result + safe usage/status metadata
+            Worker->>Memory: validate schema/provenance then persist proposal/memory + usage reconciliation
+        else timeout, revoked key, budget/circuit/rate limit, invalid or unknown outcome
+            Provider-->>Adapter: normalized redacted failure
+            Adapter-->>Worker: safe error metadata
+            Worker->>Policy: reconcile reservation / open circuit or disable AI capability as policy requires
+            Note over Worker,Memory: Do not retry/fallback blindly; trading is unchanged.
+        end
+    end
+~~~
+
+**Guards:** no execution/risk/config/deployment/database tool is exposed to the model. BYOK v1 automatic fallback is disabled. Suspend/revoke invalidates new binding leases; an in-flight result is discarded if revocation wins.
+
+## 9. Event delivery and projection rebuild
 
 Outbox/inbox delivery is at-least-once. Consumer deduplicates via event identity/consumer record and treats unsupported event version as DLQ/alert per compatibility policy. Projection rebuild consumes canonical append-only event/ledger source rather than mutating history to recover a display.
 
-## 8. Sequence invariants to test
+## 10. Sequence invariants to test
 
 - Persist attempt/client_order_id/request hash before external submit.
 - No DB transaction remains open while HTTP/WebSocket venue call is in progress.
@@ -199,9 +271,14 @@ Outbox/inbox delivery is at-least-once. Consumer deduplicates via event identity
 - Lost lease stops new claim/submission.
 - Manual approval runs fresh risk; kill-switch release requires re-auth/reconciliation/health.
 - UI/AI/strategy has no message path that directly reaches venue execution.
+- AI key enrollment is isolated/write-only/no-store and no raw field or key hash/fingerprint reaches command/event/outbox/audit/log/proxy/WAF/APM/trace/fixture/DB.
+- AI initial/rotation lifecycle preserves old active binding until candidate validation/atomic cutover; dual-role validation/activation and emergency suspension/revocation are auditable.
+- AI connection validation and inference require active owner-scoped catalog/policy-profile/budget/egress checks before secret resolution/provider call.
+- Provider timeout/unknown outcome cannot cause a blind retry, silent cross-provider fallback or trading state change; DNS/redirect/private-route bypass is denied.
 
-## 9. Nhật ký thay đổi
+## 11. Nhật ký thay đổi
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo normative runtime sequence baseline cho core safety flows. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Thêm sequence BYOK enrollment/validation và inference failure isolation cho Phase 6. | Technical Operator | Pending |

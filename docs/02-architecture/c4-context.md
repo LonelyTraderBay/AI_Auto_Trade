@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-C4-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §2, §4.1–§4.5, §6, §8, §10–§12 |
-| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001; NFR-SAFE-001, NFR-SEC-001 |
-| Related ADR | ADR-0001, ADR-0002, ADR-0005, ADR-0007, ADR-0014; ADR-0008/0009/0015 theo phase |
+| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001, FR-AI-001; NFR-SAFE-001, NFR-SEC-001, NFR-AI-001 |
+| Related ADR | ADR-0001, ADR-0002, ADR-0005, ADR-0007, ADR-0014; ADR-0008/0009/0015/0016 theo phase |
 
 > C4 context này mô tả phạm vi và quan hệ logic. Nó không là network diagram, permission matrix hoặc deployment manifest. Tích hợp external venue, authentication provider và notification channel vẫn bị chặn bởi Open Decision Register/ADR tương ứng.
 
@@ -37,7 +37,7 @@ flowchart LR
         MD[Market / reference ingestion]
         REC[Reconciliation and audit]
         RES[Research and replay]
-        AI[AI memory / proposal worker<br/>Phase 6 only]
+        AI[AI provider/profile + proposal worker<br/>Phase 6 only]
     end
 
     VENUE[External venue / testnet]
@@ -65,7 +65,7 @@ flowchart LR
     CP -->|alerts / incident routing| NOTIFY
     CP <-->|actor authentication / session| IDP
     AI <-->|sanitized proposal / memory| CP
-    AI <-->|structured request without trade credential| LLM
+    AI <-->|approved provider/profile, structured request, no trade credential| LLM
 ~~~
 
 ## 3. Actor và external-system relationship
@@ -82,7 +82,7 @@ flowchart LR
 | Historical data catalog | Dataset/manifest/Parquet và research/replay read. | Không làm phình OLTP hoặc viết live state. |
 | Authentication provider | Actor/session input cho Control API, lựa chọn chưa chốt. | Không tồn tại trong Phase 0 local loopback bootstrap; requires ADR-0015 trước Phase 3. |
 | Alert channel | Incident/alert delivery, lựa chọn chưa chốt. | Không mang secret/raw sensitive payload. |
-| LLM provider | Structured proposal/memory only ở Phase 6. | Không có execution tool, venue credential hoặc config promotion authority. |
+| AI provider / private gateway | Structured proposal/memory only ở Phase 6, qua provider/model/policy profile catalog, isolated BYOK secret ingress và owner-scoped connection. | Không có arbitrary endpoint/proxy/policy, execution tool, venue credential hoặc config promotion authority. |
 
 ## 4. Bounded context ownership
 
@@ -95,9 +95,9 @@ flowchart LR
 | execution | OMS, attempt, venue submission, order/fill lifecycle. | Approved intent/risk decision/venue evidence. | Canonical order/fill events, reconciliation input. | Bypass risk. |
 | portfolio_ledger | Journal, postings, balance/position/PnL projection. | Fill/fee/verified adjustment. | Accounting projection/audit link. | Overwrite history to match venue. |
 | research | Dataset/backtest/validation/report. | Catalog/recorded event. | Candidate/report evidence. | Write live state or trade credential. |
-| operations | Deployment, lease, health, incident, kill switch. | Authorized control action/runtime signal. | Readiness/incident/safe-state event. | Return secret in API response. |
+| operations | Deployment, lease, health, incident, kill switch, AI connection metadata/audit. | Authorized control action/runtime signal. | Readiness/incident/safe-state/AI lifecycle event. | Return raw secret or cross-owner connection metadata. |
 | platform | Outbox, inbox, DLQ, idempotency/delivery metadata. | Cross-context delivery operation. | Delivery/compatibility signal. | Own business/risk decision. |
-| ai_memory | LLM request/proposal/memory at Phase 6. | Sanitized projection. | Proposal/memory record. | Execution write/trade credential. |
+| ai_memory | AI inference provenance/proposal/memory at Phase 6. | Sanitized projection + active owner-scoped connection policy. | Proposal/memory record. | Execution write, trade credential or raw key. |
 
 ## 5. Trust và authority boundaries
 
@@ -107,7 +107,7 @@ flowchart LR
 | Risk -> execution | Risk returns decision/reservation only. Execution owns submit/OMS. |
 | Control plane -> trading runtime | Control plane submits authorized command/config intent; it does not execute hot-path market tick logic. |
 | UI/CLI -> control plane | UI/CLI must use authorized API/command path; no direct venue/database path. |
-| AI -> platform | AI produces proposal only and must not receive trade credential or execution capability. |
+| AI -> platform | AI produces proposal only; it may resolve a just-in-time owner-scoped provider binding but must not receive trade credential, execution capability or raw-key read-back. |
 | Internal -> venue | Only trading runtime with valid mode, manifest, capability, lease and credential may wire execution adapter. |
 | Internal ledger -> venue | They are reconciled but neither silently overwrites the other. |
 | Research -> live contexts | Research evidence may inform candidate workflow but cannot write live state/promotion. |
@@ -133,7 +133,7 @@ Detailed temporal behavior is defined by ARC-SEQ-001 and Master §5/§8.
 | Venue testnet/shadow | 3 | Requires venue/auth/OD/ADR gate and capability contract. |
 | Canary | 4 | Requires independent safety review, signed scope/cap and live topology gate. |
 | Dashboard | 5 | Client of control API only. |
-| AI/memory | 6 | Proposal-only, no hot-path/execution authority. |
+| AI/memory/BYOK | 6 | Proposal-only, provider/policy profile catalog, isolated secret ingress, egress/DNS/budget/rotation gate; no hot-path/execution authority. |
 
 ## 8. Review checklist
 
@@ -148,3 +148,4 @@ Detailed temporal behavior is defined by ARC-SEQ-001 and Master §5/§8.
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo C4 context baseline cho modular monolith MVP. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Làm rõ AI provider catalog/BYOK owner scope và secret/execution boundary Phase 6. | Technical Operator | Pending |

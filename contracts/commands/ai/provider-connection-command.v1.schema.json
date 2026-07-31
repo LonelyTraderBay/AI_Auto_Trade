@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/commands/ai/provider-connection-command.v1.schema.json",
+  "title": "AI provider connection lifecycle command v1",
+  "description": "Durable lifecycle command metadata for BYOK provider connections. Secret enrollment body is deliberately excluded and must never be placed in this command.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command_id",
+    "command_type",
+    "schema_version",
+    "status",
+    "actor_id",
+    "actor_role",
+    "target",
+    "idempotency_key",
+    "request_hash",
+    "correlation_id",
+    "reason",
+    "requested_at",
+    "reauthenticated_at",
+    "approval",
+    "payload",
+    "result_ref",
+    "error_code"
+  ],
+  "properties": {
+    "command_id": { "$ref": "#/$defs/uuid_v7" },
+    "command_type": { "type": "string", "enum": ["VALIDATE_AI_PROVIDER_CONNECTION", "ACTIVATE_AI_PROVIDER_CONNECTION", "SUSPEND_AI_PROVIDER_CONNECTION", "REVOKE_AI_PROVIDER_CONNECTION", "ROTATE_AI_PROVIDER_CONNECTION"] },
+    "schema_version": { "const": 1 },
+    "status": { "type": "string", "enum": ["ACCEPTED", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED"] },
+    "actor_id": { "$ref": "#/$defs/uuid_v7" },
+    "actor_role": { "type": "string", "enum": ["ACCOUNT_OWNER", "SECURITY_BACKUP_OWNER"] },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["connection_id", "owner_principal_id", "account_id", "environment"],
+      "properties": {
+        "connection_id": { "$ref": "#/$defs/uuid_v7" },
+        "owner_principal_id": { "$ref": "#/$defs/uuid_v7" },
+        "account_id": { "$ref": "#/$defs/uuid_v7" },
+        "environment": { "type": "string", "enum": ["paper", "testnet", "canary", "live"] }
+      }
+    },
+    "idempotency_key": { "type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "request_hash": { "$ref": "#/$defs/sha256" },
+    "correlation_id": { "$ref": "#/$defs/uuid_v7" },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "requested_at": { "$ref": "#/$defs/date_time" },
+    "reauthenticated_at": { "$ref": "#/$defs/date_time" },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["records"],
+      "properties": { "records": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/approval_record" } } }
+    },
+    "payload": { "type": "object" },
+    "result_ref": { "type": ["string", "null"], "maxLength": 2048 },
+    "error_code": { "type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]*$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "command_type": { "const": "VALIDATE_AI_PROVIDER_CONNECTION" } }, "required": ["command_type"] },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/validation_payload" } } }
+    },
+    {
+      "if": { "properties": { "command_type": { "enum": ["ACTIVATE_AI_PROVIDER_CONNECTION", "SUSPEND_AI_PROVIDER_CONNECTION", "REVOKE_AI_PROVIDER_CONNECTION"] } }, "required": ["command_type"] },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/revision_payload" } } }
+    },
+    {
+      "if": { "properties": { "command_type": { "const": "ROTATE_AI_PROVIDER_CONNECTION" } }, "required": ["command_type"] },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/rotation_payload" } } }
+    },
+    {
+      "if": { "properties": { "command_type": { "enum": ["VALIDATE_AI_PROVIDER_CONNECTION", "ACTIVATE_AI_PROVIDER_CONNECTION"] } }, "required": ["command_type"] },
+      "then": {
+        "properties": {
+          "approval": {
+            "properties": {
+              "records": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "type": "object",
+                      "required": ["approved_role"],
+                      "properties": { "approved_role": { "const": "ACCOUNT_OWNER" } }
+                    },
+                    "minContains": 1
+                  },
+                  {
+                    "contains": {
+                      "type": "object",
+                      "required": ["approved_role"],
+                      "properties": { "approved_role": { "const": "SECURITY_BACKUP_OWNER" } }
+                    },
+                    "minContains": 1
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "date_time": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "approval_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval_id", "approved_by", "approved_role", "approved_at", "reason"],
+      "properties": {
+        "approval_id": { "$ref": "#/$defs/uuid_v7" },
+        "approved_by": { "$ref": "#/$defs/uuid_v7" },
+        "approved_role": { "type": "string", "enum": ["SECURITY_BACKUP_OWNER", "ACCOUNT_OWNER"] },
+        "approved_at": { "$ref": "#/$defs/date_time" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 1024 }
+      }
+    },
+    "revision_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_connection_revision"],
+      "properties": { "expected_connection_revision": { "type": "integer", "minimum": 1 } }
+    },
+    "validation_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_connection_revision", "probe_profile_id"],
+      "properties": {
+        "expected_connection_revision": { "type": "integer", "minimum": 1 },
+        "probe_profile_id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" }
+      }
+    },
+    "rotation_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_connection_revision"],
+      "properties": {
+        "expected_connection_revision": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

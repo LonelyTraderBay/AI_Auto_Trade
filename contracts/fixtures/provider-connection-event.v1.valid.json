@@ -1,0 +1,31 @@
+{
+  "id": "018f8c7c-0130-7130-8130-000000000130",
+  "type": "operations.ai_provider_connection_activated.v1",
+  "schema_version": 1,
+  "source": "operations",
+  "occurred_at": "2026-07-31T00:02:00Z",
+  "received_at": "2026-07-31T00:02:00Z",
+  "processed_at": "2026-07-31T00:02:01Z",
+  "recorded_at": "2026-07-31T00:02:01Z",
+  "correlation_id": "018f8c7c-0121-7121-8121-000000000121",
+  "causation_id": "018f8c7c-0120-7120-8120-000000000120",
+  "trace_id": "018f8c7c-0131-7131-8131-000000000131",
+  "subject_id": "018f8c7c-0110-7110-8110-000000000110",
+  "partition_key": "ai_provider_connection:018f8c7c-0110-7110-8110-000000000110",
+  "data": {
+    "connection_id": "018f8c7c-0110-7110-8110-000000000110",
+    "owner_principal_id": "018f8c7c-0111-7111-8111-000000000111",
+    "account_id": "018f8c7c-0112-7112-8112-000000000112",
+    "environment": "paper",
+    "provider_id": "private_gateway",
+    "model_id": "example-structured-model",
+    "catalog_version": 1,
+    "adapter_version": "1.0.0",
+    "connection_status": "ACTIVE",
+    "connection_revision": 2,
+    "event_reason_code": "CONNECTION_ACTIVATED",
+    "data_egress_policy_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "usage_policy_id": "paper_ai_usage_v1",
+    "normalized_result_code": "AI_CONNECTION_VALID"
+  }
+}

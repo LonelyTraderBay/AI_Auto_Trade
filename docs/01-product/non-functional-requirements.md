@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | PRD-NFR-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.2, §5, §6, §7, §12, §13 và §14 |
-| Related requirements | NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-SEC-001, NFR-OPS-001; SEC-CRED-001, SEC-AUTH-001, SEC-AUD-001, SEC-SUP-001, SEC-DATA-001, SEC-AI-001 |
-| Related ADR | ADR-0001–0005, ADR-0007, ADR-0011–0015 theo phạm vi |
+| Related requirements | NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-SEC-001, NFR-OPS-001, NFR-AI-001; SEC-CRED-001, SEC-AUTH-001, SEC-AUD-001, SEC-SUP-001, SEC-DATA-001, SEC-AI-001–003 |
+| Related ADR | ADR-0001–0005, ADR-0007, ADR-0011–0016 theo phạm vi |
 
 > Non-functional requirements là acceptance criteria ngang qua mọi context. Chúng không phải tùy chọn chỉ vì một task không thêm feature mới.
 
@@ -96,7 +96,25 @@
 **Primary evidence:** health/integration tests, drill report, incident/gate records.
 **Phase gate:** Phase 0.0 through Phase 4.
 
-## 6. Implementation quality constraints
+## 6. NFR-AI-001 — Provider-independent, private và bounded AI operation
+
+**Requirement:** AI capability MUST operate through approved provider/model profiles without making any provider mandatory. BYOK credential, data egress, budget/quota, timeout/rate/circuit behavior, provenance and failure handling MUST be enforced independently of the trading hot path.
+
+**Acceptance evidence:**
+
+- Provider/model/endpoint/policy profile is immutable-versioned, capability-tested and explicitly allowlisted; it pins adapter artifact digest, residency/retention terms, host/SNI/route and egress/usage policy. Unknown/deprecated/drifted provider, model, endpoint or profile is denied/revalidated/suspended without network attempt.
+- API key is accepted only by isolated write-only secret ingress with no-store semantics and is absent from API response, browser storage, logs, proxy/WAF/APM, traces, errors, audit/event/command payload, DB/config/fixture/backup and prompt content. Ingress uses a one-time server-side enrollment session, not Idempotency-Key/body hash/fingerprint; lost response is resolved only by safe status read.
+- Connection/job request validates owner scope, active connection revision/lease, provider/model/catalog/adapter version, resolved policy profile, egress class, purpose and hard budget/quota before provider call. DNS resolution/host/SNI/TLS/redirect/private-address policy is enforced by approved egress route.
+- Input is sanitized/allowlisted; raw venue/account secret/session/private data is denied. Output/provider response is untrusted and must pass a versioned structured schema before any proposal/memory write.
+- Cost/quota reservation is concurrency-safe and reconciled to actual usage; provider availability, latency, rate limit, invalid credential, budget exhaustion and circuit state are observable without raw vendor payload.
+- Default failure policy is disable/fail AI only. No AI timeout, invalid output, provider outage, revoked key or unknown outcome changes trading/risk/OMS/ledger or causes silent cross-provider/key fallback. Rotation keeps active binding until candidate validation and atomic cutover; suspend/revoke invalidate binding leases, cancel when possible and discard invalidated in-flight output.
+- Local/CI use fake/disabled provider and prove no execution tool/trade credential/key leak/cross-owner connection use, no secret-like audit reason, no egress bypass, and both initial/rotation lifecycle transitions.
+
+**Applies to:** FR-AI-001 and every AI adapter, dashboard/control-plane AI connection route, `ai_worker`, memory/retrieval/proposal workflow.
+**Primary evidence:** provider capability/contract test, secret-leak negative test, owner-scope authorization test, egress/budget/circuit test, outage/revoke drill and Phase 6 gate record.
+**Phase gate:** Phase 6.
+
+## 7. Implementation quality constraints
 
 Các constraint dưới đây là phương thức bắt buộc để chứng minh NFR, không thay thế requirement ID:
 
@@ -110,7 +128,7 @@ Các constraint dưới đây là phương thức bắt buộc để chứng min
 | Error/failure | External transient retry theo policy; unknown outcome reconcile, không blind retry; security/infrastructure fail closed. |
 | Waiver | Chỉ SHOULD/non-safety goal có waiver; không waiver OMS/risk/ledger/audit/credential/migration/external-venue invariant. |
 
-## 7. Security/control mapping
+## 8. Security/control mapping
 
 | NFR | SEC mapping |
 |---|---|
@@ -119,13 +137,15 @@ Các constraint dưới đây là phương thức bắt buộc để chứng min
 | NFR-SAFE-001 | SEC-AUD-001, SEC-CRED-001, SEC-AUTH-001 |
 | NFR-SEC-001 | SEC-CRED-001, SEC-AUTH-001, SEC-SUP-001, SEC-AI-001 |
 | NFR-OPS-001 | SEC-AUD-001, SEC-DATA-001, SEC-CRED-001 |
+| NFR-AI-001 | SEC-AI-001, SEC-AI-002, SEC-AI-003, SEC-CRED-001, SEC-AUTH-001, SEC-AUD-001 |
 
-## 8. Review and change policy
+## 9. Review and change policy
 
 NFR acceptance must be verified by actual command/procedure, exit/result, evidence path and gate linkage. A higher coverage percentage, a successful demo or a human assertion does not replace invariant/recovery/security evidence. Any semantic change to an NFR needs traceability update and ADR if it affects architecture, persistence, risk, security or live gate.
 
-## 9. Nhật ký thay đổi
+## 10. Nhật ký thay đổi
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Chuẩn hóa acceptance/evidence cho baseline non-functional requirements. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Thêm NFR-AI-001 cho vận hành BYOK đa provider, egress/budget và failure isolation. | Technical Operator | Pending |

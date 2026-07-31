@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-DOC-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực; chỉ có hiệu lực khi trạng thái APPROVED |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1, §14.2, §15.4 và Phụ lục C |
-| Related requirements | NFR-AUD-001, NFR-OPS-001, SEC-AUD-001 |
-| Related ADR | ADR-0014 (DRAFT/required for Phase 0.0) |
+| Related requirements | NFR-AUD-001, NFR-OPS-001, NFR-AI-001, SEC-AUD-001, SEC-AI-002, SEC-AI-003 |
+| Related ADR | ADR-0014; ADR-0016 (DRAFT/required for Phase 6) |
 
 > Tài liệu này quy định cách quản lý artifact của dự án. Nó không phê duyệt kiến trúc, risk policy, contract hoặc thay đổi runtime nào. Khi còn trạng thái DRAFT hoặc IN_REVIEW, tài liệu chỉ là đề xuất để review.
 
@@ -118,4 +118,5 @@ DOCS_INDEX.md là registry điều hướng của artifact pack và phải đư�
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | Cập nhật register/control references cho hồ sơ DRAFT AI đa provider/BYOK; không phê duyệt runtime hay key. | Technical Operator | Pending |
 | 0.1.0 | 2026-07-31 | Tạo baseline kiểm soát tài liệu cho Phase 0.0. | Technical Operator | Pending |

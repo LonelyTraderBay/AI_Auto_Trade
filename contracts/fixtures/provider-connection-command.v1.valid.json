@@ -1,0 +1,43 @@
+{
+  "command_id": "018f8c7c-0120-7120-8120-000000000120",
+  "command_type": "ACTIVATE_AI_PROVIDER_CONNECTION",
+  "schema_version": 1,
+  "status": "ACCEPTED",
+  "actor_id": "018f8c7c-0111-7111-8111-000000000111",
+  "actor_role": "ACCOUNT_OWNER",
+  "target": {
+    "connection_id": "018f8c7c-0110-7110-8110-000000000110",
+    "owner_principal_id": "018f8c7c-0111-7111-8111-000000000111",
+    "account_id": "018f8c7c-0112-7112-8112-000000000112",
+    "environment": "paper"
+  },
+  "idempotency_key": "ai-connection-activate-0001",
+  "request_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "correlation_id": "018f8c7c-0121-7121-8121-000000000121",
+  "reason": "Activate validated approved provider connection for proposal-only paper workflow.",
+  "requested_at": "2026-07-31T00:02:00Z",
+  "reauthenticated_at": "2026-07-31T00:02:00Z",
+  "approval": {
+    "records": [
+      {
+        "approval_id": "018f8c7c-0122-7122-8122-000000000122",
+        "approved_by": "018f8c7c-0111-7111-8111-000000000111",
+        "approved_role": "ACCOUNT_OWNER",
+        "approved_at": "2026-07-31T00:02:00Z",
+        "reason": "Owner scope approval."
+      },
+      {
+        "approval_id": "018f8c7c-0123-7123-8123-000000000123",
+        "approved_by": "018f8c7c-0124-7124-8124-000000000124",
+        "approved_role": "SECURITY_BACKUP_OWNER",
+        "approved_at": "2026-07-31T00:02:00Z",
+        "reason": "Egress and catalog policy review."
+      }
+    ]
+  },
+  "payload": {
+    "expected_connection_revision": 2
+  },
+  "result_ref": null,
+  "error_code": null
+}

@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | PRD-GLOSSARY-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §3–§12 và §16 |
-| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, NFR-AUD-001, NFR-SAFE-001 |
-| Related ADR | ADR-0003, ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012 |
+| Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-AI-001, NFR-AUD-001, NFR-SAFE-001, NFR-AI-001 |
+| Related ADR | ADR-0003, ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012, ADR-0016 |
 
 > Tên type/field/wire enum cuối cùng phải do contract schema quyết định. Glossary này dùng để tránh nhầm semantic khi viết requirement, ADR, task và test; không thay thế contract machine-readable.
 
@@ -118,6 +118,14 @@ RECONCILING, LOST
 | Safe state | State giảm/ngăn exposure theo policy, ví dụ FREEZE, BLOCKED hoặc strategy disabled. |
 | Redaction | Loại/bảo vệ secret, account detail hoặc sensitive payload khỏi log, trace, fixture/evidence. |
 | Waiver | Exception có ADR, scope, compensating control, approver và expiry; không áp dụng safety invariant. |
+| BYOK | Bring Your Own Key: user dùng API key của chính họ cho provider được duyệt; không đồng nghĩa platform lưu/hiển thị lại key. |
+| AI provider catalog | Registry immutable-versioned của provider/model/endpoint profile/adapter artifact capability/residency-retention đã duyệt; không phải danh sách arbitrary URL. |
+| AIProviderConnection | Metadata connection scoped theo owner/environment, chọn provider/model/policy profile và internal opaque active/candidate binding; không chứa raw key. |
+| Active/candidate binding | ID opaque nội bộ liên kết connection với secret boundary. Candidate chỉ để validation/rotation, không được inference; cả hai không phải raw key hoặc `secret_ref` public. |
+| Secret enrollment | Luồng one-time write-only/no-store qua `secret_ingress` cô lập để user đưa API key vào secret boundary; không đi qua Control API normal middleware, durable command/audit payload, body hash hay key fingerprint. |
+| Data-egress policy | Policy giới hạn dữ liệu nào được gửi tới provider/endpoint/model, gồm classification/residency/retention và allowlist field. |
+| AI policy profile | Tập policy immutable-versioned bind provider/model/environment với endpoint, egress, usage/budget/timeout/rate/fallback; user chỉ chọn profile đã duyệt, không nhập các policy ID rời. |
+| Silent fallback | Tự gửi một request sang provider/model/key khác mà không có policy/consent explicit; bị cấm mặc định. |
 
 ## 7. Quy tắc dùng từ
 
@@ -126,6 +134,8 @@ RECONCILING, LOST
 - Không gọi projection là source of truth accounting.
 - Không gọi testnet/paper/shadow là live trading.
 - Không gọi AI proposal là strategy approval, order approval hay execution.
+- Không gọi mọi API/endpoint AI là "provider được hỗ trợ"; chỉ catalog entry có adapter/capability/security evidence mới được hỗ trợ.
+- Không gọi credential binding, masked label hay validation state là API key; raw key không được read-back.
 - Không dùng event_time/received_time nếu semantic là occurred_at/received_at như chuẩn timestamp.
 
 ## 8. Nhật ký thay đổi
@@ -133,3 +143,4 @@ RECONCILING, LOST
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
 | 0.1.0 | 2026-07-31 | Tạo glossary canonical để giảm ambiguity trong artifact Phase 0.0. | Technical Operator | Pending |
+| 0.2.0 | 2026-07-31 | Bổ sung thuật ngữ AI đa provider, BYOK, secret enrollment và data egress. | Technical Operator | Pending |

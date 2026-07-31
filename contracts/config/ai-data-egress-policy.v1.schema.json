@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/config/ai-data-egress-policy.v1.schema.json",
+  "title": "AI data-egress policy v1",
+  "description": "Security-owned policy that pins the only sanitized projection classes allowed to leave the platform for an approved AI purpose. It never holds prompts, credentials or raw account/order data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_version", "data_egress_policy_id", "status", "allowed_purposes", "projection_schema_id", "projection_schema_hash", "allowed_projection_components", "data_residency_class", "retention_mode", "approval_evidence_ref"],
+  "properties": {
+    "policy_version": { "const": 1 },
+    "data_egress_policy_id": { "$ref": "#/$defs/identifier" },
+    "status": { "type": "string", "enum": ["DRAFT", "ACTIVE", "SUSPENDED", "RETIRED"] },
+    "allowed_purposes": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "enum": ["PROPOSAL_GENERATION", "MEMORY_SUMMARY", "POST_MORTEM_SUMMARY", "RETRIEVAL_EMBEDDING"] } },
+    "projection_schema_id": { "$ref": "#/$defs/identifier" },
+    "projection_schema_hash": { "$ref": "#/$defs/sha256" },
+    "allowed_projection_components": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "enum": ["MARKET_SUMMARY", "SANITIZED_STRATEGY_CONTEXT", "AGGREGATED_PERFORMANCE", "PSEUDONYMIZED_IDENTIFIERS", "APPROVED_MEMORY_SNIPPET"] } },
+    "data_residency_class": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "retention_mode": { "const": "RAW_PROMPT_RESPONSE_DISABLED" },
+    "approval_evidence_ref": { "type": "string", "minLength": 1, "maxLength": 2048 }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

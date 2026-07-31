@@ -3,16 +3,19 @@ x-document-control:
   status: IN_REVIEW
   owner: Technical Operator
   approver: Account Owner
-  related: [FR-OPS-001, NFR-SEC-001, ADR-0014, ADR-0015]
+  related: [FR-OPS-001, FR-AI-001, NFR-SEC-001, NFR-AI-001, ADR-0014, ADR-0015, ADR-0016]
 info:
   title: AI Auto Trade Control Plane API
-  version: 1.0.0-draft
+  version: 1.1.0-draft
   summary: Contract-first, provider-neutral control-plane API skeleton.
   description: >-
     Canonical HTTP wire contract for the AI Auto Trade control plane. This is an
     IN_REVIEW Phase 0.0 skeleton; it authorizes no implementation, venue action,
-    credential use, deployment, or risk override. All POST command routes are
+    credential use, deployment, or risk override. All ordinary POST command routes are
     asynchronous, idempotent, audited, and never direct venue order endpoints.
+    Phase 6 AI/BYOK routes are draft-only and never return or persist a raw key;
+    their one-time credential enrollment path is a narrow write-only exception to
+    normal durable command persistence.
   contact:
     name: Technical Operator
   license:
@@ -29,6 +32,8 @@ tags:
     description: Asynchronous auditable control commands.
   - name: operations
     description: Incidents, audit events, and deployment read models.
+  - name: ai
+    description: Phase 6 provider catalog and owner-scoped BYOK connection metadata; no raw key read-back.
 security:
   - ActorAuthentication: []
 paths:
@@ -422,6 +427,383 @@ paths:
           $ref: '#/components/responses/AuthorizationDenied'
         '404':
           $ref: '#/components/responses/ResourceNotFound'
+  /ai/providers:
+    get:
+      tags: [ai]
+      operationId: listAiProviders
+      summary: List approved AI provider catalog entries.
+      description: Phase 6 only. Returns safe catalog metadata, never endpoint URL, credential material or another owner's connection.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Active/safe provider catalog entries visible to the actor scope.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProviderCatalogPage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+  /ai/providers/{provider_id}/models:
+    get:
+      tags: [ai]
+      operationId: listAiProviderModels
+      summary: List approved models for one approved provider.
+      description: Phase 6 only. Unknown, deprecated or scope-ineligible providers/models are not usable for a connection.
+      parameters:
+        - $ref: '#/components/parameters/ProviderId'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Safe model profiles and capability metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProviderModelPage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+  /ai/policy-profiles:
+    get:
+      tags: [ai]
+      operationId: listAiConnectionPolicyProfiles
+      summary: List safe, active AI connection policy profiles compatible with the actor scope.
+      description: Returns only Security-approved profile metadata. Individual endpoint/egress/budget policy IDs cannot be supplied by a caller outside an active profile.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Active policy profiles visible to the authorized owner/environment scope.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIConnectionPolicyProfilePage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+  /ai/provider-connections:
+    get:
+      tags: [ai]
+      operationId: listAiProviderConnections
+      summary: List sanitized AI provider connections in the authorized owner scope.
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Connection metadata only; no key, secret reference or raw provider response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProviderConnectionPage'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+    post:
+      tags: [ai]
+      operationId: createAiProviderConnection
+      summary: Create PENDING_SECRET metadata for an approved AI provider connection.
+      description: >-
+        Phase 6 only. The server derives owner identity from authentication and creates
+        no credential from this body. Secret enrollment is a separate write-only step.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIProviderConnectionCreateRequest'
+      responses:
+        '201':
+          description: PENDING_SECRET connection metadata created; no credential has been returned or persisted in the resource.
+          headers:
+            Location:
+              required: true
+              schema:
+                type: string
+                format: uri-reference
+            Set-Cookie:
+              required: true
+              x-sensitive: true
+              schema:
+                type: string
+              description: >-
+                Short-lived, one-time, Secure/HttpOnly/SameSite enrollment-session cookie
+                scoped only to the isolated credential-enrollment path. It is not a provider
+                key, must be redacted from logs/evidence and may not be exposed to browser JS.
+            Cache-Control:
+              required: true
+              schema:
+                const: no-store
+              description: Connection-create response carrying an enrollment session must never be cached.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProviderConnection'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+  /ai/provider-connections/{connection_id}:
+    get:
+      tags: [ai]
+      operationId: getAiProviderConnection
+      summary: Read sanitized metadata for one AI provider connection.
+      parameters:
+        - $ref: '#/components/parameters/AIProviderConnectionId'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Owner-authorized connection metadata without credential material.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProviderConnection'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+  /ai/provider-connections/{connection_id}/rotations:
+    post:
+      tags: [ai]
+      operationId: startAiProviderConnectionRotation
+      summary: Start a candidate credential rotation without disabling the active binding.
+      description: >-
+        Phase 6 only. This durable lifecycle command changes an ACTIVE connection to
+        ROTATION_PENDING_SECRET. The existing active binding remains the only binding
+        eligible for inference until a candidate is enrolled, validated and atomically
+        activated. It never carries credential material.
+      parameters:
+        - $ref: '#/components/parameters/AIProviderConnectionId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIConnectionRevisionCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '423':
+          $ref: '#/components/responses/OperationBlocked'
+  /ai/provider-connections/{connection_id}/credential-enrollments:
+    post:
+      tags: [ai]
+      operationId: enrollAiProviderCredential
+      summary: Submit one provider API key through a write-only secret boundary.
+      description: >-
+        Phase 6 only. This route is physically served by the isolated secret-ingress
+        boundary, which writes directly to the approved secret provider; it is not a
+        normal Control API request path. Request body material must bypass command/event/
+        outbox/audit persistence and normal request logging. It does not use Idempotency-Key
+        or a body hash: the ingress requires a server-side, one-time enrollment session
+        bound to actor, owner scope, connection and revision. If the client loses the
+        response, it must query safe connection status instead of automatically resubmitting
+        a key. The response contains only a safe receipt, never the API key, secret reference,
+        fingerprint, length or raw provider result.
+      parameters:
+        - $ref: '#/components/parameters/AIProviderConnectionId'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIProviderCredentialEnrollmentRequest'
+      responses:
+        '201':
+          description: Opaque credential binding created and connection moved to an initial or rotation validation state.
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                const: no-store
+              description: Credential enrollment responses must never be cached.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProviderCredentialEnrollmentReceipt'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '409':
+          $ref: '#/components/responses/OperationBlocked'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+  /ai/provider-connections/{connection_id}/validations:
+    post:
+      tags: [ai]
+      operationId: validateAiProviderConnection
+      summary: Request a bounded non-trading validation probe.
+      description: Server-side approval workflow must record both Account Owner and Security/Backup Owner role approvals before dispatching the probe. The probe uses only the candidate binding and synthetic/sanitized data.
+      parameters:
+        - $ref: '#/components/parameters/AIProviderConnectionId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIConnectionValidationCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+  /ai/provider-connections/{connection_id}/activations:
+    post:
+      tags: [ai]
+      operationId: activateAiProviderConnection
+      summary: Request activation of a validated owner-scoped connection.
+      description: Server-side approval workflow must record both Account Owner and Security/Backup Owner role approvals. For rotation, activation atomically swaps the validated candidate binding for the old active binding and retires the old binding after cutover.
+      parameters:
+        - $ref: '#/components/parameters/AIProviderConnectionId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIConnectionRevisionCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '423':
+          $ref: '#/components/responses/OperationBlocked'
+  /ai/provider-connections/{connection_id}/suspensions:
+    post:
+      tags: [ai]
+      operationId: suspendAiProviderConnection
+      summary: Request immediate suspension of an AI provider connection.
+      description: Account Owner may suspend their own connection. Security/Backup Owner may perform an emergency unilateral suspension with re-auth/reason/audit; Account Owner notification and review follow under policy.
+      parameters:
+        - $ref: '#/components/parameters/AIProviderConnectionId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIConnectionRevisionCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+  /ai/provider-connections/{connection_id}/revocations:
+    post:
+      tags: [ai]
+      operationId: revokeAiProviderConnection
+      summary: Request platform revocation/disable of an AI provider connection.
+      description: Platform revocation stops future use. Account Owner may revoke own connection; Security/Backup Owner may perform emergency unilateral revoke with re-auth/reason/audit and required follow-up review. Upstream key revocation is reported only when the provider procedure verifies it.
+      parameters:
+        - $ref: '#/components/parameters/AIProviderConnectionId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/ReauthenticationProof'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIConnectionRevisionCommandRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/CommandAccepted'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '409':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
 components:
   securitySchemes:
     ActorAuthentication:
@@ -486,6 +868,21 @@ components:
       name: deployment_id
       in: path
       required: true
+      schema:
+        $ref: '#/components/schemas/UuidV7'
+    ProviderId:
+      name: provider_id
+      in: path
+      required: true
+      description: Approved provider catalog identifier; this is never a URL.
+      schema:
+        type: string
+        pattern: '^[a-z][a-z0-9_-]{1,63}$'
+    AIProviderConnectionId:
+      name: connection_id
+      in: path
+      required: true
+      description: Owner-scoped opaque AI provider connection identifier.
       schema:
         $ref: '#/components/schemas/UuidV7'
     Cursor:
@@ -682,7 +1079,7 @@ components:
           $ref: '#/components/schemas/UuidV7'
         command_type:
           type: string
-          enum: [REQUEST_RECONCILIATION, ACTIVATE_KILL_SWITCH, RELEASE_KILL_SWITCH, ACTIVATE_STRATEGY, STOP_STRATEGY, START_BACKTEST]
+          enum: [REQUEST_RECONCILIATION, ACTIVATE_KILL_SWITCH, RELEASE_KILL_SWITCH, ACTIVATE_STRATEGY, STOP_STRATEGY, START_BACKTEST, VALIDATE_AI_PROVIDER_CONNECTION, ACTIVATE_AI_PROVIDER_CONNECTION, SUSPEND_AI_PROVIDER_CONNECTION, REVOKE_AI_PROVIDER_CONNECTION, ROTATE_AI_PROVIDER_CONNECTION]
         status:
           type: string
           enum: [ACCEPTED, RUNNING, SUCCEEDED, FAILED, CANCELLED]
@@ -708,7 +1105,7 @@ components:
       properties:
         code:
           type: string
-          enum: [VALIDATION_FAILED, AUTHENTICATION_REQUIRED, AUTHORIZATION_DENIED, IDEMPOTENCY_KEY_REUSED, PRECONDITION_FAILED, COMMAND_NOT_FOUND, RESOURCE_NOT_FOUND, COMMAND_STATE_CONFLICT, RISK_REJECTED, RUNTIME_NOT_READY, RECONCILIATION_BLOCKED, KILL_SWITCH_ACTIVE, EXTERNAL_OUTCOME_UNKNOWN, INTERNAL_ERROR]
+          enum: [VALIDATION_FAILED, AUTHENTICATION_REQUIRED, AUTHORIZATION_DENIED, IDEMPOTENCY_KEY_REUSED, PRECONDITION_FAILED, COMMAND_NOT_FOUND, RESOURCE_NOT_FOUND, COMMAND_STATE_CONFLICT, RISK_REJECTED, RUNTIME_NOT_READY, RECONCILIATION_BLOCKED, KILL_SWITCH_ACTIVE, EXTERNAL_OUTCOME_UNKNOWN, AI_PROVIDER_NOT_ALLOWED, AI_MODEL_NOT_ALLOWED, AI_CONNECTION_SCOPE_DENIED, AI_CREDENTIAL_NOT_CONFIGURED, AI_CREDENTIAL_VALIDATION_FAILED, AI_ENROLLMENT_NOT_PERMITTED, AI_EGRESS_POLICY_DENIED, AI_BUDGET_EXCEEDED, AI_PROVIDER_UNAVAILABLE, AI_OUTPUT_INVALID, AI_OUTCOME_UNKNOWN, SENSITIVE_INPUT_REJECTED, INTERNAL_ERROR]
         message:
           type: string
           minLength: 1
@@ -973,6 +1370,7 @@ components:
           type: string
           minLength: 1
           maxLength: 1024
+          description: Secret-like input is rejected before audit/command persistence.
         payload:
           type: object
           additionalProperties: false
@@ -1085,3 +1483,367 @@ components:
             seed:
               type: integer
               minimum: 0
+    AIProviderCatalogPage:
+      type: object
+      additionalProperties: false
+      required: [catalog_version, items]
+      properties:
+        catalog_version:
+          type: integer
+          minimum: 1
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIProviderCatalogEntry'
+    AIProviderCatalogEntry:
+      type: object
+      additionalProperties: false
+      required: [provider_id, display_name, lifecycle_status, endpoint_profile_id, data_egress_class, data_residency_class, retention_training_policy_ref, adapter_version, auth_mode, byok_supported, models]
+      properties:
+        provider_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 128
+        lifecycle_status:
+          type: string
+          enum: [ACTIVE, SUSPENDED, RETIRED]
+        endpoint_profile_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+          description: Approved opaque profile ID, never a URL supplied by the caller.
+        data_egress_class:
+          type: string
+          enum: [SANITIZED_PROPOSAL_ONLY, PRIVATE_GATEWAY_ONLY]
+        data_residency_class:
+          type: string
+          minLength: 1
+          maxLength: 128
+        retention_training_policy_ref:
+          type: string
+          minLength: 1
+          maxLength: 2048
+        adapter_version:
+          type: string
+          minLength: 1
+          maxLength: 128
+        auth_mode:
+          const: API_KEY
+        byok_supported:
+          const: true
+        models:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIProviderModelProfile'
+    AIProviderModelPage:
+      type: object
+      additionalProperties: false
+      required: [provider_id, catalog_version, items]
+      properties:
+        provider_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        catalog_version:
+          type: integer
+          minimum: 1
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIProviderModelProfile'
+    AIProviderModelProfile:
+      type: object
+      additionalProperties: false
+      required: [model_id, model_revision, lifecycle_status, structured_output_supported, max_input_tokens, max_output_tokens]
+      properties:
+        model_id:
+          type: string
+          minLength: 1
+          maxLength: 256
+        model_revision:
+          type: string
+          minLength: 1
+          maxLength: 256
+        lifecycle_status:
+          type: string
+          enum: [ACTIVE, DEPRECATED, RETIRED]
+        structured_output_supported:
+          type: boolean
+        max_input_tokens:
+          type: integer
+          minimum: 1
+        max_output_tokens:
+          type: integer
+          minimum: 1
+    AIConnectionPolicyProfilePage:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIConnectionPolicyProfile'
+    AIConnectionPolicyProfile:
+      type: object
+      additionalProperties: false
+      required: [policy_profile_id, policy_profile_version, provider_id, allowed_model_ids, allowed_environments, data_egress_class, fallback_mode]
+      description: Sanitized selectable profile metadata. It omits hostnames, network route details, precise budget values and secret material.
+      properties:
+        policy_profile_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        policy_profile_version:
+          type: integer
+          minimum: 1
+        provider_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        allowed_model_ids:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            minLength: 1
+            maxLength: 256
+        allowed_environments:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [paper, testnet, canary, live]
+        data_egress_class:
+          type: string
+          enum: [SANITIZED_PROPOSAL_ONLY, PRIVATE_GATEWAY_ONLY]
+        fallback_mode:
+          const: DISABLED
+    AIProviderConnectionPage:
+      type: object
+      additionalProperties: false
+      required: [items, next_cursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIProviderConnection'
+        next_cursor:
+          type: [string, 'null']
+    AIProviderConnection:
+      type: object
+      additionalProperties: false
+      required: [connection_id, environment, provider_selection, policies, status, revision, created_at, validated_at, activated_at, suspended_at, expired_at, revoked_at]
+      description: Sanitized owner-authorized metadata. It deliberately omits raw key, secret reference, credential binding and raw provider response.
+      properties:
+        connection_id:
+          $ref: '#/components/schemas/UuidV7'
+        environment:
+          type: string
+          enum: [paper, testnet, canary, live]
+        provider_selection:
+          $ref: '#/components/schemas/AIProviderSelection'
+        policies:
+          $ref: '#/components/schemas/AIConnectionPolicies'
+        status:
+          type: string
+          enum: [DRAFT, PENDING_SECRET, PENDING_VALIDATION, ACTIVE, ROTATION_PENDING_SECRET, ROTATION_PENDING_VALIDATION, SUSPENDED, VALIDATION_FAILED, EXPIRED, REVOKED]
+          description: SUSPENDED, EXPIRED and REVOKED are terminal in BYOK v1. Recovery requires a new reviewed connection lifecycle, not reactivation of this connection.
+        revision:
+          type: integer
+          minimum: 1
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        validated_at:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Timestamp'
+        activated_at:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Timestamp'
+        suspended_at:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Timestamp'
+        expired_at:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Timestamp'
+        revoked_at:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Timestamp'
+    AIProviderSelection:
+      type: object
+      additionalProperties: false
+      required: [provider_id, model_id, catalog_version, adapter_version]
+      properties:
+        provider_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        model_id:
+          type: string
+          minLength: 1
+          maxLength: 256
+        catalog_version:
+          type: integer
+          minimum: 1
+        adapter_version:
+          type: string
+          minLength: 1
+          maxLength: 128
+    AIProviderSelectionRequest:
+      type: object
+      additionalProperties: false
+      required: [provider_id, model_id, catalog_version]
+      description: Caller chooses only an approved provider/model/catalog version. The server resolves endpoint profile and adapter version from the catalog.
+      properties:
+        provider_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        model_id:
+          type: string
+          minLength: 1
+          maxLength: 256
+        catalog_version:
+          type: integer
+          minimum: 1
+    AIConnectionPolicies:
+      type: object
+      additionalProperties: false
+      required: [policy_profile_id, policy_profile_version, endpoint_profile_id, endpoint_profile_version, data_egress_policy_id, data_egress_policy_version, usage_policy_id, usage_policy_version]
+      properties:
+        policy_profile_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        policy_profile_version:
+          type: integer
+          minimum: 1
+        endpoint_profile_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        endpoint_profile_version:
+          type: integer
+          minimum: 1
+        data_egress_policy_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        data_egress_policy_version:
+          type: integer
+          minimum: 1
+        usage_policy_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        usage_policy_version:
+          type: integer
+          minimum: 1
+    AIConnectionPolicyProfileSelection:
+      type: object
+      additionalProperties: false
+      required: [policy_profile_id, policy_profile_version]
+      description: Caller selects only an ACTIVE, server-approved profile compatible with the selected catalog/provider/model/environment. The server resolves the endpoint, egress and usage policy IDs; callers cannot submit them individually.
+      properties:
+        policy_profile_id:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]{1,63}$'
+        policy_profile_version:
+          type: integer
+          minimum: 1
+    AIProviderConnectionCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [environment, provider_selection, policy_profile, reason]
+      description: Owner identity is derived from authentication. This request cannot carry API key, secret reference, actor ID, approval, lifecycle status or unrestricted egress/budget/endpoint policy IDs.
+      properties:
+        environment:
+          type: string
+          enum: [paper, testnet, canary, live]
+        provider_selection:
+          $ref: '#/components/schemas/AIProviderSelectionRequest'
+        policy_profile:
+          $ref: '#/components/schemas/AIConnectionPolicyProfileSelection'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          description: Secret-like input is rejected before audit/command persistence.
+    AIProviderCredentialEnrollmentRequest:
+      type: object
+      additionalProperties: false
+      required: [expected_connection_revision, api_key, reason]
+      description: The api_key is a one-time write-only secret input accepted only by the isolated secret-ingress boundary. It must be redacted before any normal request logging/tracing and must never be hashed, fingerprinted or persisted by the command/audit/event pipeline. Secret-like text in reason is rejected before audit persistence.
+      properties:
+        expected_connection_revision:
+          type: integer
+          minimum: 1
+        api_key:
+          type: string
+          format: password
+          writeOnly: true
+          minLength: 1
+          maxLength: 16384
+          x-sensitive: true
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          description: Secret-like input is rejected before any safe enrollment lifecycle metadata is persisted.
+    AIProviderCredentialEnrollmentReceipt:
+      type: object
+      additionalProperties: false
+      required: [connection_id, enrollment_kind, connection_status, revision, accepted_at]
+      description: Safe enrollment receipt. It intentionally omits raw key, secret reference, fingerprint and credential binding ID.
+      properties:
+        connection_id:
+          $ref: '#/components/schemas/UuidV7'
+        enrollment_kind:
+          type: string
+          enum: [INITIAL, ROTATION]
+        connection_status:
+          type: string
+          enum: [PENDING_VALIDATION, ROTATION_PENDING_VALIDATION]
+        revision:
+          type: integer
+          minimum: 1
+        accepted_at:
+          $ref: '#/components/schemas/Timestamp'
+    AIConnectionValidationCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          description: Secret-like input is rejected before audit/command persistence.
+        payload:
+          type: object
+          additionalProperties: false
+          required: [expected_connection_revision, probe_profile_id]
+          properties:
+            expected_connection_revision:
+              type: integer
+              minimum: 1
+            probe_profile_id:
+              type: string
+              pattern: '^[a-z][a-z0-9_-]{1,63}$'
+              description: Approved bounded synthetic/sanitized validation profile, not arbitrary prompt text.
+    AIConnectionRevisionCommandRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, payload]
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          description: Secret-like input is rejected before audit/command persistence.
+        payload:
+          type: object
+          additionalProperties: false
+          required: [expected_connection_revision]
+          properties:
+            expected_connection_revision:
+              type: integer
+              minimum: 1

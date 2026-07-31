@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/config/ai-provider-connection.v1.schema.json",
+  "title": "AI provider connection metadata v1",
+  "description": "Owner-scoped BYOK connection metadata. It never contains a raw API key, encrypted key blob, authorization header or public secret reference.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connection_version",
+    "connection_id",
+    "owner_scope",
+    "environment",
+    "provider_selection",
+    "active_credential_binding_id",
+    "candidate_credential_binding_id",
+    "policies",
+    "status",
+    "revision",
+    "created_at",
+    "validated_at",
+    "activated_at",
+    "suspended_at",
+    "expired_at",
+    "revoked_at"
+  ],
+  "properties": {
+    "connection_version": { "const": 1 },
+    "connection_id": { "$ref": "#/$defs/uuid_v7" },
+    "owner_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_type", "owner_principal_id", "account_id"],
+      "properties": {
+        "scope_type": { "const": "ACCOUNT_OWNER" },
+        "owner_principal_id": { "$ref": "#/$defs/uuid_v7" },
+        "account_id": { "$ref": "#/$defs/uuid_v7" }
+      }
+    },
+    "environment": { "type": "string", "enum": ["paper", "testnet", "canary", "live"] },
+    "provider_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_id", "model_id", "catalog_id", "catalog_version", "adapter_version"],
+      "properties": {
+        "provider_id": { "$ref": "#/$defs/identifier" },
+        "model_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "catalog_id": { "$ref": "#/$defs/uuid_v7" },
+        "catalog_version": { "type": "integer", "minimum": 1 },
+        "adapter_version": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "active_credential_binding_id": {
+      "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }],
+      "description": "Opaque active secret-boundary binding. It is null before initial enrollment and after final revocation; never public API/UI data."
+    },
+    "candidate_credential_binding_id": {
+      "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/uuid_v7" }],
+      "description": "Opaque candidate binding used only for initial validation or rotation. It is not eligible for inference and never public API/UI data."
+    },
+    "policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_profile_id", "policy_profile_version", "endpoint_profile_id", "endpoint_profile_version", "data_egress_policy_id", "data_egress_policy_version", "usage_policy_id", "usage_policy_version", "purpose_allowlist_hash"],
+      "properties": {
+        "policy_profile_id": { "$ref": "#/$defs/identifier" },
+        "policy_profile_version": { "type": "integer", "minimum": 1 },
+        "endpoint_profile_id": { "$ref": "#/$defs/identifier" },
+        "endpoint_profile_version": { "type": "integer", "minimum": 1 },
+        "data_egress_policy_id": { "$ref": "#/$defs/identifier" },
+        "data_egress_policy_version": { "type": "integer", "minimum": 1 },
+        "usage_policy_id": { "$ref": "#/$defs/identifier" },
+        "usage_policy_version": { "type": "integer", "minimum": 1 },
+        "purpose_allowlist_hash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["DRAFT", "PENDING_SECRET", "PENDING_VALIDATION", "ACTIVE", "ROTATION_PENDING_SECRET", "ROTATION_PENDING_VALIDATION", "SUSPENDED", "VALIDATION_FAILED", "EXPIRED", "REVOKED"],
+      "description": "SUSPENDED, EXPIRED and REVOKED are terminal in BYOK v1. A terminal record may retain an opaque binding ID for retention/audit, but no terminal binding is eligible or resolvable for inference."
+    },
+    "revision": { "type": "integer", "minimum": 1 },
+    "created_at": { "$ref": "#/$defs/date_time" },
+    "validated_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] },
+    "activated_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] },
+    "suspended_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] },
+    "expired_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] },
+    "revoked_at": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/date_time" }] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "ACTIVE" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "active_credential_binding_id": { "$ref": "#/$defs/uuid_v7" },
+          "candidate_credential_binding_id": { "type": "null" },
+          "validated_at": { "$ref": "#/$defs/date_time" },
+          "activated_at": { "$ref": "#/$defs/date_time" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "PENDING_VALIDATION" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "active_credential_binding_id": { "type": "null" },
+          "candidate_credential_binding_id": { "$ref": "#/$defs/uuid_v7" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "ROTATION_PENDING_SECRET" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "active_credential_binding_id": { "$ref": "#/$defs/uuid_v7" },
+          "candidate_credential_binding_id": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "ROTATION_PENDING_VALIDATION" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "active_credential_binding_id": { "$ref": "#/$defs/uuid_v7" },
+          "candidate_credential_binding_id": { "$ref": "#/$defs/uuid_v7" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "enum": ["DRAFT", "PENDING_SECRET", "VALIDATION_FAILED", "REVOKED"] } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "active_credential_binding_id": { "type": "null" },
+          "candidate_credential_binding_id": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "SUSPENDED" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "candidate_credential_binding_id": { "type": "null" },
+          "suspended_at": { "$ref": "#/$defs/date_time" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "EXPIRED" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "candidate_credential_binding_id": { "type": "null" },
+          "expired_at": { "$ref": "#/$defs/date_time" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "REVOKED" } }, "required": ["status"] },
+      "then": { "properties": { "revoked_at": { "$ref": "#/$defs/date_time" } } }
+    }
+  ],
+  "$defs": {
+    "uuid_v7": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "date_time": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  }
+}

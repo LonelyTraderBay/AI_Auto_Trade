@@ -2,13 +2,13 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày soạn | 2026-07-31 |
-| Liên quan | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, NFR-AUD-001; ADR-0003, ADR-0004, ADR-0005, ADR-0011, ADR-0012 |
-| Nguồn policy | [Master specification](../../AI_AUTO_TRADE_MASTER_SPEC.md), §4.2, §7.4–§7.8, §8 |
+| Liên quan | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-AI-001, NFR-AUD-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0016 |
+| Nguồn policy | [Master specification](../../AI_AUTO_TRADE_MASTER_SPEC.md), §4.2, §7.4–§7.8, §8, §10.6 |
 
 ## 1. Reading rules
 
@@ -44,6 +44,12 @@ portfolio_ledger: chart_of_accounts --- journal_entries --- postings
 
 operations: deployments, runtime_leases, kill_switches, commands --- command_events
                                       \ approvals / audit_log / incidents
+                                      \ ai_provider_connections --- ai_connection_events
+
+ai_memory (Phase 6 only): inference_runs --- proposals / memory_items / retrieval_runs
+       ^
+       | immutable connection revision and sanitized provenance only; no raw key
+operations.ai_provider_connections
 
 platform: outbox --- outbox_delivery_state; inbox; dead_letters; idempotency_keys
 ```
@@ -105,6 +111,17 @@ platform.outbox_delivery_state (1) ---- (0..N) platform.dead_letters
 | `operations.commands` | `command_events` | 1:N; `UNIQUE(command_id, sequence)`; events append-only |
 | command / risk subject | `operations.approvals` | conceptual ID link only; approvals do not mutate risk state directly |
 | operations action | `audit_log` | 1:N append-only evidence with actor/machine/correlation fields |
+| `operations.ai_provider_connections` | `ai_connection_events` | 1:N append-only lifecycle metadata; same-schema FK only after Phase 6 dictionary/migration approval; no raw key/binding-to-secret mapping |
+
+### 4.4 Deferred AI/BYOK relationships
+
+| Parent | Child | Relationship rule |
+|---|---|---|
+| `operations.ai_provider_connections` | `ai_connection_events` | 1:N append-only metadata for create/validate/activate/suspend/rotate/revoke; owner scope/version is retained; no secret body/value. |
+| connection revision | `ai_memory.inference_runs` | cross-context immutable ID/version reference, no FK; run records selected provider/model/catalog/adapter/policy provenance only. |
+| `ai_memory.inference_runs` | `proposals`, `memory_items`, `retrieval_runs` | same-context links permitted only after approved Phase 6 data dictionary; structured output/provenance/retention checks apply. |
+
+The secret provider is intentionally absent from this ERD. Internal active/candidate binding IDs are opaque metadata; mapping to raw key is outside PostgreSQL and never a public API/database relationship. Candidate binding exists only for validation/rotation and does not permit inference.
 
 ## 5. Key and uniqueness contract
 
@@ -124,7 +141,7 @@ platform.outbox_delivery_state (1) ---- (0..N) platform.dead_letters
 
 An entity may be shown in §2 but remains deferred until all conditions are true: (1) phase/task authorizes it, (2) dictionary row contains full columns/constraints/access/retention, (3) relevant ADR is APPROVED, (4) contract/fixture and migration/forward-fix plan are reviewed, and (5) no existing owner table can meet the requirement without violating boundaries.
 
-Examples explicitly deferred now: all `ai_memory` entities; venue-specific private data; authentication/session tables; all research/Parquet metadata until Phase 2; trading/risk/ledger tables until Phase 1. An implementation must not turn this ERD into speculative DDL.
+Examples explicitly deferred now: all AI/BYOK entities until ADR-0008 + ADR-0016 and Phase 6 task/gate; venue-specific private data; authentication/session tables; all research/Parquet metadata until Phase 2; trading/risk/ledger tables until Phase 1. An implementation must not turn this ERD into speculative DDL.
 
 ## 7. Review checklist
 
@@ -133,4 +150,3 @@ Examples explicitly deferred now: all `ai_memory` entities; venue-specific priva
 - [ ] All append-only facts retain event/source/effective/recorded timestamps and evidence lineage.
 - [ ] Every same-schema FK has a documented delete rule; financial/audit history never uses cascade delete.
 - [ ] Exact physical columns are sourced from [data dictionary](data-dictionary.md), not inferred from this diagram.
-

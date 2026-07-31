@@ -1,0 +1,12 @@
+{
+  "policy_version": 1,
+  "data_egress_policy_id": "sanitized_proposal_only",
+  "status": "ACTIVE",
+  "allowed_purposes": ["PROPOSAL_GENERATION", "MEMORY_SUMMARY"],
+  "projection_schema_id": "sanitized_ai_projection_v1",
+  "projection_schema_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "allowed_projection_components": ["MARKET_SUMMARY", "SANITIZED_STRATEGY_CONTEXT", "PSEUDONYMIZED_IDENTIFIERS"],
+  "data_residency_class": "approved-private-route",
+  "retention_mode": "RAW_PROMPT_RESPONSE_DISABLED",
+  "approval_evidence_ref": "docs/evidence/phase-6/egress-policy-review"
+}

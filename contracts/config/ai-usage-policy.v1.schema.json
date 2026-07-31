@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-auto-trade.invalid/contracts/config/ai-usage-policy.v1.schema.json",
+  "title": "AI usage, budget and failure policy v1",
+  "description": "Owner-scoped hard-limit and failure policy for an approved AI connection. It is configuration only and does not authorize a provider call by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_version", "usage_policy_id", "status", "scope_dimensions", "hard_limits", "timeout_rate_circuit", "retry_policy", "fallback_mode", "approval_evidence_ref"],
+  "properties": {
+    "policy_version": { "const": 1 },
+    "usage_policy_id": { "$ref": "#/$defs/identifier" },
+    "status": { "type": "string", "enum": ["DRAFT", "ACTIVE", "SUSPENDED", "RETIRED"] },
+    "scope_dimensions": { "type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": { "type": "string", "enum": ["OWNER", "CONNECTION", "PROVIDER_MODEL", "ENVIRONMENT", "PURPOSE"] } },
+    "hard_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["window_seconds", "max_requests", "max_concurrent_requests", "max_input_tokens_per_request", "max_output_tokens_per_request", "max_cost_minor_units", "currency"],
+      "properties": {
+        "window_seconds": { "type": "integer", "minimum": 1, "maximum": 2678400 },
+        "max_requests": { "type": "integer", "minimum": 1 },
+        "max_concurrent_requests": { "type": "integer", "minimum": 1 },
+        "max_input_tokens_per_request": { "type": "integer", "minimum": 1 },
+        "max_output_tokens_per_request": { "type": "integer", "minimum": 1 },
+        "max_cost_minor_units": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+      }
+    },
+    "timeout_rate_circuit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_timeout_ms", "max_requests_per_minute", "failure_threshold", "circuit_open_seconds"],
+      "properties": {
+        "request_timeout_ms": { "type": "integer", "minimum": 100, "maximum": 300000 },
+        "max_requests_per_minute": { "type": "integer", "minimum": 1 },
+        "failure_threshold": { "type": "integer", "minimum": 1 },
+        "circuit_open_seconds": { "type": "integer", "minimum": 1, "maximum": 86400 }
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_attempts", "require_provider_idempotency", "unknown_outcome_action"],
+      "properties": {
+        "max_attempts": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "require_provider_idempotency": { "const": true },
+        "unknown_outcome_action": { "const": "DO_NOT_RETRY" }
+      }
+    },
+    "fallback_mode": { "const": "DISABLED", "description": "Cross-provider/key fallback requires a future explicitly approved contract; silent fallback is never permitted." },
+    "approval_evidence_ref": { "type": "string", "minLength": 1, "maxLength": 2048 }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" }
+  }
+}

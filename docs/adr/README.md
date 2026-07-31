@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-ADR-INDEX-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner |
@@ -28,5 +28,13 @@ All ADR files in this directory are `DRAFT` until an Account Owner decision is r
 | [0013](0013-data-lifecycle-retention.md) | Lifecycle, retention and backup set | Before Phase 2 | DRAFT |
 | [0014](0014-toolchain-repo-contract-authority.md) | Toolchain/repository/contract authority | Phase 0.0 gate | DRAFT |
 | [0015](0015-authentication-session-machine-identity.md) | Authentication/session/machine identity | Before Phase 3 | DRAFT |
+| [0016](0016-provider-neutral-byok-ai-connections.md) | Provider-neutral AI/BYOK catalog, connection and credential boundary | Before Phase 6 | DRAFT |
 
-Approval procedure: review Context, Decision, Alternatives, Consequences, related requirements/contracts, rollout/forward-fix and explicit non-goals. Record the Account Owner’s decision and UTC timestamp in each ADR, then update this register and the Phase 0.0 gate record in the same change.
+Approval procedure: review Context, Decision, Alternatives, Consequences, related requirements/contracts, rollout/forward-fix and explicit non-goals. Record the Account Owner’s decision and UTC timestamp in each ADR, then update this register and the gate record applicable to that ADR's phase in the same change.
+
+## Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | Đăng ký ADR-0016 cho AI đa provider/BYOK, required trước Phase 6; không phê duyệt runtime/provider/key. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Tạo ADR register baseline. | Technical Operator | Pending |

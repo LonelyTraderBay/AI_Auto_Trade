@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.0.0 |
+| Phiên bản | 2.1.0 |
 | Trạng thái | Phase 0.0 — Documentation Closure (IN_REVIEW) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
@@ -12,7 +12,7 @@
 | Mục tiêu | Xây một nền tảng giao dịch có thể kiểm thử, audit, phục hồi và nâng cấp từng phần |
 | Nguyên tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
 | Lần rà soát gần nhất | 2026-07-31 |
-| Thay đổi chính v2.0 | Nâng thành pre-code governance baseline: requirements/RACI, language/process policy, DB/API contract, ADR gate, SDLC và AI task protocol |
+| Thay đổi chính v2.1 | Bổ sung thiết kế DRAFT cho AI đa provider/BYOK: user chọn provider/model đã duyệt, secret ingress write-only, provider catalog, egress/budget và zero-execution boundary |
 
 ---
 
@@ -88,6 +88,7 @@ Không đặt tham số live bằng phỏng đoán. Mọi quyết định mở d
 | OD-005 | Alert channel, backup location, live topology | Phase 3/4 | Security/Backup Owner | Trước Phase 3 | Runbook + drill | OPEN |
 | OD-006 | Control-plane authentication provider and session model | Phase 3 | Security/Backup Owner | Trước Phase 3 | ADR + permission matrix | OPEN |
 | OD-007 | Legal/compliance applicability and data-retention obligations | Phase 2/3 | Account Owner | Trước Phase 2 | Assessment record | OPEN |
+| OD-008 | AI BYOK: provider/model catalog, owner scope, secret ingress, data-egress/privacy, budget và fallback policy | Phase 6 | Account Owner + Security/Backup Owner | Trước Phase 6 | ADR-0016 + catalog/policy + security review | OPEN |
 
 Một record OPEN chặn phase được nêu. Chỉ chuyển sang RESOLVED khi có evidence URI/path và actor đã phê duyệt.
 
@@ -300,7 +301,7 @@ Mỗi capability mới phải được thêm qua:
 | CCXT | Chỉ prototype, discovery hoặc read tooling | Không là execution core mặc định cho live |
 | Event delivery | In-process typed bus + PostgreSQL outbox/inbox | Gọn nhưng có delivery semantics rõ |
 | UI | API/CLI trước; Flutter ở phase sau | UI không được chặn trading path |
-| LLM | Ai-worker tách quyền, proposal-only | Không có đường trực tiếp đến execution |
+| LLM/BYOK | AI worker provider-neutral, proposal-only; user chọn provider/model đã được duyệt và tự cấp key qua connection bảo mật | Không bắt buộc OpenAI, không có đường trực tiếp đến execution, không có arbitrary endpoint |
 | Observability | Structured logs + OpenTelemetry-compatible tracing + metrics | Debug/audit xuyên suốt |
 | Type checking | Pyright strict | Một tool duy nhất, không cho AI chọn mypy thay thế |
 | Internal ID | UUIDv7 | Có thứ tự thời gian, chuẩn duy nhất trong PostgreSQL |
@@ -817,6 +818,12 @@ configs/
   environments/{local,ci,paper,testnet,canary}.yaml
   services/{control-api,trading-node,data-worker}.yaml
   venues/{venue-id}.yaml
+  ai/
+    provider-catalogs/{catalog-id}.yaml
+    endpoint-profiles/{endpoint-profile-id}.yaml
+    data-egress-policies/{data-egress-policy-id}.yaml
+    usage-policies/{usage-policy-id}.yaml
+    policy-profiles/{policy-profile-id}.yaml
   strategies/{strategy-version}.yaml
   risk/{policy-id-version}.yaml
   deployments/{deployment-id}.yaml
@@ -852,6 +859,7 @@ Config tối thiểu phải tách:
 | risk | policy ID/version, caps, freshness, reservation, kill-switch policy |
 | strategy | artifact/version, instrument scope, parameter schema |
 | data | retention, quality threshold, catalog location |
+| ai | provider/model catalog đã duyệt, endpoint/data-egress/usage/policy profile versioned; connection metadata active/candidate opaque, không có raw key hoặc secret_ref public |
 | operations | lease, retry, alert, backup, log redaction |
 | deployment | manifest hash, approval, image/artifact digest |
 
@@ -972,9 +980,9 @@ Alembic migration đã apply là physical schema source of truth. Data dictionar
 | portfolio_ledger | chart_of_accounts, journal_entries, postings, balance_projections, position_projections, projection_checkpoints | journal/posting là append-only accounting truth |
 | market_data | catalog_partitions, ingestion_checkpoints, feed_health, data_quality_issues | raw tick lớn nằm ở Parquet, DB chỉ metadata/control |
 | research | dataset_versions, feature_definitions, backtest_runs, evaluation_reports | research không query trực tiếp OLTP write model |
-| operations | deployments, runtime_leases, kill_switches, commands, command_events, approvals, audit_log, incidents | command async, actor/approval/audit; ownership chi tiết bên dưới |
+| operations | deployments, runtime_leases, kill_switches, commands, command_events, approvals, audit_log, incidents, ai_provider_connections, ai_connection_events | connection chỉ lưu metadata/internal active-candidate binding opaque; không lưu raw API key hoặc secret blob |
 | platform | outbox, inbox, dead_letters, idempotency_keys | platform là bounded context infrastructure, không phải context ẩn |
-| ai_memory | memory_items, retrieval_runs, proposals, post_mortems | chỉ Phase 6; không tạo sớm |
+| ai_memory | memory_items, retrieval_runs, inference_runs, proposals, post_mortems | chỉ Phase 6; không tạo sớm; raw prompt/response theo policy riêng |
 
 #### Ownership của control command và approval
 
@@ -1455,7 +1463,10 @@ Không có một ExchangePort quá lớn. Tách ít nhất:
 | NotificationPort | alert/operator notification |
 | ClockPort | time nguồn và simulated clock |
 | EventBusPort | publish/subscribe abstraction |
-| LLMProviderPort | structured generation/embedding ngoài hot path |
+| AIInferencePort | structured generation ngoài hot path; không tool execution |
+| EmbeddingProviderPort | embedding/retrieval ngoài hot path khi Phase 6 cần |
+| AIProviderCatalogPort | capability/provider/model profile đã duyệt; không suy đoán từ tên provider |
+| AIConnectionValidationPort | validate connection qua probe tối thiểu, không gửi dữ liệu trading |
 
 ### 10.2 Venue capability contract
 
@@ -1508,22 +1519,46 @@ Một adapter chỉ được dùng cho paper/live sau khi pass:
 - Live execution ưu tiên venue-native/Nautilus adapter đủ contract.
 - Core không phụ thuộc unified model của CCXT.
 
-### 10.6 LLM integration
+### 10.6 AI đa provider và BYOK (Bring Your Own Key)
 
-LLM là optional và chỉ bắt đầu sau paper ổn định.
+AI là optional và chỉ bắt đầu sau paper/canary core ổn định. **OpenAI không phải provider bắt buộc hay default.** Người dùng có thể dùng API key của mình với provider/model và `AIPolicyProfile` trong catalog đã được phê duyệt, ví dụ provider cloud, gateway tương thích hoặc gateway private. BYOK v1 chỉ hỗ trợ profile `API_KEY`; provider dùng workload identity/OAuth cần credential-flow/ADR riêng, không được nhận API key theo đường BYOK này. “Đa provider” nghĩa là thêm adapter/capability profile được review; không có nghĩa UI được nhập URL, provider, model, endpoint hoặc policy ID tùy ý.
+
+`AIProviderCatalog`, endpoint profile, data-egress policy, usage/budget policy và `AIPolicyProfile` là artifact versioned, immutable khi `ACTIVE`; thay adapter artifact digest, provider/model terms, hostname/SNI/route, retention/residency, egress projection, budget hoặc retry/fallback phải tạo version mới, capability/security review và evidence mới. Khi provider/model drift/deprecate/retire, connection bị revalidate, suspend hoặc expire theo policy; không “continue silently” trên capability chưa pin.
+
+Mỗi `AIProviderConnection` có owner scope, provider/model profile, policy-profile đã resolve, status/revision và binding opaque. Metadata nội bộ tách `active_binding` và `candidate_binding`: `PENDING_SECRET` chưa có binding, candidate chỉ dùng validation/rotation, và chỉ `active_binding` mới được inference. Public API/UI/event không trả binding nào; fixture chỉ có thể dùng UUID opaque tổng hợp để test schema, không có mapping/reference đến secret provider. Raw API key chỉ đi qua secret-enrollment write-only, một lần, qua transport bảo vệ; nó không được ghi vào PostgreSQL, YAML, deployment manifest, browser storage, command/event/audit payload, log, trace, fixture, backup hay response. Database/API chỉ dùng ID/reference opaque; không role nào, kể cả owner, được đọc lại key.
+
+Lifecycle chuẩn:
+
+~~~text
+DRAFT -> PENDING_SECRET -> PENDING_VALIDATION -> ACTIVE
+         |                    |                  |
+         |                    -> VALIDATION_FAILED -> PENDING_SECRET (explicit retry)
+ACTIVE -> ROTATION_PENDING_SECRET -> ROTATION_PENDING_VALIDATION -> ACTIVE
+                         |                    (candidate failure: discard candidate, remain ACTIVE)
+any non-terminal state -> SUSPENDED | EXPIRED | REVOKED
+(SUSPENDED, EXPIRED and REVOKED are terminal in BYOK v1; recovery requires a new,
+ separately reviewed connection lifecycle, never an implicit resume of this connection.)
+~~~
+
+Rotation bắt đầu bằng command durable không chứa key, tạo candidate binding/revision qua secret ingress, validate độc lập rồi chuyển active atomically; active binding cũ vẫn phục vụ AI trong rotation states. Candidate fail bị hủy và active binding cũ giữ nguyên. Revoke/disable chặn issuance/resolution binding mới ngay; worker dùng lease ngắn theo owner/connection/revision/job, re-check state/revision ngay trước outbound call, zeroize sau call và bỏ output của request bị revoke in-flight. Disconnect chỉ ngừng sử dụng key trong platform; upstream revoke chỉ được khẳng định khi provider capability/procedure chứng minh.
+
+Một terminal connection có thể giữ opaque binding ID chỉ để retention/audit, nhưng binding đó không còn eligible hoặc resolvable cho inference. BYOK v1 không có API “unsuspend/reactivate” trên cùng `connection_id`; user chỉ có thể tạo một lifecycle mới có review đầy đủ.
 
 Ai-worker:
 
-- chỉ đọc sanitized projection/query API;
+- chỉ đọc sanitized projection/query API theo data-egress policy;
 - chỉ ghi ai_proposal, memory item hoặc post-mortem;
-- không có exchange credential;
-- không có execution write permission;
+- resolve credential binding just-in-time cho đúng connection/job, không nhận trade key hoặc inject toàn bộ user key vào environment;
+- outbound chỉ qua approved endpoint profile và egress gateway: hostname/SNI allowlist, TLS validation, redirect deny, DNS resolution tại gateway và deny private/link-local address trừ private route đã approve;
+- không có execution write permission, risk/config/deployment promotion hoặc tool/file/network/SQL capability ngoài adapter allowlist;
 - không ở hot path;
-- có provider allowlist, budget, timeout/circuit breaker.
+- kiểm provider/model/adapter artifact/catalog capability, owner scope, policy profile, egress policy, quota/budget reservation, timeout, rate limit và circuit breaker trước request.
 
-LLM được phép phân tích, tóm tắt, tìm memory, tạo hypothesis và proposal. LLM không được place order, change risk limit, deploy live, disable audit, change credential hoặc withdraw.
+LLM được phép phân tích, tóm tắt, tìm memory, tạo hypothesis và proposal. LLM không được place order, change risk limit, deploy live, disable audit, change credential hoặc withdraw. Tool/function calling mặc định disabled; không có direct LLM -> execution/venue path.
 
-Output phải qua structured schema validation. Prompt injection trong data/memory được coi là data, không phải instruction.
+Output phải qua structured schema validation. Prompt injection, provider response và memory là untrusted data, không phải instruction. Raw prompt/response không vào telemetry mặc định; audit lưu metadata/hash, provider/model/catalog/adapter artifact/prompt-policy version, timing, usage/cost và normalized status theo retention policy. Free-text `reason`/note/audit input phải bị secret-like-input detection/reject/redact trước persistence; không ai được dán API key vào reason để “giải thích” action.
+
+BYOK v1 có fallback `DISABLED`: không có silent fallback sang provider/model/key khác. Khi AI provider timeout/outage/invalid output/budget exhausted/revoked key, capability AI fail closed hoặc bị disable; trading/risk/OMS/ledger vẫn hoạt động. Retry/fallback chỉ có thể xuất hiện ở contract/profile tương lai đã approve, cùng owner scope, egress classification/capability tương đương và provider biết request chưa rời hệ thống hoặc hỗ trợ idempotency.
 
 ### 10.7 Memory contract
 
@@ -1586,7 +1621,7 @@ contracts/api/openapi.yaml là canonical HTTP wire contract. Không implement ro
 - Prefix /api/v1.
 - Async POST command trả 202, command_id và Location của command status resource.
 - Command lifecycle: ACCEPTED -> RUNNING -> SUCCEEDED | FAILED | CANCELLED. Terminal command record là append-only audit evidence.
-- POST command có Idempotency-Key. Scope là actor_id + route_scope + key; payload canonical hash phải khớp. Same key/same payload trả original command/response; same key/different payload trả 409 IDEMPOTENCY_KEY_REUSED.
+- POST command có Idempotency-Key. Scope là actor_id + route_scope + key; payload canonical hash phải khớp. Same key/same payload trả original command/response; same key/different payload trả 409 IDEMPOTENCY_KEY_REUSED. Exception duy nhất là secret-ingress `credential-enrollments`: nó không nhận Idempotency-Key, không hash/fingerprint/persist body `api_key`, và dùng enrollment session một lần do secret boundary quản lý.
 - idempotency retention là operations policy field, tối thiểu 24 giờ với control command; exchange order idempotency vẫn dùng ClientOrderId, không dùng HTTP key.
 - Optimistic concurrency dùng resource version/If-Match; mismatch trả 412 PRECONDITION_FAILED.
 - Cursor pagination phải có sort key ổn định, opaque cursor và filter schema trong OpenAPI; không offset pagination cho audit/order/feed lớn.
@@ -1613,9 +1648,23 @@ GET   /api/v1/commands/{command_id}
 GET   /api/v1/incidents
 GET   /api/v1/audit-events
 GET   /api/v1/deployments/{deployment_id}
+GET   /api/v1/ai/providers
+GET   /api/v1/ai/providers/{provider_id}/models
+GET   /api/v1/ai/policy-profiles
+POST  /api/v1/ai/provider-connections
+GET   /api/v1/ai/provider-connections
+GET   /api/v1/ai/provider-connections/{connection_id}
+POST  /api/v1/ai/provider-connections/{connection_id}/rotations
+POST  /api/v1/ai/provider-connections/{connection_id}/credential-enrollments
+POST  /api/v1/ai/provider-connections/{connection_id}/validations
+POST  /api/v1/ai/provider-connections/{connection_id}/activations
+POST  /api/v1/ai/provider-connections/{connection_id}/suspensions
+POST  /api/v1/ai/provider-connections/{connection_id}/revocations
 ~~~
 
-Route chỉ được tạo ở phase có quyền tương ứng: health/read-only từ Phase 0, backtest/reconciliation theo Phase 2–3, action strategy/kill switch theo phase runtime. Manual order endpoint không có trong MVP. Nếu thêm sau này phải đi qua exact risk flow, `ClientOrderId`, approval và quyền high-risk riêng.
+Route chỉ được tạo ở phase có quyền tương ứng: health/read-only từ Phase 0, backtest/reconciliation theo Phase 2–3, action strategy/kill switch theo phase runtime và AI provider connection từ Phase 6. Manual order endpoint không có trong MVP. Nếu thêm sau này phải đi qua exact risk flow, `ClientOrderId`, approval và quyền high-risk riêng.
+
+`credential-enrollments` là exception hẹp cho secret ingress, không phải Control API request path hay command/event durable: route phải được isolate tới `secret_ingress` ghi trực tiếp approved secret provider. Body chứa `api_key` write-only qua TLS, `Cache-Control: no-store`, không có example/fixture/log/audit payload và không được hash/fingerprint để idempotency. Ingress dùng server-side enrollment session một lần bind actor/owner scope/connection/revision; nếu client mất response, client chỉ query metadata status an toàn, không auto-resubmit key. Receipt chỉ trả status/revision opaque. `rotations` là command durable riêng không chứa key; candidate được enroll/validate rồi activate atomically. Create/validate/activate/suspend/revoke connection tạo audit/command metadata không chứa raw secret. Endpoint này chỉ mở sau khi ADR-0016, secret topology và auth/RBAC Phase 6 được APPROVED.
 
 Error catalog tối thiểu:
 
@@ -1632,6 +1681,18 @@ RUNTIME_NOT_READY
 RECONCILIATION_BLOCKED
 KILL_SWITCH_ACTIVE
 EXTERNAL_OUTCOME_UNKNOWN
+AI_PROVIDER_NOT_ALLOWED
+AI_MODEL_NOT_ALLOWED
+AI_CONNECTION_SCOPE_DENIED
+AI_CREDENTIAL_NOT_CONFIGURED
+AI_CREDENTIAL_VALIDATION_FAILED
+AI_ENROLLMENT_NOT_PERMITTED
+AI_EGRESS_POLICY_DENIED
+AI_BUDGET_EXCEEDED
+AI_PROVIDER_UNAVAILABLE
+AI_OUTPUT_INVALID
+AI_OUTCOME_UNKNOWN
+SENSITIVE_INPUT_REJECTED
 INTERNAL_ERROR
 ~~~
 
@@ -1656,17 +1717,21 @@ Auth provider/session model là OD-006 và ADR bắt buộc trước Phase 3. B�
 | change risk policy/deployment | Risk Approver + Account Owner theo scope | có | có |
 | approve canary | Account Owner + Risk Approver | có | có |
 | rotate credential/topology | Security/Backup Owner | có | có |
+| xem AI provider/model catalog đã duyệt | Viewer trong owner scope | không | không |
+| tạo/enroll/rotate/revoke AI connection của scope mình | Account Owner | có | có |
+| validate/activate AI connection hoặc thay egress/budget policy | Account Owner + Security/Backup Owner | có | có |
+| emergency suspend/revoke AI connection không thuộc scope đang thao tác | Security/Backup Owner | có | có; Account Owner notification/review bắt buộc sau containment |
 
 ### 11.4 Ownership và decision rights
 
-Một người có thể giữ nhiều vai trong dự án solo ở Phase 0 đến paper/testnet, nhưng audit record vẫn phải ghi role hành động. Quy tắc reviewer human thứ hai cho canary/live ở §1.6 vẫn áp dụng và không được thay bằng cùng actor đổi role trên UI.
+Một người có thể giữ nhiều vai trong dự án solo ở Phase 0 đến paper/testnet, nhưng audit record vẫn phải ghi role hành động. Validate/activate AI connection cần record cả Account Owner và Security/Backup Owner; nếu cùng cá nhân giữ hai role ở pre-canary, phải có record hai role và waiver/approval theo policy, không được giả vờ là independent review. Quy tắc reviewer human thứ hai cho canary/live ở §1.6 vẫn áp dụng và không được thay bằng cùng actor đổi role trên UI.
 
 | Role | Quyền/quy trách nhiệm |
 |---|---|
-| Account Owner | sở hữu account/capital, phê duyệt venue, canary cap, legal/terms và live scope |
+| Account Owner | sở hữu account/capital, phê duyệt venue, canary cap, legal/terms, live scope và AI connection của scope mình; không đọc raw API key |
 | Technical Operator | triển khai, chạy CI, vận hành runtime, request reconciliation, activate kill switch |
 | Risk Approver | sở hữu risk policy, duyệt override/pending approval/canary risk cap |
-| Security/Backup Owner | credential, topology, network allowlist, backup/restore, incident escalation |
+| Security/Backup Owner | credential, topology, network allowlist, backup/restore, incident escalation, AI provider catalog/egress approval; có thể emergency suspend/revoke AI connection với re-auth/reason/audit và post-containment Account Owner review; không đọc raw API key |
 | Viewer | chỉ đọc sanitized projection/audit phù hợp |
 | Worker | machine identity chỉ có permission tối thiểu của process |
 | AI Coding Agent | chỉ sửa code theo task/phase; không có production credential hoặc quyền deploy |
@@ -1680,6 +1745,7 @@ Một người có thể giữ nhiều vai trong dự án solo ở Phase 0 đế
 | Backup/restore runbook | Security/Backup Owner | Restore drill evidence |
 | Gate record | Technical Operator | role quy định ở §14.2 |
 | Credential rotation | Security/Backup Owner | audit + verification |
+| AI provider connection/profile | Account Owner | Security/Backup Owner review; validate/activate cần hai role record; ADR-0016/gate trước Phase 6 |
 
 Dangerous action gồm release kill switch, approve canary, thay risk policy và credential rotation phải có re-auth, audit và explicit reason. Không có action high-risk nào chỉ dựa vào UI confirmation.
 
@@ -1699,12 +1765,14 @@ Flutter chỉ là client của Control API:
 
 ### 12.1 Credential policy
 
-- Key riêng cho mỗi environment/account.
-- Paper/testnet/live không dùng chung key.
-- Trade key không có withdrawal permission.
-- IP allowlist khi venue hỗ trợ.
-- Secret ở secret provider hoặc environment injection; không commit, log, trace hay UI.
-- Rotate theo lịch hoặc ngay khi nghi ngờ lộ.
+- Venue key, AI provider key và control-plane/session credential là ba credential class riêng, không dùng thay thế hoặc chia sẻ quyền.
+- Venue key riêng cho mỗi environment/account; paper/testnet/live không dùng chung key; trade key không có withdrawal permission.
+- AI provider key thuộc đúng owner scope + provider connection + environment/policy, không có venue/account capability và không được shared cross-owner.
+- IP/network allowlist khi provider/venue hỗ trợ; AI egress chỉ tới endpoint profile được catalog phê duyệt.
+- Secret ở approved secret provider/injection; không commit, log, trace, UI, browser storage, DB/manifest/fixture/evidence hoặc prompt.
+- BYOK enrollment chỉ được phép qua write-only secret ingress; raw key không được read-back sau submit.
+- Rotate theo lịch hoặc ngay khi nghi ngờ lộ; rotation/revoke của AI key phải disable binding và preserve audit metadata không chứa secret. Secret ingress, proxy/WAF/APM, request/response cache và browser path phải enforce redaction/no-store; secret-like input ở reason/note/audit bị reject.
+- Binding lease của `ai_worker` phải ngắn, scope theo owner/connection/revision/job, không reusable cross-job; revoke/suspend invalidates issuance immediately, worker rechecks state/revision before egress, zeroizes after use và discards an in-flight result if revocation wins. Revocation propagation SLA/cache TTL là policy field và có drill/test trước Phase 6.
 - AI worker không nhận trade key.
 
 ### 12.2 Supply chain và bảo vệ dữ liệu
@@ -1727,6 +1795,7 @@ Flutter chỉ là client của Control API:
 | data worker | ingest data; không có trade secret |
 | research worker | đọc catalog; ghi research candidate |
 | ai worker | đọc sanitized projection; ghi AI/memory proposal |
+| secret_ingress | validate one-time enrollment session; direct vault write; safe receipt only; không raw-body log/hash/audit persistence |
 | dashboard | chỉ gọi Control API |
 
 Mỗi process có database role riêng. Không chạy ứng dụng bằng DB superuser.
@@ -1736,6 +1805,8 @@ Mỗi process có database role riêng. Không chạy ứng dụng bằng DB sup
 Phải model và kiểm thử các threat:
 
 - API key theft, secret/log leakage;
+- user-supplied AI key enrollment leak/body hash, cross-owner connection use, arbitrary endpoint/proxy/DNS/redirect/SSRF và unauthorized provider data egress;
+- AI quota/billing abuse, model/capability/adapter drift, candidate rotation/revoke race, provider outage/unknown outcome và silent fallback sang provider khác;
 - unauthorized deployment hoặc risk bypass;
 - prompt injection/memory poisoning;
 - poisoned market/reference data;
@@ -1757,7 +1828,7 @@ Metrics tối thiểu:
 - risk verdict/reason, exposure, reservation age, stale blocks;
 - reconciliation mismatch, projection lag, ledger imbalance attempts;
 - DB locks/connections/disk, outbox backlog, worker heartbeat, clock drift;
-- LLM cost/error/validation failure nếu AI được bật.
+- AI provider availability/latency/rate limit, initial/rotation connection validation/revocation/lease propagation, quota/budget reservation/actual usage, egress denial, output validation và circuit-breaker state nếu AI được bật.
 
 Alert baseline:
 
@@ -1777,6 +1848,7 @@ Alert baseline:
 | Unknown outcome | reconcile, không retry blind |
 | Permanent external error | alert/stop capability phù hợp, không retry tự động |
 | Infrastructure/security error | fail closed, incident và circuit breaker |
+| AI provider timeout/unknown outcome | không retry/fallback blind; normalize error, preserve no-secret evidence và disable AI capability nếu policy yêu cầu |
 
 ### 12.7 Runbook tối thiểu
 
@@ -1789,7 +1861,8 @@ Trước paper cần có runbook cho:
 5. Trading node crash/restart.
 6. Database unavailable/disk full.
 7. Credential revoked/rotation.
-8. Backup restore và rollback deployment.
+8. Phase 6: AI connection credential compromise/revoke, provider outage/budget exhaustion và denied data egress.
+9. Backup restore và rollback deployment.
 
 Mỗi runbook phải có cùng mẫu:
 
@@ -2166,15 +2239,17 @@ Chỉ thực hiện sau paper/canary ổn định. Auth/RBAC tối thiểu đã 
 
 ### Phase 6 — AI, memory và controlled learning
 
-Chỉ thực hiện khi core paper/canary đã ổn định và ADR 0008 `APPROVED`:
+Chỉ thực hiện khi core paper/canary đã ổn định, ADR 0008 và ADR 0016 `APPROVED`, OD-008 `RESOLVED`, auth/machine identity và secret-provider topology liên quan đã được phê duyệt:
 
-- Fake/Disabled LLM provider trước.
-- OpenAI/other provider adapter với structured output/redaction/budget.
+- Fake/Disabled AI provider trước, CI không dùng key/provider thật.
+- Provider-neutral adapter + catalog/capability profile; OpenAI chỉ là một adapter có thể chọn, không phải dependency bắt buộc.
+- User BYOK connection: user chọn provider/model và policy profile đã duyệt; create/rotation command không chứa key, isolated secret ingress enroll write-only candidate key, validate với synthetic/sanitized probe rồi activate atomically theo owner/egress/budget policy.
+- Endpoint profile, data-egress policy, usage/budget policy và policy profile phải versioned/reviewed; outbound chỉ qua egress gateway allowlist, không redirect/DNS/private-address bypass.
 - Memory có provenance, review status, retention và point-in-time retrieval.
 - Candidate -> backtest -> walk-forward -> stress -> shadow -> paper -> canary -> approval.
 - Không auto-promote live, không tự sửa live code/risk/config.
 
-**Exit gate:** tắt AI không ảnh hưởng trading; invalid/timeout output không block hot path; retrieval không dùng memory tương lai trong replay; budget hard limit được thực thi; AI provider có zero trade credential và contract test chứng minh không có execution tool.
+**Exit gate:** tắt AI không ảnh hưởng trading; invalid/timeout output không block hot path; retrieval không dùng memory tương lai trong replay; hard budget/quota/rate limit được thực thi; raw key không xuất hiện ở response/log/trace/audit/DB/fixture/proxy/WAF/APM/cache; provider/model/endpoint/policy-profile không allowlist bị reject; cross-owner connection access bị deny; initial `PENDING_SECRET`, candidate rotation/cutover/rollback, enrollment no-hash/no-auto-retry, dual-role approval, revoke lease/in-flight, DNS/redirect/egress bypass, catalog drift/deprecation và outage drills pass; AI provider có zero trade credential và contract test chứng minh không có execution tool hoặc silent cross-provider fallback.
 
 ### Phần hoãn sau Phase 6
 
@@ -2203,6 +2278,7 @@ Multi-venue, derivatives, multi-account, distributed worker, HA, advanced ML, gr
 | 0013 | Data lifecycle, retention, Parquet atomicity và backup consistency | Trước Phase 2 |
 | 0014 | Toolchain, repository topology, language policy và contract authority | Phase 0.0 gate |
 | 0015 | Control-plane authentication, session model, machine identity và authorization enforcement | Trước Phase 3 |
+| 0016 | Provider-neutral AI/BYOK connection, provider/model catalog, secret ingress, egress/budget/fallback boundary | Trước Phase 6 |
 
 Mỗi ADR có Context, Decision, Alternatives, Consequences, Status, Date, owner, related requirements/contracts, migration/rollout impact và rollback/forward-fix note. Status hợp lệ là `DRAFT`, `APPROVED`, `REJECTED`, `SUPERSEDED`; chỉ `APPROVED` được dùng để mở gate. `SUPERSEDED` phải link tới ADR thay thế; không sửa lịch sử quyết định đã có evidence.
 
@@ -2233,6 +2309,13 @@ Trước Phase 4:
 - shutdown policy cho open order;
 - owner/approver identity;
 - live host/topology và escalation path.
+
+Trước Phase 6:
+
+- AI provider/model catalog, adapter capability/version và endpoint/network egress profile;
+- user/owner scope, BYOK enrollment/rotation/revoke và secret-provider topology;
+- data classification, retention, data residency/terms, budget/quota/rate/fallback policy;
+- AI machine identity, no-execution negative-security evidence và provider outage/credential-compromise runbook.
 
 ### 15.3 Waiver policy
 

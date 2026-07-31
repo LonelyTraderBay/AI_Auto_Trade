@@ -1,0 +1,38 @@
+{
+  "connection_version": 1,
+  "connection_id": "018f8c7c-0110-7110-8110-000000000110",
+  "owner_scope": {
+    "scope_type": "ACCOUNT_OWNER",
+    "owner_principal_id": "018f8c7c-0111-7111-8111-000000000111",
+    "account_id": "018f8c7c-0112-7112-8112-000000000112"
+  },
+  "environment": "paper",
+  "provider_selection": {
+    "provider_id": "private_gateway",
+    "model_id": "example-structured-model",
+    "catalog_id": "018f8c7c-0100-7100-8100-000000000100",
+    "catalog_version": 1,
+    "adapter_version": "1.0.0"
+  },
+  "active_credential_binding_id": "018f8c7c-0113-7113-8113-000000000113",
+  "candidate_credential_binding_id": null,
+  "policies": {
+    "policy_profile_id": "private_gateway_paper_proposal",
+    "policy_profile_version": 1,
+    "endpoint_profile_id": "private_gateway_paper",
+    "endpoint_profile_version": 1,
+    "data_egress_policy_id": "sanitized_proposal_only",
+    "data_egress_policy_version": 1,
+    "usage_policy_id": "paper_ai_usage_v1",
+    "usage_policy_version": 1,
+    "purpose_allowlist_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
+  "status": "ACTIVE",
+  "revision": 2,
+  "created_at": "2026-07-31T00:00:00Z",
+  "validated_at": "2026-07-31T00:01:00Z",
+  "activated_at": "2026-07-31T00:02:00Z",
+  "suspended_at": null,
+  "expired_at": null,
+  "revoked_at": null
+}
