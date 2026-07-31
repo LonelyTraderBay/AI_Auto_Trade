@@ -14,5 +14,5 @@
   "data_egress_policy_version": 1,
   "usage_policy_id": "paper_ai_usage_v1",
   "usage_policy_version": 1,
-  "approval_evidence_ref": "docs/evidence/phase-6/private-gateway-paper-policy-profile"
+  "approval_evidence_ref": "docs/governance/evidence/phase-6/private-gateway-paper-policy-profile"
 }

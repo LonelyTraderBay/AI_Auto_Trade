@@ -13,7 +13,7 @@ goal: "Tạo governance, product baseline, glossary và traceability cho MVP."
 non_goals: ["Approve risk limits", "Choose venue", "Create implementation code"]
 preconditions: ["Task 0.0.0 exists."]
 blockers: ["Account Owner approval of scope and RACI is pending."]
-allowed_globs: ["docs/DOCS_INDEX.md", "docs/00-governance/**", "docs/01-product/**", "docs/evidence/tasks/0.0.1/**"]
+allowed_globs: ["docs/governance/DOCS_INDEX.md", "docs/governance/*.md", "docs/backend/product/**", "docs/shared/**", "docs/governance/evidence/tasks/0.0.1/**"]
 forbidden_globs: ["src/**", "migrations/**", "contracts/**", "configs/**", "infra/**"]
 impact:
   database: false
@@ -26,7 +26,7 @@ acceptance_criteria:
   - "Document control, RACI, RAID, requirements và glossary tồn tại và dùng ID chuẩn."
   - "Mọi baseline FR/NFR/SEC map tới source/test/gate dự kiến."
 required_commands: ["Manual link and requirement-traceability review"]
-evidence_path: "docs/evidence/tasks/0.0.1/"
+evidence_path: "docs/governance/evidence/tasks/0.0.1/"
 gate_impact: "Phase 0.0"
 rollback_or_forward_fix: "Sửa tài liệu trong review change; không xóa historical decision record."
 known_risks: ["RACI và scope cần Account Owner xác nhận."]

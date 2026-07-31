@@ -24,5 +24,5 @@
     "unknown_outcome_action": "DO_NOT_RETRY"
   },
   "fallback_mode": "DISABLED",
-  "approval_evidence_ref": "docs/evidence/phase-6/usage-policy-review"
+  "approval_evidence_ref": "docs/governance/evidence/phase-6/usage-policy-review"
 }

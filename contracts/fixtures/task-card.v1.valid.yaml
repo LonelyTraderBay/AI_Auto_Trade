@@ -41,7 +41,7 @@ acceptance_criteria:
   - "Fixtures validate without containing secret or real venue data."
 required_commands:
   - "Phase 0.0 approved JSON Schema and OpenAPI validation procedure"
-evidence_path: "docs/evidence/tasks/0.0.4/"
+evidence_path: "docs/governance/evidence/tasks/0.0.4/"
 gate_impact: "phase-0.0"
 rollback_or_forward_fix: "Supersede draft contract versions; do not modify approved or implemented public v1 semantics without a new task and compatibility plan."
 known_risks:

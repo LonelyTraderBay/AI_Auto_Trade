@@ -13,7 +13,7 @@ goal: "Tạo canonical domain, OMS/risk/accounting policy và data design đủ 
 non_goals: ["Alembic migration", "Database instance", "Venue adapter", "Risk value approval"]
 preconditions: ["Architecture baseline exists."]
 blockers: ["Required ADR and accounting policy approval pending."]
-allowed_globs: ["docs/03-domain/**", "docs/04-data/**", "docs/adr/0003-*.md", "docs/adr/0004-*.md", "docs/adr/0005-*.md", "docs/adr/0007-*.md", "docs/adr/0011-*.md", "docs/adr/0012-*.md", "docs/adr/0013-*.md", "docs/evidence/tasks/0.0.3/**"]
+allowed_globs: ["docs/backend/domain/**", "docs/backend/data/**", "docs/backend/adr/0003-*.md", "docs/backend/adr/0004-*.md", "docs/backend/adr/0005-*.md", "docs/backend/adr/0007-*.md", "docs/backend/adr/0011-*.md", "docs/backend/adr/0012-*.md", "docs/backend/adr/0013-*.md", "docs/governance/evidence/tasks/0.0.3/**"]
 forbidden_globs: ["src/**", "migrations/**", "configs/**", "infra/**", "pyproject.toml", "uv.lock"]
 impact:
   database: true
@@ -26,7 +26,7 @@ acceptance_criteria:
   - "OMS, accounting and transaction policies are compatible with master invariants."
   - "ERD/data dictionary define Task 0.3 physical tables and constraints."
 required_commands: ["Manual domain-data-ADR consistency review"]
-evidence_path: "docs/evidence/tasks/0.0.3/"
+evidence_path: "docs/governance/evidence/tasks/0.0.3/"
 gate_impact: "Phase 0.0"
 rollback_or_forward_fix: "Amend documents/ADRs before a migration exists."
 known_risks: ["No DDL may be created until the data review is approved."]

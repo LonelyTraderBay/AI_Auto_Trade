@@ -26,7 +26,7 @@ acceptance_criteria:
   - "Artifact pack có index, task controls và gate record draft."
   - "Không tạo application, migration hoặc runtime artifact."
 required_commands: ["Manual Phase 0.0 document-pack review; evidence pending"]
-evidence_path: "docs/evidence/tasks/0.0.0/"
+evidence_path: "docs/governance/evidence/tasks/0.0.0/"
 gate_impact: "Phase 0.0"
 rollback_or_forward_fix: "Artifact sai được sửa bằng change review; không có runtime state để rollback."
 known_risks: ["Không được đánh dấu PASS trước Account Owner review."]

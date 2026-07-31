@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.1.0 |
+| Phiên bản | 2.1.1 |
 | Trạng thái | Phase 0.0 — Documentation Closure (IN_REVIEW) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
@@ -13,6 +13,7 @@
 | Nguyên tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
 | Lần rà soát gần nhất | 2026-07-31 |
 | Thay đổi chính v2.1 | Bổ sung thiết kế DRAFT cho AI đa provider/BYOK: user chọn provider/model đã duyệt, secret ingress write-only, provider catalog, egress/budget và zero-execution boundary |
+| Thay đổi chính v2.1.1 | Cập nhật §1.5 artifact pack tree và các tham chiếu đường dẫn docs/ theo tái cấu trúc lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001); không đổi quyết định kiến trúc/domain/risk/security nào |
 
 ---
 
@@ -158,21 +159,36 @@ Nếu artifact cấp thấp mâu thuẫn cấp cao hơn, trạng thái là BLOCK
 
 Pre-Phase 0 phải tạo artifact pack sau; chưa cần implementation code, nhưng từng artifact phải có owner, version và review:
 
+Kể từ v2.1.1, artifact pack được tổ chức theo lớp Backend/Frontend/Shared/Governance thay vì theo số thứ tự 00–06 (xem `docs/governance/documentation-layer-classification.md`, GOV-CLASS-001, cho lý do phân loại từng artifact):
+
 ~~~text
 docs/
-  DOCS_INDEX.md
-  00-governance/{document-control,raci,raid-register,requirements-traceability}.md
-  01-product/{product-charter,functional-requirements,non-functional-requirements,glossary}.md
-  02-architecture/{c4-context,c4-container,runtime-sequences,language-and-technology-policy}.md
-  03-domain/{canonical-domain-model,oms-state-machine,risk-policy,accounting-policy}.md
-  04-data/{data-architecture,erd,data-dictionary,database-standards,transaction-and-concurrency,db-operations,migration-backfill-playbook}.md
-  05-engineering/{repository-conventions,coding-standards-python,test-strategy,ci-cd-design,ai-coding-protocol}.md
-  06-security-ops/{threat-model,access-control-matrix,auth-session-policy,secrets-and-key-management,slo-sli-alert-policy,runbook-index}.md
-  06-security-ops/runbooks/
-  contract-registry.md
-  adr/
-  evidence/{gates,tasks}/
-  templates/{adr,task-card,gate-record}.md
+  governance/
+    DOCS_INDEX.md
+    document-control.md
+    raci.md
+    raid-register.md
+    requirements-traceability.md
+    documentation-layer-classification.md
+    adr/
+      README.md
+    templates/{adr,task-card,gate-record}.md
+    evidence/{gates,tasks}/
+  shared/
+    glossary.md
+    product/non-functional-requirements.md
+  backend/
+    product/{product-charter,functional-requirements}.md
+    architecture/{c4-context,c4-container,runtime-sequences,language-and-technology-policy,ai-provider-byok-architecture}.md
+    domain/{canonical-domain-model,oms-state-machine,risk-policy,accounting-policy}.md
+    data/{data-architecture,erd,data-dictionary,database-standards,transaction-and-concurrency,db-operations,migration-backfill-playbook}.md
+    engineering/{repository-conventions,coding-standards-python,test-strategy,ci-cd-design,ai-coding-protocol}.md
+    security-ops/{threat-model,access-control-matrix,auth-session-policy,secrets-and-key-management,slo-sli-alert-policy,runbook-index,ai-byok-security-policy}.md
+    security-ops/runbooks/
+    adr/0001-…0016-*.md
+    contracts/contract-registry.md
+  frontend/
+    README.md  # placeholder có chủ đích, chưa có nội dung trước Phase 5
 contracts/
   api/openapi.yaml
   commands/
@@ -239,7 +255,7 @@ Phạm vi ban đầu bị giới hạn bắt buộc:
 
 ### 2.2 Mục tiêu chức năng
 
-Đây là baseline requirement có thể trace trước khi tách đầy đủ vào `docs/01-product/`. Task implementation phải tham chiếu ID, không chỉ tham chiếu một câu mô tả.
+Đây là baseline requirement có thể trace trước khi tách đầy đủ vào `docs/backend/product/`. Task implementation phải tham chiếu ID, không chỉ tham chiếu một câu mô tả.
 
 | ID | Requirement baseline | Acceptance source chính |
 |---|---|---|
@@ -256,7 +272,7 @@ Phạm vi ban đầu bị giới hạn bắt buộc:
 | NFR-SEC-001 | Credential least-privilege; AI/UI không có đường đặt lệnh trực tiếp. | §10.6, §11, §12 |
 | NFR-OPS-001 | Runtime có health, alert, restore/reconciliation và runbook có evidence. | §12, §14 gate |
 
-`docs/01-product/functional-requirements.md` và `non-functional-requirements.md` phải mở rộng bảng này bằng acceptance criteria cụ thể, priority, owner và trạng thái. Không được đổi ID/meaning đã được implementation dùng; thay vào đó tạo requirement version/supersession rõ ràng.
+`docs/backend/product/functional-requirements.md` và `docs/shared/product/non-functional-requirements.md` phải mở rộng bảng này bằng acceptance criteria cụ thể, priority, owner và trạng thái. Không được đổi ID/meaning đã được implementation dùng; thay vào đó tạo requirement version/supersession rõ ràng.
 
 ### 2.3 Không nằm trong phạm vi giai đoạn đầu
 
@@ -470,18 +486,30 @@ ai-auto-trade/
     active/
     completed/
   docs/
-    DOCS_INDEX.md
-    00-governance/
-    01-product/
-    02-architecture/
-    03-domain/
-    04-data/
-    05-engineering/
-    06-security-ops/
-    contract-registry.md
-    adr/
-    evidence/{gates,tasks}/
-    templates/
+    governance/
+      DOCS_INDEX.md
+      document-control.md
+      raci.md
+      raid-register.md
+      requirements-traceability.md
+      documentation-layer-classification.md
+      adr/
+      evidence/{gates,tasks}/
+      templates/
+    shared/
+      glossary.md
+      product/
+    backend/
+      product/
+      architecture/
+      domain/
+      data/
+      engineering/
+      security-ops/
+      adr/
+      contracts/
+        contract-registry.md
+    frontend/
   src/ai_auto_trade/
     shared_kernel/
     contexts/
@@ -954,7 +982,7 @@ Hệ thống dùng at-least-once delivery, không hứa exactly-once.
 
 AI không được tạo migration đầu tiên, bảng mới hoặc index mới nếu chưa có data dictionary entry và task card được duyệt.
 
-Mỗi table entry trong docs/04-data/data-dictionary.md phải có:
+Mỗi table entry trong docs/backend/data/data-dictionary.md phải có:
 
 | Thuộc tính | Bắt buộc |
 |---|---|
@@ -1123,7 +1151,7 @@ contracts/
   config/<kind>.v1.schema.json
   errors/error-catalog.md
   fixtures/
-docs/contract-registry.md
+docs/backend/contracts/contract-registry.md
 ~~~
 
 Mỗi registry entry phải có Contract ID/version, owner context, canonical path, producer, consumer, partition key, sensitive-data classification, compatibility rule, fixture/test path, migration/retirement plan.
@@ -2037,7 +2065,7 @@ documentation closure + approved ADRs/contracts
 
 ### 14.2 Gate rules và evidence
 
-Mỗi gate là một record độc lập tại docs/evidence/gates/phase-N/ và phải có:
+Mỗi gate là một record độc lập tại docs/governance/evidence/gates/phase-N/ và phải có:
 
 | Field | Bắt buộc |
 |---|---|
@@ -2361,7 +2389,7 @@ Thiếu requirement, ADR, contract, allowed path, acceptance command hoặc owne
 
 ### 16.2 Task card bắt buộc
 
-Machine-readable task card là authority cho scope thực thi: `tasks/active/<TASK_ID>.yaml` hoặc `tasks/completed/<TASK_ID>.yaml`, validate bằng `contracts/config/task-card.v1.schema.json`. `docs/templates/task-card.md` là template/readable render, không được khác YAML authority.
+Machine-readable task card là authority cho scope thực thi: `tasks/active/<TASK_ID>.yaml` hoặc `tasks/completed/<TASK_ID>.yaml`, validate bằng `contracts/config/task-card.v1.schema.json`. `docs/governance/templates/task-card.md` là template/readable render, không được khác YAML authority.
 
 Task YAML phải có tối thiểu:
 
@@ -2435,7 +2463,7 @@ Bootstrap exception duy nhất: trước khi `tasks/` và schema tồn tại, Ta
 
 ## Phụ lục C — Mẫu tối thiểu cho artifact pre-code
 
-Các template/readable render trong `docs/templates/` và structured source tương ứng phải dùng các trường dưới đây. Được thêm field cần thiết, không được bỏ field bắt buộc.
+Các template/readable render trong `docs/governance/templates/` và structured source tương ứng phải dùng các trường dưới đây. Được thêm field cần thiết, không được bỏ field bắt buộc.
 
 ### C.1 Header mọi tài liệu kiểm soát
 
@@ -2486,7 +2514,7 @@ forbidden_globs: ["migrations/**", "src/**"]
 impact: { database: false, api: false, event: false, config: false, dependency: false, security: false }
 acceptance_criteria: []
 required_commands: ["uv sync --locked"]
-evidence_path: "docs/evidence/tasks/0.1/"
+evidence_path: "docs/governance/evidence/tasks/0.1/"
 gate_impact: "none"
 rollback_or_forward_fix: "..."
 known_risks: []

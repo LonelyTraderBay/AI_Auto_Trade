@@ -13,7 +13,7 @@ goal: "Tạo contract registry, API/schema skeleton và security/operations base
 non_goals: ["Implement API", "Configure auth provider", "Connect venue", "Create secret"]
 preconditions: ["Architecture and data contract drafts exist."]
 blockers: ["Authentication provider decision OD-006/ADR-0015 is pending."]
-allowed_globs: ["docs/06-security-ops/**", "docs/contract-registry.md", "contracts/api/**", "contracts/commands/**", "contracts/events/**", "contracts/errors/**", "contracts/fixtures/**", "docs/adr/0015-*.md", "docs/evidence/tasks/0.0.4/**"]
+allowed_globs: ["docs/backend/security-ops/**", "docs/backend/contracts/contract-registry.md", "contracts/api/**", "contracts/commands/**", "contracts/events/**", "contracts/errors/**", "contracts/fixtures/**", "docs/backend/adr/0015-*.md", "docs/governance/evidence/tasks/0.0.4/**"]
 forbidden_globs: ["src/**", "migrations/**", "configs/**", "infra/**", "pyproject.toml", "uv.lock"]
 impact:
   database: false
@@ -26,7 +26,7 @@ acceptance_criteria:
   - "OpenAPI and JSON schemas are parseable and have redacted fixtures."
   - "Threat, access, secret and SLO policy explicitly fail closed."
 required_commands: ["Contract/schema parse validation", "Manual security-policy review"]
-evidence_path: "docs/evidence/tasks/0.0.4/"
+evidence_path: "docs/governance/evidence/tasks/0.0.4/"
 gate_impact: "Phase 0.0"
 rollback_or_forward_fix: "Version contract before consumer/producer implementation exists."
 known_risks: ["No external command or venue credential is allowed in this phase."]

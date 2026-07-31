@@ -33,7 +33,7 @@
           "max_output_tokens": 1024
         }
       ],
-      "approval_evidence_ref": "docs/evidence/providers/private-gateway-paper.md"
+      "approval_evidence_ref": "docs/governance/evidence/providers/private-gateway-paper.md"
     }
   ]
 }

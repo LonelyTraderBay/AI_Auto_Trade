@@ -10,5 +10,5 @@
   "redirect_policy": "DENY",
   "dns_resolution_policy": "EGRESS_GATEWAY_ONLY",
   "private_address_policy": "APPROVED_PRIVATE_ROUTE_ONLY",
-  "approval_evidence_ref": "docs/evidence/phase-6/provider-private-gateway-review"
+  "approval_evidence_ref": "docs/governance/evidence/phase-6/provider-private-gateway-review"
 }

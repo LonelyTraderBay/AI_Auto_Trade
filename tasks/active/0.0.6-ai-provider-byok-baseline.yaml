@@ -13,7 +13,7 @@ goal: "Chuẩn hóa hồ sơ DRAFT cho AI đa provider/BYOK: user chọn provide
 non_goals: ["Implement AI provider adapter", "Create or use real API key", "Connect an external AI provider", "Create migration or runtime endpoint", "Enable AI trading/execution", "Approve ADR or gate"]
 preconditions: ["Phase 0.0 artifact pack exists.", "ADR-0008 baseline and secret/auth policies are available as DRAFT/IN_REVIEW."]
 blockers: ["OD-008 and ADR-0016 are pending Account Owner/Security review.", "Secret-provider topology and auth/machine identity are not approved."]
-allowed_globs: ["AI_AUTO_TRADE_MASTER_SPEC.md", "docs/DOCS_INDEX.md", "docs/00-governance/**", "docs/01-product/**", "docs/02-architecture/**", "docs/03-domain/**", "docs/04-data/**", "docs/05-engineering/test-strategy.md", "docs/06-security-ops/**", "docs/adr/0008-*.md", "docs/adr/0016-*.md", "docs/adr/README.md", "docs/contract-registry.md", "contracts/api/**", "contracts/config/ai-*.json", "contracts/commands/ai/**", "contracts/events/ai/**", "contracts/errors/**", "contracts/fixtures/ai-*.json", "contracts/fixtures/provider-connection-*.json", "tasks/active/0.0.6-*.yaml", "docs/evidence/tasks/0.0.6/**", "docs/evidence/gates/phase-0.0/**"]
+allowed_globs: ["AI_AUTO_TRADE_MASTER_SPEC.md", "docs/governance/DOCS_INDEX.md", "docs/governance/*.md", "docs/backend/product/**", "docs/shared/**", "docs/backend/architecture/**", "docs/backend/domain/**", "docs/backend/data/**", "docs/backend/engineering/test-strategy.md", "docs/backend/security-ops/**", "docs/backend/adr/0008-*.md", "docs/backend/adr/0016-*.md", "docs/governance/adr/README.md", "docs/backend/contracts/contract-registry.md", "contracts/api/**", "contracts/config/ai-*.json", "contracts/commands/ai/**", "contracts/events/ai/**", "contracts/errors/**", "contracts/fixtures/ai-*.json", "contracts/fixtures/provider-connection-*.json", "tasks/active/0.0.6-*.yaml", "docs/governance/evidence/tasks/0.0.6/**", "docs/governance/evidence/gates/phase-0.0/**"]
 forbidden_globs: ["src/**", "migrations/**", "configs/**", "infra/**", "pyproject.toml", "uv.lock", ".env*"]
 impact:
   database: false
@@ -29,7 +29,7 @@ acceptance_criteria:
   - "Provider/model/policy-profile allowlist, owner scope, dual-role validation/activation, egress/budget/no-fallback, rotation/revoke and zero execution controls have traceability to Phase 6 gate."
   - "All new JSON Schema fixtures validate through the offline registry; OpenAPI/YAML and Markdown links validate."
 required_commands: ["JSON Schema Draft 2020-12 validation with offline $id registry", "OpenAPI 3.1 validation", "Markdown/link/reference consistency check", "Manual Security/Backup Owner and Account Owner review"]
-evidence_path: "docs/evidence/tasks/0.0.6/"
+evidence_path: "docs/governance/evidence/tasks/0.0.6/"
 gate_impact: "Phase 0.0 documentation review and future Phase 6 AI/BYOK gate"
 rollback_or_forward_fix: "No runtime exists. Amend or supersede DRAFT ADR/contracts before implementation; never introduce a raw-key persistence fallback."
 known_risks: ["User request for arbitrary provider/URL is intentionally constrained to approved adapter/catalog entries.", "This baseline does not resolve secret-vault, authentication or multi-tenant design decisions."]

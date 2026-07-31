@@ -90,7 +90,7 @@
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
           "uniqueItems": true,
-          "description": "Canonical path or contract ID from docs/contract-registry.md."
+          "description": "Canonical path or contract ID from docs/backend/contracts/contract-registry.md."
         }
       }
     },
@@ -147,7 +147,7 @@
     },
     "evidence_path": {
       "type": "string",
-      "pattern": "^docs/evidence/(?:tasks|gates)/.+/$",
+      "pattern": "^docs/governance/evidence/(?:tasks|gates)/.+/$",
       "description": "Repository-relative evidence directory with trailing slash."
     },
     "gate_impact": {

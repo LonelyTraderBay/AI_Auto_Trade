@@ -8,5 +8,5 @@
   "allowed_projection_components": ["MARKET_SUMMARY", "SANITIZED_STRATEGY_CONTEXT", "PSEUDONYMIZED_IDENTIFIERS"],
   "data_residency_class": "approved-private-route",
   "retention_mode": "RAW_PROMPT_RESPONSE_DISABLED",
-  "approval_evidence_ref": "docs/evidence/phase-6/egress-policy-review"
+  "approval_evidence_ref": "docs/governance/evidence/phase-6/egress-policy-review"
 }
