@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
+| Version / Status | 1.2.0 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
 | Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
 | Related | FR-EXEC-001, FR-RSK-001, NFR-SEC-001, NFR-OPS-001; ADR-0002, ADR-0011, ADR-0012, ADR-0014 |
-| Change summary | 1.1.0 (2026-07-31, Technical Operator, Pending): đổi title ID ENG-002 -> ENG-PY-001; sửa Related FR-OMS-001 -> FR-EXEC-001 (dangling ID); thêm §4a Exception taxonomy và error mapping (DRAFT). 1.0.0: quy tắc Python áp dụng từ Task 0.1; chưa định nghĩa source implementation. |
+| Change summary | 1.2.0 (2026-07-31, Technical Operator, Pending): thêm §5a Complexity/size budget + config authority (DRAFT, enforce bằng Ruff), mở rộng §5 naming/duplication/TODO repo-wide, bổ sung tiêu chí chất lượng vào §7 DoD — đóng khoảng trống "code chuyên nghiệp, ngắn gọn" chỉ là khát vọng. 1.1.0: đổi title ID ENG-002 -> ENG-PY-001; sửa Related FR-OMS-001 -> FR-EXEC-001; thêm §4a Exception taxonomy (DRAFT). 1.0.0: quy tắc Python áp dụng từ Task 0.1. |
 
 ## 1. Phạm vi và toolchain
 
@@ -56,10 +56,45 @@ Domain không truy cập DB/network/env/file trực tiếp. Strategy không tạ
 ## 5. Naming, comments và API design
 
 - Một function/use case có một intent rõ ràng. Tránh utility module chung che domain ownership.
+- Tên phải reveal intent: không viết tắt ngoài glossary (`docs/shared/glossary.md`), không tên gây hiểu nhầm; single-letter identifier chỉ cho loop index/comprehension.
+- Trong một bounded context: duplication đến lần xuất hiện **thứ ba** mới extract helper có owner/module rõ nghĩa; không extract sớm hơn (rule of three). Extract xuyên context vẫn theo quy tắc shared-kernel ba-context của master §4.4.
 - Enum wire dùng `SCREAMING_SNAKE_CASE`; Python enum không được đổi nghĩa wire value đã public.
-- Comment giải thích invariant/quyết định, không diễn tả lại code. `TODO` trên safety path bị cấm nếu không có waiver ID/expiry.
+- Comment giải thích invariant/quyết định, không diễn tả lại code. `TODO`/`FIXME` bị cấm **toàn repo**: trên safety path cần waiver ID/expiry; ngoài safety path phải kèm reference issue/task ID — không có `TODO` mồ côi.
 - Public boundary lấy/ trả typed domain model hoặc versioned DTO; mapping vendor DTO tại adapter.
 - Không log secret, token, raw authorization header, raw account PII hoặc raw vendor payload. Dùng redactor đã được review khi sau này tạo logging.
+
+## 5a. Complexity, size budget và config authority (DRAFT)
+
+> DRAFT — cần phê duyệt. Mục tiêu: "chuyên nghiệp, ngắn gọn, Enterprise-Grade" phải là yêu cầu **cưỡng chế được bằng tooling**, không phải khát vọng văn xuôi.
+
+Ngân sách bắt buộc, enforce bằng Ruff trong `pyproject.toml` khi Task 0.1 tạo:
+
+| Ngân sách | Giá trị | Ruff rule family |
+|---|---|---|
+| Cyclomatic complexity mỗi function | ≤ 10 | `C90` (mccabe, `max-complexity = 10`) |
+| Số tham số function | ≤ 5 | `PLR0913` |
+| Số return / branch / statement | Ruff default | `PLR0911` / `PLR0912` / `PLR0915` |
+| Commented-out code | 0 — cấm | `ERA` |
+| Docstring public API (domain/application) | bắt buộc, Google style | `D` (`convention = "google"`) |
+| Simplification | bật | `SIM` |
+| Type annotation coverage | bật (bổ trợ Pyright) | `ANN` |
+
+Hướng dẫn không-tự-động (reviewer kiểm): function ≤ ~50 dòng, module ≤ ~400 dòng — vượt ngưỡng phải có lý do trong PR description hoặc tách module theo intent.
+
+**Config authority:** `pyproject.toml` là nơi duy nhất chứa cấu hình Ruff/Pyright và là artifact được kiểm soát — Task 0.1 đề xuất giá trị cụ thể chứa tối thiểu các rule family trên; giá trị trở thành authority sau khi reviewer approve; mọi việc **nới lỏng** rule (tắt family, tăng ngưỡng, thêm per-file-ignores) sau đó là thay đổi có kiểm soát cần task card + lý do, và nếu đụng safety path cần waiver ID/expiry trong `docs/governance/waiver-register.md`. `# noqa` đã bị cấm ở §3; Ruff config phải bật cơ chế chặn noqa tương ứng.
+
+## 5b. Chống anti-pattern AI (DRAFT)
+
+> DRAFT — cần phê duyệt. Áp dụng cho mọi code do AI agent tạo; reviewer dùng làm tiêu chí từ chối.
+
+Nguyên tắc gốc: **implement giải pháp đơn giản nhất pass được acceptance commands của task card.** Cấm cụ thể:
+
+- Abstraction/interface/wrapper class chưa có consumer thứ hai thực tế (speculative abstraction, premature generalization).
+- Defensive check cho điều kiện mà type system, schema validation hoặc contract đã loại trừ (redundant `if x is None` sau typed non-optional, try/except "cho chắc").
+- `async` cho code không có concurrent caller thực tế.
+- Boilerplate/verbose code có thể thay bằng cấu trúc chuẩn ngắn hơn (Ruff `SIM` bắt một phần; phần còn lại reviewer kiểm).
+- Dead code, unreachable branch, import/biến không dùng, code copy-paste rồi sửa lệch (copy-paste variance).
+- File "một phát" khổng lồ trộn nhiều intent; comment diễn tả lại code (đã cấm ở §5).
 
 ## 6. Testability bắt buộc
 
@@ -70,4 +105,12 @@ Với thay đổi OMS/risk/ledger/reconciliation phải thêm negative và recov
 ## 7. Definition of Done cho code Python
 
 Trước khi một source module được coi DONE: task allowlist pass, dependency/import boundary checked, type/lint/test theo task pass, contract/ADR link cập nhật, Decimal/time/idempotency/concurrency/security impact được review và evidence được lưu. Không có Phase 0.0 exception để tạo source module.
+
+Tiêu chí **chất lượng** reviewer phải xác nhận thêm (không chỉ safety/scope):
+
+- [ ] Diff không thể nhỏ hơn đáng kể mà vẫn pass acceptance — không code thừa ngoài yêu cầu card.
+- [ ] Tên (module/function/biến) reveal intent, khớp glossary; không viết tắt tùy tiện.
+- [ ] Không duplication mới trong context vượt rule-of-three (§5); không dead code/commented-out code.
+- [ ] Ngân sách complexity §5a pass (Ruff xanh, không per-file-ignore mới không lý do).
+- [ ] Không anti-pattern §5b (speculative abstraction, defensive check thừa, async không cần).
 

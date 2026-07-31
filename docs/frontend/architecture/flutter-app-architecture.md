@@ -106,8 +106,18 @@ test/             # tests mirror cấu trúc lib/ theo tinh thần "test mirror 
 - **Open decision — vị trí repo frontend** (DRAFT, cần owner quyết định trước Phase 5): đề xuất (a) cùng monorepo dưới `frontend/` (ưu điểm: cùng contract source `contracts/`, cùng CI governance) hoặc (b) repo riêng (ưu điểm: toolchain Dart/Flutter tách khỏi Python backend). Chưa có quyết định; ghi nhận là open decision theo cơ chế Open Decision Register (master §0.3) và phải được Account Owner chốt trước khi Phase 5 task card đầu tiên được viết.
 - Các quyết định DRAFT đang chờ Account Owner phê duyệt trong tài liệu này: state management package (§3), cách biểu diễn Decimal phía client (§2), codegen toolchain (§4), cấu trúc thư mục (§7), vị trí repo (§8).
 
+## 9. Dart code-quality gates (DRAFT — open item Phase 5)
+
+Backend đã có ngân sách chất lượng cưỡng chế bằng tooling (ENG-PY-001 §5a/§5b); phía Dart/Flutter chưa có tương đương — đây là **open item bắt buộc đóng khi viết Phase 5 task card đầu tiên**, không được để trống như hiện trạng. Đề xuất baseline (DRAFT, cần Account Owner phê duyệt):
+
+- Command profile Dart tương đương master §13.2: `dart format --set-exit-if-changed .`, `flutter analyze` (0 warning), `flutter test` — CI chạy đúng các lệnh local.
+- `analysis_options.yaml` pin `flutter_lints` version + bật analyzer strict modes: `strict-casts`, `strict-raw-types`, `strict-inference`; cấm `// ignore:` không kèm reference issue/waiver (tương đương lệnh cấm `noqa` của ENG-PY-001 §3).
+- Ngân sách complexity/size và anti-pattern AI áp dụng nguyên tắc ENG-PY-001 §5a/§5b (function ≤ ~50 dòng, không speculative abstraction/wrapper, không dead code, comment không diễn tả lại code); enforcement bằng lint rule Dart tương ứng chọn khi viết task card Phase 5.
+- `analysis_options.yaml` là config authority phía Dart, cùng cơ chế kiểm soát nới lỏng như `pyproject.toml` (task card + lý do; waiver nếu đụng safety).
+
 ## Nhật ký thay đổi
 
 | Phiên bản | Ngày | Tác giả | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | Technical Operator | Pending | Thêm §9 Dart code-quality gates (DRAFT): command profile Dart, analyzer strict modes, config authority — đăng ký gap chất lượng phía frontend làm open item Phase 5 thay vì để trống. |
 | 0.1.0 | 2026-07-31 | Technical Operator | Pending | Bản DRAFT đầu tiên: nguyên tắc thin client, layer structure, state management, generated API client, auth placeholder, data freshness, cấu trúc thư mục và open decision vị trí repo. |

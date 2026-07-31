@@ -46,6 +46,7 @@ Artifact cấp thấp mâu thuẫn cấp cao → BLOCKED. Không sửa code đ�
 
 ## 4. Khi code (từ Phase 0 trở đi, sau khi gate mở)
 
+- **Viết code nhỏ nhất và đơn giản nhất đủ pass acceptance commands** — chất lượng là non-negotiable như safety: tuân ngân sách complexity ENG-PY-001 §5a (Ruff enforce: complexity ≤10, tham số ≤5, không commented-out code, docstring Google style cho public API domain/application), không anti-pattern §5b (không speculative abstraction/wrapper chưa có consumer thứ hai, không defensive check thừa cho điều kiện type system đã loại trừ, không `async` không cần, không dead code, không generalize ngoài card).
 - Làm đúng và chỉ đúng phạm vi `allowed_globs` của card READY hiện hành; mỗi commit nhỏ, một ý nghĩa, message Conventional Commit kèm Task ID (xem [CONTRIBUTING.md](CONTRIBUTING.md)).
 - Chạy đủ `required_commands` của card; chỉ được báo "pass" khi lệnh đã chạy thật và exit code/artifact được lưu vào `evidence_path`.
 - Test theo pyramid §13.3; invariant test không thay bằng coverage; fixture pin seed/UTC/Decimal context.

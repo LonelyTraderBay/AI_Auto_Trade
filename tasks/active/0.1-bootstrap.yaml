@@ -66,6 +66,7 @@ acceptance_criteria:
   - ".env.example chỉ chứa key mẫu/placeholder, secret scan không phát hiện leak."
   - "Không có code import exchange SDK, LLM SDK hoặc đọc live credential."
   - "Mọi dependency trong pyproject có lý do và locked version; không package ngoài phạm vi bootstrap."
+  - "Cấu hình Ruff trong pyproject.toml chứa tối thiểu các rule family theo ENG-PY-001 §5a (C90 max-complexity=10, PLR0911/0912/0913/0915, ERA, D convention=google cho domain/application, SIM, ANN); Pyright strict; giá trị config trở thành authority sau reviewer approve."
 required_commands:
   - "uv sync --locked"
   - "uv run ruff format --check ."
