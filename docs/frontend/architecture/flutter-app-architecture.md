@@ -3,13 +3,13 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | FE-ARC-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực — chờ Account Owner phê duyệt và Phase 5 task card READY |
 | Rà soát gần nhất | 2026-07-31 |
-| Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.5, §3.4, §4.8, §5.8, §11.2, §11.3, §11.5, §12.1; `contracts/api/openapi.yaml` (C-API-001 v1.1.0-draft); `contracts/errors/error-catalog.md` (C-ERR-001 v1.1); SEC-003 (`docs/backend/security-ops/auth-session-policy.md`); NFR (`docs/shared/product/non-functional-requirements.md`) |
+| Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.5, §3.4, §4.8, §5.8, §11.2, §11.3, §11.5, §12.1; `contracts/api/openapi.yaml` (C-API-001 v1.1.0-draft); `contracts/errors/error-catalog.md` (C-ERR-001 1.1.1); SEC-003 (`docs/backend/security-ops/auth-session-policy.md`); NFR (`docs/shared/product/non-functional-requirements.md`) |
 | Related requirements | FR-OPS-001, FR-AI-001; NFR-SAFE-001, NFR-SEC-001, NFR-OPS-001, NFR-AI-001 |
 | Related ADR | ADR-0014, ADR-0015 (pending), ADR-0016 |
 

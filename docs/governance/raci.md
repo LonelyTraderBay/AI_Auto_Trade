@@ -3,15 +3,16 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-RACI-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.1 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.6, §11.3, §11.4, §14 và §15 |
 | Related requirements | FR-OPS-001, FR-AI-001, NFR-AUD-001, NFR-SEC-001, NFR-AI-001, SEC-AUTH-001, SEC-AUD-001, SEC-AI-002, SEC-AI-003 |
 | Related ADR | ADR-0014, ADR-0015, ADR-0016 (DRAFT/required by phase) |
+| Change summary | 0.3.1 (2026-08-02): sắp lại changelog theo thứ tự newest-first; thêm row Change summary theo GOV-DOC-001 §3. Không đổi phân vai nào. |
 
 > Ma trận này diễn giải trách nhiệm thành role. Nó không tự cấp quyền runtime, không thay thế permission matrix tại Master §11.3 và chưa có hiệu lực khi còn DRAFT hoặc IN_REVIEW.
 
@@ -73,6 +74,7 @@ R trong cột AI Coding Agent chỉ có nghĩa là agent có thể soạn file t
 | Kill switch release | Risk Approver | Account Owner | Technical Operator | Security/Backup Owner |
 | Canary approval | Risk Approver | Account Owner | Technical Operator, Security/Backup Owner | Viewer |
 | Incident closure sau critical event | Technical Operator | Account Owner | Risk Approver, Security/Backup Owner | Affected roles |
+| Cấp/gia hạn waiver (WAIVER-NNNN) | Technical Operator | Account Owner | Risk Approver khi đụng risk/quality gate; Security/Backup Owner khi đụng security scope | Affected roles |
 
 ## 5. Quyền runtime tối thiểu
 
@@ -109,5 +111,7 @@ RACI phải được rà soát khi thay đổi role owner, thêm venue/account, 
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
-| 0.1.0 | 2026-07-31 | Tạo RACI baseline cho Phase 0.0 và các action trọng yếu. | Technical Operator | Pending |
+| 0.3.1 | 2026-08-02 | Sắp lại changelog theo thứ tự newest-first (trước đó 0.1.0 → 0.3.0 → 0.2.0); thêm row Change summary vào header theo GOV-DOC-001 §3. Không đổi phân vai. | Technical Operator | Pending |
+| 0.3.0 | 2026-08-02 | Thêm hoạt động "Cấp/gia hạn waiver (WAIVER-NNNN)" vào §4 (R: Technical Operator, A: Account Owner; C: Risk Approver/Security-Backup Owner theo scope) — đồng bộ với waiver register (GOV-WAIVER-001). | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Thêm trách nhiệm/approval BYOK AI connection, catalog và egress Phase 6. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Tạo RACI baseline cho Phase 0.0 và các action trọng yếu. | Technical Operator | Pending |

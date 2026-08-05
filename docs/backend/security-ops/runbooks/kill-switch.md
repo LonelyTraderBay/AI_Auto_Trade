@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Technical Operator; release: Risk Approver + Account Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Safety breach, risk/data/reconciliation/credential/lease condition, manual operator decision / Critical or High by approved policy |
 | Scope / Incident commander | Explicit global/account/instrument/strategy scope / Technical Operator; Risk Approver + Account Owner for release |
 | Related | FR-RSK-001, FR-OPS-001, NFR-SEC-001; ADR-0007, ADR-0015; SEC-002 |
-| Change summary | Design procedure; no endpoint is executed until implementation/authorization exists. |
+| Change summary | Design procedure; no endpoint is executed until implementation/authorization exists. 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

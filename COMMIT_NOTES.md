@@ -1,6 +1,8 @@
 # Ghi chú commit — Hoàn thiện hồ sơ Phase 0.0
 
-> **Addendum 2026-07-31 (sau tái cấu trúc GOV-CLASS-001):** File này là hồ sơ lịch sử của commit `15fc81a`; các đường dẫn trong đó phản ánh cấu trúc `docs/` CŨ (trước tái cấu trúc Backend/Frontend/Shared/Governance). Đường dẫn hiện hành: gate record tại `docs/governance/evidence/gates/phase-0.0/gate-record.md`, chỉ mục tại `docs/governance/DOCS_INDEX.md`. File `COMMIT_MESSAGE.txt` được nhắc ở §6 chưa từng được commit vào repo — commit message đã được nhập trực tiếp. Không sửa nội dung gốc bên dưới để giữ tính lịch sử.
+> **Addendum 2026-07-31 (sau tái cấu trúc GOV-CLASS-001):** File này là hồ sơ lịch sử; các đường dẫn trong đó phản ánh cấu trúc `docs/` CŨ (trước tái cấu trúc Backend/Frontend/Shared/Governance). Đường dẫn hiện hành: gate record tại `docs/governance/evidence/gates/phase-0.0/gate-record.md`, chỉ mục tại `docs/governance/DOCS_INDEX.md`. File `COMMIT_MESSAGE.txt` được nhắc ở §6 chưa từng được commit vào repo — commit message đã được nhập trực tiếp. Không sửa nội dung gốc bên dưới để giữ tính lịch sử. **Mọi đường dẫn/chỉ dẫn dạng quy phạm trong phần lịch sử bên dưới (kể cả §5) không còn được duy trì — chỉ tra cứu theo đường dẫn hiện hành nêu trên.**
+>
+> **Đính chính attribution (audit 2026-08-02):** các con số kiểm tra ở §2/§4 (6 schema, 6 fixture, 6 task card, 15 ADR 0001–0015) khớp với tree tại commit `d99d32d`, KHÔNG khớp tree tại `15fc81a` (thời điểm đó đã có 8 config schema, 16 fixture, 7 task card active và ADR-0016). Hồ sơ này vì vậy được gán đúng cho `d99d32d`; commit `15fc81a` (dùng lại nguyên văn message) bổ sung thêm gói BYOK: ADR-0016, task 0.0.6, schema + fixture AI. Không sửa nội dung gốc để giữ tính lịch sử.
 
 | Thuộc tính | Giá trị |
 |---|---|

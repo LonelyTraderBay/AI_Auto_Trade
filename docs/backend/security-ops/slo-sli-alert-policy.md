@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.2.0 / DRAFT |
-| Owner / Approver | Security/Backup Owner / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | NFR-OPS-001, NFR-SEC-001, NFR-AI-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0016; runbooks RB-001–RB-012 |
-| Change summary | Bổ sung escalation logic (DRAFT), policy fields `slow_query_threshold_ms`/`alert_ack_timeout_s`/`clock_drift_threshold_ms`, dashboard views bắt buộc trước testnet (DRAFT) và weekly audit-event review. |
+| Version / Status | 1.3.0 / DRAFT |
+| Owner / Approver | Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Related | NFR-OPS-001, NFR-SEC-001, NFR-AI-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0016; runbooks RB-001–RB-012 |
+| Change summary | 1.3.0 (2026-08-02): thêm signal venue rate-limit/ban (§2) map RB-010; SLI freshness dùng `recorded_at` khớp data dictionary. Trước đó: escalation logic (DRAFT), policy fields, dashboard views bắt buộc trước testnet, weekly audit-event review. |
 
 ## 1. Principles
 
@@ -18,7 +18,7 @@ Alert severity is based on safety/integrity first, then availability. Alert supp
 
 | Signal / SLI | Measurement | Breach behavior | Initial severity |
 |---|---|---|---|
-| Market/private stream freshness | `now - received_at`; gap/reconnect count | Block new exposure when stale/untrusted | High; Critical when safety gate breached |
+| Market/private stream freshness | `now - recorded_at` (thời điểm hệ thống ghi nhận event — field chuẩn theo DATA-003 data dictionary; bản trước dùng `received_at` chưa được định nghĩa); gap/reconnect count | Block new exposure when stale/untrusted | High; Critical when safety gate breached |
 | Submit-to-ack, ack-to-fill | Histograms by venue/instrument/mode | Investigate latency; unknown outcome enters reconcile | Medium/High |
 | Unknown order age | `UNKNOWN` start to resolved | No blind retry; escalate at `unknown_order_sla_s` | Critical after SLA |
 | Reconciliation mismatch age/count | Mismatch creation to resolution | Freeze affected new exposure | High/Critical by scope |
@@ -26,6 +26,7 @@ Alert severity is based on safety/integrity first, then availability. Alert supp
 | Ledger imbalance attempt | Deferred check/reconciliation result | Stop affected financial processing | Critical |
 | Lease/fencing health | Heartbeat, leader count, clock drift | Block submission on lost/ambiguous lease | Critical |
 | Outbox/inbox/DLQ backlog | Queue age/count, duplicate rate | Backpressure/triage; no silent drop | Medium/High |
+| Venue request rejection / rate-limit / ban state | 429/418 count, rejection rate, IP/key ban state theo venue | Pause submission theo RB-010; staged resume khi rejection rate về trong policy; không reflexive key rotation | High; Critical khi ban ảnh hưởng safe-state command |
 | DB health | Connections, lock wait, disk, backup age | Fail closed; use RB-006 | High/Critical |
 | Security/credential events | Denied dangerous action, scan leak, rotation failure | Contain/revoke/escalate | High/Critical |
 | AI connection lifecycle | Initial/rotation enrollment, validation/activation/suspend/revoke/expiry and lease-invalidation propagation by safe status code | Disable failed connection; investigate only within owner scope | Low/Medium; High for suspected key leak or failed revoke |
@@ -71,4 +72,7 @@ Dashboard/alert output must carry environment, deployment/manifest hash when app
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 1.3.0 | 2026-08-02 | Audit toàn diện: thêm signal "Venue request rejection / rate-limit / ban state" (§2) — Related đã khai RB-001..RB-012 nhưng thiếu SLI cho RB-010; SLI freshness đổi `received_at` (chưa định nghĩa) thành `recorded_at` khớp data dictionary; cập nhật Last review; sắp changelog newest-first. | Technical Operator | Pending |
+| 1.2.1 | 2026-08-02 | Bỏ dangling ID SEC-OPS-001 khỏi Related (NFR-OPS-001 đã có sẵn) theo audit 2026-08-02. | Technical Operator | Pending |
 | 1.2.0 | 2026-07-31 | Thêm §4.1 escalation logic (DRAFT, roster/channel là OD-005) với `alert_ack_timeout_s` và fail-closed cho Critical chưa ack trên execution/ledger path; thêm `slow_query_threshold_ms`, `alert_ack_timeout_s`, `clock_drift_threshold_ms` vào §3; thêm §4.2 dashboard views bắt buộc trước testnet (DRAFT); thêm weekly audit-event review by Security/Backup Owner vào §5. | Technical Operator | Pending |
+| 1.0.0–1.1.x | 2026-07-31 | Khởi tạo SLO/SLI/alert baseline (lineage chi tiết: xem git history — row bổ sung cho đủ chuỗi version). | Technical Operator | Pending |

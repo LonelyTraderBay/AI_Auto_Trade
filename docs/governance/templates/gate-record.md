@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | TMP-GATE-001 |
 | Artifact type | Reusable gate-record template |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.1.1 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -13,8 +13,9 @@
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §0.1, §14.2, §15.3 và Phụ lục C.4 |
 | Related requirements | NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001, SEC-AUD-001 |
 | Related ADR | Theo phase/gate cụ thể |
+| Change summary | 0.1.1 (2026-08-02): quy ước tên file khớp thực tế (`phase-<N>/gate-record.md`, Gate ID trong header); tách REVOKED khỏi bộ Status lifecycle — REVOKED chỉ là giá trị Decision theo Phụ lục C.4. |
 
-> Copy template này vào docs/governance/evidence/gates/phase-N/<GATE_ID>.md. Không có evidence thì gate là FAIL. Một gate record DRAFT/IN_REVIEW không mở phase tiếp theo.
+> Copy template này vào `docs/governance/evidence/gates/phase-<N>/gate-record.md` (một gate record chính cho mỗi phase, Gate ID dạng `GATE-<PHASE>-<NNN>` ghi trong header — khớp thực tế `phase-0.0/gate-record.md`, GATE-0.0-001); nếu một phase có nhiều gate, dùng `gate-record-<NNN>.md`. Không có evidence thì gate là FAIL. Một gate record DRAFT/IN_REVIEW không mở phase tiếp theo.
 
 ---
 
@@ -25,7 +26,7 @@
 | Gate ID | GATE-<PHASE>-<NNN> |
 | Phase | <0.0 / 0 / 1 / ...> |
 | Record version | 0.1.0 |
-| Status | DRAFT / IN_REVIEW / APPROVED / REVOKED |
+| Status | DRAFT / IN_REVIEW / APPROVED / REJECTED / SUPERSEDED (lifecycle theo GOV-DOC-001 §4; REVOKED là giá trị của trường Decision ở §5, không phải Status) |
 | Scope | <venue/account/instrument/strategy/environment hoặc documentation scope> |
 | Environment | <local/fake/paper/testnet/canary; no secret> |
 | Deployment/config manifest hash | <hash or N/A> |

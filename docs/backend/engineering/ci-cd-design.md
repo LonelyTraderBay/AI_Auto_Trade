@@ -2,15 +2,15 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
-| Owner / Approver | Technical Operator / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
+| Version / Status | 1.1.1 / IN_REVIEW |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Related | NFR-OPS-001, NFR-SEC-001; ADR-0012, ADR-0014; Phase 0.0.5 |
-| Change summary | 1.1.0 (2026-07-31, Technical Operator, Pending): đổi title ID ENG-004 -> ENG-CI-001; thêm trigger matrix DRAFT, xác nhận secret scanning tool detect-secrets, thêm dòng evidence retention theo ADR-0013. 1.0.0: thiết kế pipeline và enforcement trước khi workflow implementation được tạo ở Task 0.1/0.2. |
+| Change summary | 1.1.1 (2026-08-02, Technical Operator, Pending): tách attribution ở §1/§7 theo task card 0.1 — Task 0.1 chỉ tạo local command profile chạy tay/evidence, workflow `.github/workflows` + enforcement thuộc Task 0.2. 1.1.0 (2026-07-31, Technical Operator, Pending): đổi title ID ENG-004 -> ENG-CI-001; thêm trigger matrix DRAFT, xác nhận secret scanning tool detect-secrets, thêm dòng evidence retention theo ADR-0013. 1.0.0: thiết kế pipeline và enforcement trước khi workflow implementation được tạo ở Task 0.1/0.2. |
 
 ## 1. Phạm vi
 
-Phase 0.0 chỉ ghi thiết kế và validate artifact. Chưa có `.github/workflows`, build image, deploy, secret integration hoặc production credential. Pipeline thực tế được Task 0.1/0.2 tạo từ task card đã `READY`.
+Phase 0.0 chỉ ghi thiết kế và validate artifact. Chưa có `.github/workflows`, build image, deploy, secret integration hoặc production credential. Task 0.1 chỉ tạo local command profile chạy tay kèm evidence exit code (không tạo `.github/**`); workflow `.github/workflows` và CI enforcement thực tế do Task 0.2 tạo từ task card đã `READY`.
 
 ## 2. Trigger và principle
 
@@ -75,5 +75,5 @@ Deployment không auto-promote từ CI. Paper/testnet/canary cần manifest immu
 
 ## 7. Bootstrap acceptance
 
-Task 0.0.5 chỉ cần có design này, task-card schema/fixture và một procedure validate được ghi evidence. Task 0.1/0.2 phải chuyển design thành workflow/commands thực tế, không claim pipeline xanh trước khi command tồn tại và exit code được lưu.
+Task 0.0.5 chỉ cần có design này, task-card schema/fixture và một procedure validate được ghi evidence. Task 0.1 chuyển design thành local command profile chạy tay và lưu evidence exit code; Task 0.2 chuyển design thành workflow `.github/workflows` và enforcement thực tế. Không claim pipeline xanh trước khi command tồn tại và exit code được lưu.
 

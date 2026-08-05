@@ -39,4 +39,4 @@ Command profile mở rộng theo phase (contracts validate từ Task 0.2, db ver
 
 ## 6. CHANGELOG và release
 
-Không duy trì CHANGELOG viết tay. Release note được sinh từ lịch sử Conventional Commits tại thời điểm gắn tag, theo [docs/backend/engineering/versioning-release-policy.md](docs/backend/engineering/versioning-release-policy.md). Định danh release/deployment gắn với immutable deployment manifest (master §6.6), không gắn với tên branch.
+Không duy trì CHANGELOG viết tay. Release note được sinh từ lịch sử Conventional Commits tại thời điểm gắn tag, theo [docs/backend/engineering/versioning-release-policy.md](docs/backend/engineering/versioning-release-policy.md) (ENG-VER-001 — hiện DRAFT, chỉ có hiệu lực khi APPROVED; đã được đăng ký trong cây artifact master §1.5). Định danh release/deployment gắn với immutable deployment manifest (master §6.6), không gắn với tên branch.

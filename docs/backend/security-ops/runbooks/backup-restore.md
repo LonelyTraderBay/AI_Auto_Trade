@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Scheduled restore drill, data-loss/corruption recovery, failed deployment rollback or backup/PITR alert / High; Critical for integrity/audit/financial data loss |
 | Scope / Incident commander | Approved consistency set/environment/incident / Security/Backup Owner |
 | Related | NFR-OPS-001, NFR-SEC-001; ADR-0003, ADR-0010, ADR-0013; SEC-004; RB-006 |
-| Change summary | Consistency-set and isolated-restore procedure; no destructive restore instruction. |
+| Change summary | Consistency-set and isolated-restore procedure; no destructive restore instruction. 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

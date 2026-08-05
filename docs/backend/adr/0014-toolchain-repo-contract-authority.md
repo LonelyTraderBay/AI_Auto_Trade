@@ -2,12 +2,18 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| ADR ID | ADR-0014 |
+| Phiên bản | 0.1.0 |
 | Status | DRAFT — required for Phase 0.0; chưa mở gate |
 | Date | 2026-07-31 |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
+| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Decision deadline | Phase 0.0 gate |
+| Rà soát gần nhất | 2026-08-02 |
 | Related | NFR-DET-001, NFR-AUD-001, NFR-SEC-001, NFR-OPS-001; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §1.5–§1.6, §3.5, §4.6–§4.8, §7.13, §13, §16 |
 | Supersedes / superseded by | None / None |
+| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
 
 ## Context and decision drivers
 
@@ -20,6 +26,8 @@ If approved, MVP uses Python 3.12.x for domain/application/ports/adapters/API/wo
 Repository topology is exactly Master §4.6: context layers under `src/ai_auto_trade/contexts`, concrete adapters globally under `adapters/<kind>/<provider>`, apps as composition roots, versioned `contracts/`, controlled `docs/`, `tasks/`, migrations/config/test topology. Public HTTP is OpenAPI 3.1; command/event/config use JSON Schema 2020-12. Authority order is regulatory constraint -> Master + APPROVED ADR -> versioned executable DDL/schema/manifest -> approved task/gate -> code -> test/log.
 
 Additional language/runtime/database/broker/framework is forbidden by default and needs ADR, owner, security/operations/dependency review and phase gate. Node/TypeScript/Go/Rust/Java/Redis/Kafka/NATS/Kubernetes are not convenience additions for MVP.
+
+Executable reference block cho toolchain config: ENG-PY-001 §5a/§5a-ref (pyproject.toml là config authority; Task 0.1 tái tạo khối chuẩn). Runtime/IO client selection (asyncio/httpx/websockets/uvicorn/OTel — ARC-TECH-001 §8) cần amendment ADR này hoặc ADR riêng trước Task 0.2 (RAID I-008).
 
 ## Alternatives considered
 

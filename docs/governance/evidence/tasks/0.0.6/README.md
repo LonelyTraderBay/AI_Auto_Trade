@@ -13,3 +13,5 @@ Store only safe review evidence here: command/procedure name, UTC timestamp, run
 Required review points are defined in [task card](../../../../../tasks/active/0.0.6-ai-provider-byok-baseline.yaml), [ADR-0016](../../../../backend/adr/0016-provider-neutral-byok-ai-connections.md), [AI BYOK architecture](../../../../backend/architecture/ai-provider-byok-architecture.md) and [security policy](../../../../backend/security-ops/ai-byok-security-policy.md).
 
 Local technical validation is recorded in [EV-0.0.6-2026-07-30-01](validation-2026-07-30.md). It is not an approval, and it does not change this task or any gate to PASS.
+
+> **Addendum 2026-08-02:** EV-0.0.6-2026-07-30-01 đã **stale** (hash keyed theo đường dẫn trước tái cấu trúc GOV-CLASS-001 — RAID I-007, đã RESOLVED). Record hiện hành là chuỗi gate-level: [EV-GATE-0.0-2026-08-02-01](../../gates/phase-0.0/validation-2026-08-02.md) → [EV-GATE-0.0-2026-08-02-02](../../gates/phase-0.0/validation-2026-08-02-02.md). Record cũ được giữ read-only làm lịch sử, không sửa nội dung.

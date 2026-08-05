@@ -2,13 +2,19 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| ADR ID | ADR-0013 |
+| Phiên bản | 0.1.0 |
 | Status | DRAFT — required before Phase 2; no retention/purge authorization |
 | Date | 2026-07-31 |
 | Owner | Security/Backup Owner |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
+| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Decision deadline | Before Phase 2 |
+| Rà soát gần nhất | 2026-08-02 |
 | Consulted | Technical Operator |
 | Related | FR-MKT-001, FR-OPS-001, NFR-AUD-001, NFR-DET-001, NFR-OPS-001; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §7.11–§7.12, §9, §12; DATA-001, DATA-006 |
 | Supersedes / superseded by | None / None |
+| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
 
 ## Context and decision drivers
 

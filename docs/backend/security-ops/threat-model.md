@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.2.0 / IN_REVIEW |
-| Owner / Approver | Security/Backup Owner / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | NFR-SEC-001, NFR-OPS-001, NFR-AI-001, SEC-AUTH-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0015, ADR-0016 |
-| Change summary | Bổ sung T-017 (Control API DoS/resource exhaustion) và T-018 (insider/single-operator) vào threat register theo audit supplement. |
+| Version / Status | 1.2.2 / IN_REVIEW |
+| Owner / Approver | Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Related | NFR-SEC-001, NFR-OPS-001, NFR-AI-001, SEC-AUTH-001, SEC-AI-002, SEC-AI-003; ADR-0007, ADR-0010, ADR-0012, ADR-0015, ADR-0016 |
+| Change summary | Bổ sung T-017 (Control API DoS/resource exhaustion) và T-018 (insider/single-operator) vào threat register theo audit supplement; sửa dangling requirement ID theo audit 2026-08-02. |
 
 ## 1. Scope và security objectives
 
@@ -46,7 +46,7 @@ Safe state nghĩa là strategy disabled/frozen, submission blocked, risk/kill-sw
 | T-010 | Malicious/vulnerable dependency or build artifact | Code compromise | Lock pinning, license/vuln/SAST/secret scan, SBOM/digest, review | CI artifact scan, checksum mismatch | Technical Operator |
 | T-011 | Clock manipulation / non-determinism | Wrong expiry/replay/audit | Injected Clock/RandomSource, UTC, NTP/clock-drift alert, persisted seed | Replay result, drift metric | Technical Operator |
 | T-012 | Alert/runbook/backup failure during incident | Prolonged unsafe state | SLO policy, tested runbooks, restore drills, escalation ownership | Drill report, incident closure evidence | Security/Backup Owner |
-| T-013 | BYOK enrollment leak, raw key/body hash/fingerprint in HTTP log/audit/event/DB/fixture/browser/proxy/WAF/APM | Provider/account takeover, billing/data exposure | One-time isolated no-store enrollment, no Idempotency-Key/body hash, secret provider, body/log suppression, no read-back, scan/redaction/rotation | Secret-leak/no-hash negative test, access audit, RB-AI-001 drill | Security/Backup Owner |
+| T-013 | BYOK enrollment leak, raw key/body hash/fingerprint in HTTP log/audit/event/DB/fixture/browser/proxy/WAF/APM | Provider/account takeover, billing/data exposure | One-time isolated no-store enrollment, no Idempotency-Key/body hash, secret provider, body/log suppression, no read-back, scan/redaction/rotation | Secret-leak/no-hash negative test, access audit, RB-009 drill | Security/Backup Owner |
 | T-014 | Cross-owner connection use or secret-binding enumeration | Unauthorized provider use/data egress | Owner-scope authorization before existence disclosure, opaque binding, machine job scope, no shared environment key | Cross-scope authorization test, audit correlation, denied-access alert | Security/Backup Owner |
 | T-015 | Arbitrary provider URL/model/proxy, DNS/redirect/private-route bypass or silent fallback | SSRF, key/data exfiltration, duplicate egress/cost | Approved catalog/endpoint profile, egress gateway hostname/SNI/TLS/DNS/redirect policy, adapter capability review, default no fallback | Endpoint/model/proxy/DNS/redirect deny test, egress audit, adapter/catalog evidence | Security + Technical |
 | T-016 | Budget abuse, capability drift, provider timeout/unknown outcome or stale/revoked binding in flight | Cost exhaustion, invalid proposal, duplicated external data egress | Atomic quota reservation, model/catalog/adapter digest pin, circuit breaker, structured validation, short binding lease/recheck/zeroization, no blind retry/fallback | Usage/quota/circuit/revoke alerts, outage/budget drill, provenance test | Technical + Account Owner |
@@ -74,4 +74,7 @@ Residual risks such as provider choice, legal requirement, venue-specific contro
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 1.2.2 | 2026-08-02 | Audit toàn diện: sửa dangling runbook ID "RB-AI-001" thành RB-009 tại T-013 (catalog chỉ có RB-001..RB-012); cập nhật Last review; sắp changelog newest-first. Thay đổi do Technical Operator thực hiện thay Owner (Security/Backup Owner). | Technical Operator (soạn thay Security/Backup Owner) | Pending |
+| 1.2.1 | 2026-08-02 | Bỏ dangling ID SEC-OPS-001 khỏi Related (NFR-OPS-001 đã có sẵn) theo audit 2026-08-02. | Technical Operator | Pending |
 | 1.2.0 | 2026-07-31 | Thêm T-017 (Control API DoS/resource exhaustion, kể cả vô ý) và T-018 (insider/single-operator sai sót hoặc lạm quyền) vào §3 threat register. | Technical Operator | Pending |
+| 1.0.0–1.1.x | 2026-07-31 | Khởi tạo threat model T-001..T-016 (lineage chi tiết: xem git history — row bổ sung cho đủ chuỗi version). | Technical Operator | Pending |

@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / DRAFT |
-| Owner / Approver | Security/Backup Owner / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
+| Version / Status | 1.1.1 / DRAFT |
+| Owner / Approver | Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Related | SEC-AUTH-001, SEC-AI-002, SEC-AI-003, NFR-SEC-001, NFR-AI-001; OD-006, OD-008; ADR-0015, ADR-0016; SEC-002 |
-| Change summary | Provider-neutral mandatory controls, gồm re-auth/owner scope cho BYOK AI connection. Không phải quyết định provider/session implementation. |
+| Change summary | 1.1.1 (2026-08-02, Technical Operator soạn thay Owner, Pending): registry doc-ID trong DOCS_INDEX đổi thành SEC-AUTH-POL-001 (title SEC-003 giữ nguyên) để hết va chạm với requirement ID SEC-AUTH-001; ghi lineage version vào Change summary thay cho changelog table còn thiếu; thêm "(pending)". 1.1.0/1.0.0 (2026-07-31): provider-neutral mandatory controls, gồm re-auth/owner scope cho BYOK AI connection; không phải quyết định provider/session implementation. |
 
 ## 1. Decision boundary
 

@@ -2,12 +2,18 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| ADR ID | ADR-0008 |
+| Phiên bản | 0.1.0 |
 | Status | DRAFT — required only before Phase 6; no AI runtime authorized |
 | Date | 2026-07-31 |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
+| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Decision deadline | Before Phase 6 |
+| Rà soát gần nhất | 2026-08-02 |
 | Related | NFR-SEC-001, NFR-DET-001, NFR-SAFE-001, ADR-0016; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §4.1–§4.5, §10.6–§10.8, §14 Phase 6 |
 | Supersedes / superseded by | None / None |
+| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
 
 ## Context and decision drivers
 

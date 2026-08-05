@@ -2,13 +2,17 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.3.0 |
+| Document ID | DATA-ERD-001 (registry DOCS_INDEX; title giữ alias ngắn) |
+| Phiên bản | 0.4.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-AI-001, NFR-AUD-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §4.2, §7.4–§7.8, §8, §10.6 |
+| Change summary | 0.4.0 (2026-08-02): §2 bổ sung `data_quality_issues` vào context map (khớp §4.1/master §7.6); chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## 1. Reading rules
 
@@ -21,7 +25,7 @@ All internal keys are UUIDv7/`UUID`. Financial values are `NUMERIC(38,18)`, time
 ```text
 reference: venues --- accounts --- assets --- instruments --- instrument_rule_versions
                  \                         \
-                  \--> capability_profiles  \--> market_data catalog/checkpoints/feed_health
+                  \--> capability_profiles  \--> market_data catalog/checkpoints/feed_health/data_quality_issues
 
 strategy: definitions --- versions --- instances --- checkpoints
                                       |

@@ -2,12 +2,18 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| ADR ID | ADR-0015 |
+| Phiên bản | 0.1.0 |
 | Status | DRAFT — required before Phase 3; provider/session choice unresolved |
 | Date | 2026-07-31 |
 | Owner | Security/Backup Owner |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
+| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Decision deadline | Before Phase 3 |
+| Rà soát gần nhất | 2026-08-02 |
 | Related | FR-OPS-001, NFR-SEC-001, NFR-AUD-001, NFR-OPS-001; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §0.3 OD-006, §11.2–§11.4, §12; docs/backend/security-ops access/auth artifacts |
 | Supersedes / superseded by | None / None |
+| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
 
 ## Context and decision drivers
 

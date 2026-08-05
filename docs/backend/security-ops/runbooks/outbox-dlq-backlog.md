@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.2 / DRAFT |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Outbox backlog/dead-letter count or age beyond OPS-001 signal threshold, publisher making no progress while the database itself is healthy / Medium; High as backlog age grows or execution/ledger consumers are affected |
 | Scope / Incident commander | Affected outbox publisher, partition/consumer scope, dead-letter set / Technical Operator |
-| Related | FR-AUD-001, NFR-OPS-001; ADR-0003, ADR-0011; OPS-001; RB-005, RB-006 |
-| Change summary | Triage procedure for stuck relay/poison message/DLQ overflow; no silent drop, no manual payload edit. |
+| Related | NFR-AUD-001, NFR-OPS-001; ADR-0003, ADR-0011; OPS-001; RB-005, RB-006 |
+| Change summary | Triage procedure for stuck relay/poison message/DLQ overflow; no silent drop, no manual payload edit; sửa dangling requirement ID theo audit 2026-08-02. 1.0.2 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

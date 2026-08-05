@@ -3,15 +3,16 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-RAID-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.4.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §0.3, §1.5, §12, §14, §15 |
 | Related requirements | NFR-SAFE-001, NFR-OPS-001, NFR-SEC-001, NFR-AI-001, SEC-CRED-001, SEC-AUTH-001, SEC-AI-002, SEC-AI-003 |
 | Related ADR | ADR-0001 đến ADR-0016 theo deadline trong Master §15.1 |
+| Change summary | 0.4.0 (2026-08-02): I-007 RESOLVED (chuỗi validation record EV-GATE-0.0-2026-08-02-01/-02); thêm I-009 (khoảng trống approval tái cấu trúc GOV-CLASS-001) và I-010 (transition OMS cần amendment master §5.5/ADR-0005); sắp lại changelog newest-first. |
 
 > RAID register là log vận hành của rủi ro và blocker, không phải nơi phê duyệt exception. Chỉ ADR/owner decision/gate record hợp lệ mới có thể đóng mục hoặc thay đổi phase.
 
@@ -63,6 +64,13 @@ Không được chuyển mục sang RESOLVED chỉ vì có kế hoạch. Cần e
 | I-002 | ADR required by Phase 0.0 chưa có trạng thái APPROVED trong master hiện tại. | Phase 0 bị chặn. | Soạn/review/approve ADR-0001–0005, 0007, 0011, 0012, 0014. | Account Owner | OPEN | ADR files + approval evidence |
 | I-003 | Venue, jurisdiction, account/instrument, auth provider, retention obligation chưa có quyết định cuối. | Phase 2/3/4 bị chặn theo từng item. | Duy trì Open Decision Register và không triển khai phase bị chặn. | Account Owner | OPEN | OD evidence theo Master §0.3 |
 | I-004 | AI BYOK provider catalog, secret ingress, owner scope, data-egress/budget/fallback policy chưa được phê duyệt. | Phase 6 bị chặn. | Review/approve ADR-0016, resolve OD-008 và hoàn tất catalog/security/runbook evidence. | Account Owner + Security/Backup Owner | OPEN | ADR-0016, ARC-AI-001, SEC-AI-POL-001 |
+| I-005 | OpenAPI v1.1 thiếu route cho mandatory ops views (8 GAP tại FE-SCREEN-001 §4; OD-010). | Chặn Phase 5; view 1–6 là testnet gate evidence theo OPS-001 §4.2. | Bổ sung route + fixture qua contract review. | Technical Operator | OPEN | openapi.yaml version mới + fixture + review record |
+| I-006 | Enum terminal_reason lệch giữa openapi.yaml và DOM-002 §5; FE-DS-001 render theo DOM-002. | Contract UI không xác định. | Đồng bộ một chiều theo hierarchy §1.5 khi ADR-0005/0009 chốt. | Technical Operator | OPEN | Diff + review record |
+| I-007 | Validation record EV-0.0.6-2026-07-30-01 stale (hash theo path trước tái cấu trúc; tự vô hiệu theo quy tắc của chính nó). | Gate Phase 0.0 thiếu technical validation evidence hợp lệ. | Đã chạy lại local validation và ghi record mới tại docs/governance/evidence/gates/phase-0.0/ (EV-GATE-0.0-2026-08-02-01, được thay bởi -02 sau đợt sửa audit toàn diện cùng ngày). | Technical Operator | RESOLVED (2026-08-02) | [validation-2026-08-02-02.md](evidence/gates/phase-0.0/validation-2026-08-02-02.md) |
+| I-008 | ARC-TECH-001 §8 chọn httpx/websockets/uvicorn/OTel SDK chưa có ADR — vi phạm trigger §9 của chính nó. | Task 0.2+ thêm dependency không ADR. | Amendment ADR-0014 hoặc ADR-0017 trước Task 0.2. | Technical Operator | OPEN | ADR amendment/record |
+| I-009 | Tái cấu trúc vật lý docs/ (GOV-CLASS-001 v0.2.0, 79 tệp git mv) được thực thi theo yêu cầu trực tiếp của Account Owner nhưng chưa có approval record hợp lệ theo GOV-DOC-001 §4 (actor/role/UTC/scope/evidence). | Khoảng trống hợp thức hóa governance; tiền lệ xấu nếu không được đóng chính thức. | Hợp thức hóa trong quyết định ký gate Phase 0.0: gate record liệt kê tái cấu trúc GOV-CLASS-001 trong phạm vi phê duyệt của Account Owner; không tự tạo approval hồi tố. | Account Owner | OPEN | Gate record Phase 0.0 có mục phê duyệt tái cấu trúc |
+| I-010 | Ba nhóm transition OMS được mô tả ở tài liệu thấp hơn nhưng chưa có trong master §5.5/DOM-002 §3: (a) fill-đến-khi-đang-cancel (CANCEL_REQUESTED nhận fill report — ARC-SEQ-001 §11 hiện đi qua UNKNOWN/reconciliation), (b) expiry trước submission (INTENT_EXPIRED/DECISION_EXPIRED — DOM-002 §5), (c) venue tự cancel IOC remainder không qua CANCEL_REQUESTED. | Nếu không ratify, implementation Phase 1 sẽ thiếu transition hợp lệ hoặc tự chế. | Amendment master §5.5 + ADR-0005 (hoặc ADR mới) trước Phase 1 core-safety gate; DOM-002 §5a liệt kê danh sách đề xuất. | Technical Operator | OPEN | ADR amendment + DOM-002/master bản cập nhật |
+| I-011 | DRAFT rule "CancelIntent không qua full risk evaluation" (ARC-SEQ-001 §11) chưa có trong master §8.6; đang là đề xuất tự khai báo trong tài liệu architecture. | Nếu không quyết, cancel path Phase 1 không có rule risk-gate rõ ràng. | Owner decision hoặc amendment master §8.6/ADR trước Phase 1 core-safety gate. | Account Owner + Risk Approver | OPEN | Amendment/ADR hoặc decision record |
 
 ## 5. Dependencies
 
@@ -75,6 +83,7 @@ Không được chuyển mục sang RESOLVED chỉ vì có kế hoạch. Cần e
 | D-005 | Venue capability, jurisdiction, account/instrument và authentication decision. | Phase 3 external venue. | Account Owner | Trước Phase 3 | OPEN |
 | D-006 | Canary topology, capital cap, risk hard limits, independent reviewer. | Phase 4 canary. | Account Owner + Risk Approver + Security/Backup Owner | Trước Phase 4 | OPEN |
 | D-007 | Provider catalog/capability, secret provider topology, BYOK owner scope/egress/budget/fallback policy và AI machine identity. | Phase 6 AI/BYOK. | Account Owner + Security/Backup Owner | Trước Phase 6 | OPEN |
+| D-008 | Quyết định vị trí repo frontend + Dart quality gates (FE-ARC-001 §8–§9; OD-009). | Phase 5 task card đầu tiên READY. | Account Owner | Trước Phase 5 | OPEN |
 
 ## 6. Cadence và escalation
 
@@ -87,5 +96,7 @@ Không được chuyển mục sang RESOLVED chỉ vì có kế hoạch. Cần e
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
-| 0.1.0 | 2026-07-31 | Tạo RAID baseline từ blocker và gate của master. | Technical Operator | Pending |
+| 0.4.0 | 2026-08-02 | Audit toàn diện đợt 2: I-007 chuyển RESOLVED kèm evidence (EV-GATE-0.0-2026-08-02-01/-02); thêm I-009 (khoảng trống approval tái cấu trúc GOV-CLASS-001 theo GOV-DOC-001 §4) và I-010 (ba nhóm transition OMS cần amendment master §5.5/ADR-0005 trước Phase 1); sắp lại changelog newest-first; thêm row Change summary. | Technical Operator | Pending |
+| 0.3.0 | 2026-08-02 | Thêm D-008 (vị trí repo frontend + Dart quality gates trước Phase 5; OD-009) và I-005..I-008 theo audit chéo 2026-08-02: GAP route ops views trong OpenAPI (OD-010), lệch enum terminal_reason với DOM-002, validation record EV-0.0.6-2026-07-30-01 stale, dependency ARC-TECH-001 §8 chưa có ADR. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Thêm BYOK đa provider risk, assumption, issue và dependency trước Phase 6. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Tạo RAID baseline từ blocker và gate của master. | Technical Operator | Pending |

@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | PRD-GLOSSARY-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -30,6 +30,7 @@
 | Causation ID | ID của event/command trực tiếp gây ra event hiện tại. |
 | Trace ID | ID cho telemetry trace xuyên process/adapter. |
 | Canonical request hash | SHA-256 của canonical JSON v1 cho audit/phát hiện payload change; không thay ClientOrderId idempotency. |
+| Idempotency-Key | HTTP header client cung cấp cho command API; scope dedupe = actor + route + key (master §7.6, C-API-001). Khác với ClientOrderId (venue-level idempotency) và không dùng cho secret enrollment. |
 
 ## 2. Trading, risk và OMS
 
@@ -89,6 +90,7 @@ RECONCILING, LOST
 | Adapter | Implementation vendor/framework của port, đặt global dưới adapters/<kind>/<provider>. |
 | Composition root | Nơi duy nhất wire concrete adapter vào app/process. |
 | Outbox / inbox | Persistent delivery records để hỗ trợ at-least-once publish/consume, dedupe và failure handling. |
+| DLQ / dead letter | Bản ghi delivery bị cách ly sau khi vượt retry policy (bảng `dead_letters`); không silent drop, chỉ replay idempotent theo runbook RB-011. |
 | Contract | Machine-readable API, command, event hoặc config schema có version/canonical path. |
 | ADR | Architecture Decision Record; chỉ status APPROVED được dùng để mở gate. |
 | Task card | YAML authority xác định scope/allowlist/acceptance/evidence cho task; readable Markdown không thay YAML. |
@@ -106,6 +108,7 @@ RECONCILING, LOST
 | CANARY | Live venue scope cực nhỏ, trade credential và gate riêng; không đồng nghĩa full live. |
 | FULL_LIVE | Scope live mở rộng; ngoài tài liệu MVP, cần ADR/gate mới. |
 | Execution leader | Trading node duy nhất được lease/fencing cho venue/account scope để claim/submission. |
+| Fencing token | Token đơn điệu tăng gắn với execution lease; mọi write/submission của leader phải mang token hiện hành để vô hiệu hóa leader cũ (chống split-brain, master §8.9). |
 | Deployment manifest | Immutable validated identity của code/config/risk/strategy/mode/credential class/deployment scope. |
 
 ## 6. Security và operations
@@ -142,5 +145,6 @@ RECONCILING, LOST
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
-| 0.1.0 | 2026-07-31 | Tạo glossary canonical để giảm ambiguity trong artifact Phase 0.0. | Technical Operator | Pending |
+| 0.3.0 | 2026-08-02 | Audit toàn diện: bổ sung 3 entry được dùng lặp lại nhưng chưa định nghĩa — Idempotency-Key, DLQ/dead letter, Fencing token. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Bổ sung thuật ngữ AI đa provider, BYOK, secret enrollment và data egress. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Tạo glossary canonical để giảm ambiguity trong artifact Phase 0.0. | Technical Operator | Pending |

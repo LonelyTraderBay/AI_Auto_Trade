@@ -2,11 +2,14 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT — Phase 6 only |
+| Version / Status | 1.0.1 / DRAFT — Phase 6 only |
+| Owner / Approver | Security/Backup Owner + Account Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Suspected BYOK key exposure, unexpected provider/endpoint egress, cross-owner access attempt, revoke/rotation failure, provider outage, budget/quota exhaustion or invalid/unknown provider outcome / Medium to Critical by data-security impact |
 | Scope / Incident commander | Affected AI connection, owner scope, environment, provider/model/profile / Security/Backup Owner; Account Owner for owner-scope decision |
 | Related | ADR-0008, ADR-0016; SEC-001, SEC-002, SEC-004, OPS-001; Master §10.6, §12.1, §12.4–§12.7 |
 | Safe objective | Stop new AI provider calls for affected connection/scope, preserve safe metadata, contain secret/egress exposure, and keep trading independently safe |
+| Change summary | 1.0.1 (2026-08-02): bổ sung Owner/Approver, Effective/Last review và Change summary theo GOV-DOC-001 §3 (audit toàn diện — trước đây là runbook duy nhất thiếu Change summary); nội dung procedure không đổi. |
 
 ## 1. Preconditions and hard prohibitions
 

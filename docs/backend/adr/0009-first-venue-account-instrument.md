@@ -2,12 +2,18 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| ADR ID | ADR-0009 |
+| Phiên bản | 0.1.0 |
 | Status | DRAFT — required before Phase 3; no venue/account/instrument selected |
 | Date | 2026-07-31 |
 | Owner | Account Owner |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
+| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Decision deadline | Before Phase 3 |
+| Rà soát gần nhất | 2026-08-02 |
 | Related | FR-MKT-001, FR-EXEC-001, FR-REC-001, NFR-SEC-001; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §0.3 OD-001–OD-003, §2, §10, §14 Phase 3 |
 | Supersedes / superseded by | None / None |
+| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
 
 ## Context and decision drivers
 

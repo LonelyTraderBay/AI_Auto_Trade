@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.2.0 / IN_REVIEW |
+| Version / Status | 1.3.1 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | FR-EXEC-001, FR-RSK-001, NFR-SEC-001, NFR-OPS-001; ADR-0002, ADR-0011, ADR-0012, ADR-0014 |
-| Change summary | 1.2.0 (2026-07-31, Technical Operator, Pending): thêm §5a Complexity/size budget + config authority (DRAFT, enforce bằng Ruff), mở rộng §5 naming/duplication/TODO repo-wide, bổ sung tiêu chí chất lượng vào §7 DoD — đóng khoảng trống "code chuyên nghiệp, ngắn gọn" chỉ là khát vọng. 1.1.0: đổi title ID ENG-002 -> ENG-PY-001; sửa Related FR-OMS-001 -> FR-EXEC-001; thêm §4a Exception taxonomy (DRAFT). 1.0.0: quy tắc Python áp dụng từ Task 0.1. |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Related | FR-EXEC-001, FR-RSK-001, NFR-SEC-001, NFR-OPS-001; ADR-0002, ADR-0011, ADR-0012, ADR-0014; ENG-REPO-001 §2a/§2b |
+| Change summary | 1.3.1 (2026-08-02, Technical Operator, Pending): SỬA 2 LỖI TỰ MÂU THUẪN do audit chéo phát hiện — (a) thêm `ignore = ["D104"]` vào §5a-ref vì D104 bắt docstring trên mọi `__init__.py` trong khi ENG-REPO-001 §2a bắt buộc `__init__.py` rỗng (skeleton bắt buộc sẽ fail lint bắt buộc); (b) thêm `[build-system]` hatchling vì thiếu nó `uv run pytest` không import được package (test bootstrap fail ModuleNotFoundError). Kèm: ghi rõ khối §5a-ref là superset authority so với bảng trích yếu; sửa scope docstring D thành toàn bộ src/ trừ tests/; ghi chú ANN áp dụng cho tests (`-> None`). 1.3.0 (2026-08-01): sửa mâu thuẫn §2 theo master §4.3; thêm khối pyproject.toml chuẩn tham chiếu §5a-ref; quy tắc absolute import. 1.2.0: §5a budget + §5b anti-pattern AI + §7 DoD chất lượng. 1.1.0: đổi title ID; FR-OMS-001 -> FR-EXEC-001; §4a Exception taxonomy. 1.0.0: quy tắc Python áp dụng từ Task 0.1. |
 
 ## 1. Phạm vi và toolchain
 
@@ -16,13 +16,14 @@ Version runtime/dependency phải pin trong `pyproject.toml`, `uv.lock`, image d
 
 ## 2. Layer và import boundary
 
-Mỗi bounded context có `domain`, `application`, `ports`, `adapters`, `tests`.
+Mỗi bounded context chỉ có `domain`, `application`, `ports` (master §4.3). Adapter nằm tập trung tại `src/ai_auto_trade/adapters/<kind>/<provider>/`, test nằm tại `tests/` mirror source — **không có** adapter hoặc tests context-local. Layout module và tên file bên trong từng layer theo ENG-REPO-001 §2a.
 
 - `domain`: immutable value object/entity/policy; không import FastAPI, SQLAlchemy, Pydantic, CCXT, NautilusTrader, OpenAI SDK, HTTP client, filesystem, environment hoặc clock/random global.
 - `application`: orchestration/use case, nhận port và Unit of Work qua constructor; không biết vendor SDK hoặc transport HTTP.
 - `ports`: Protocol/ABC tối thiểu, type rõ ràng, không chứa vendor DTO.
 - `adapters`: mapping/IO/vendor. Chỉ adapter được dùng framework/provider SDK.
-- Composition root ở `bootstrap`/`apps`, không trong domain hoặc strategy.
+- Composition root ở từng app trong `apps/` (không có thư mục `bootstrap/` riêng — master §4.6), không trong domain hoặc strategy.
+- Import luôn absolute từ `ai_auto_trade.`; cấm relative import. Ruff `I` quản thứ tự import (ENG-REPO-001 §2a).
 
 Domain không truy cập DB/network/env/file trực tiếp. Strategy không tạo `ClientOrderId`, không place order và không tự retry external submission.
 
@@ -75,13 +76,84 @@ Ngân sách bắt buộc, enforce bằng Ruff trong `pyproject.toml` khi Task 0.
 | Số tham số function | ≤ 5 | `PLR0913` |
 | Số return / branch / statement | Ruff default | `PLR0911` / `PLR0912` / `PLR0915` |
 | Commented-out code | 0 — cấm | `ERA` |
-| Docstring public API (domain/application) | bắt buộc, Google style | `D` (`convention = "google"`) |
+| Docstring public API (toàn bộ `src/`, trừ `tests/` và `__init__.py` rỗng) | bắt buộc, Google style | `D` (`convention = "google"`, ignore `D104`) |
 | Simplification | bật | `SIM` |
-| Type annotation coverage | bật (bổ trợ Pyright) | `ANN` |
+| Type annotation coverage | bật (bổ trợ Pyright; áp dụng cả tests — test function khai báo `-> None`) | `ANN` |
+
+Bảng trên chỉ liệt kê các ngân sách nổi bật; danh sách rule family **đầy đủ và có hiệu lực** là khối §5a-ref bên dưới (gồm cả `E/W/F/I/UP/B/PGH/RUF` và toàn bộ `PL`) — bảng là trích yếu, khối là authority.
 
 Hướng dẫn không-tự-động (reviewer kiểm): function ≤ ~50 dòng, module ≤ ~400 dòng — vượt ngưỡng phải có lý do trong PR description hoặc tách module theo intent.
 
-**Config authority:** `pyproject.toml` là nơi duy nhất chứa cấu hình Ruff/Pyright và là artifact được kiểm soát — Task 0.1 đề xuất giá trị cụ thể chứa tối thiểu các rule family trên; giá trị trở thành authority sau khi reviewer approve; mọi việc **nới lỏng** rule (tắt family, tăng ngưỡng, thêm per-file-ignores) sau đó là thay đổi có kiểm soát cần task card + lý do, và nếu đụng safety path cần waiver ID/expiry trong `docs/governance/waiver-register.md`. `# noqa` đã bị cấm ở §3; Ruff config phải bật cơ chế chặn noqa tương ứng.
+**Config authority:** `pyproject.toml` là nơi duy nhất chứa cấu hình Ruff/Pyright và là artifact được kiểm soát — Task 0.1 **tái tạo khối chuẩn tham chiếu dưới đây** (không tự thiết kế config); giá trị trở thành authority sau khi reviewer approve; mọi việc **nới lỏng** rule (tắt family, tăng ngưỡng, thêm per-file-ignores) sau đó là thay đổi có kiểm soát cần task card + lý do, và nếu đụng safety path cần waiver ID/expiry trong `docs/governance/waiver-register.md`. `# noqa` đã bị cấm ở §3; family `PGH` dưới đây chặn blanket `# noqa`/`# type: ignore`, và `RUF100` bắt noqa thừa.
+
+**Khối chuẩn tham chiếu cho Task 0.1 (§5a-ref, DRAFT):** AI tái tạo đúng cấu trúc và giá trị sau; chỗ duy nhất AI được điền là `<pinned>` — version mới nhất tại thời điểm `uv lock`, ghi vào evidence. Mọi sai khác khác phải có lý do bằng văn bản trong PR/report để reviewer quyết.
+
+~~~toml
+[project]
+name = "ai-auto-trade"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = []                       # Task 0.1: không runtime dependency
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"       # hatchling tự nhận src/ai_auto_trade từ project name;
+                                        # bắt buộc để uv cài package và test import được
+
+[dependency-groups]
+dev = [
+  "ruff==<pinned>",
+  "pyright==<pinned>",
+  "pytest==<pinned>",
+]
+
+[tool.ruff]
+line-length = 100                       # khớp .editorconfig
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+  "E", "W", "F",                        # pycodestyle + pyflakes
+  "I",                                  # isort — thứ tự import
+  "UP",                                 # pyupgrade — idiom 3.12
+  "B",                                  # bugbear
+  "C90",                                # mccabe complexity
+  "PL",                                 # pylint (gồm PLR0911/0912/0913/0915)
+  "ERA",                                # cấm commented-out code
+  "SIM",                                # simplification
+  "ANN",                                # annotation coverage
+  "D",                                  # docstring
+  "PGH",                                # cấm blanket noqa / type: ignore
+  "RUF",                                # ruff-specific, gồm RUF100
+]
+
+ignore = ["D104"]                       # __init__.py bắt buộc rỗng theo ENG-REPO-001 §2a —
+                                        # không thể vừa rỗng vừa có docstring; ignore toàn cục
+                                        # để giữ "per-file-ignore duy nhất" bên dưới đúng nghĩa
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]                      # per-file-ignore duy nhất được phép ở 0.1
+
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+include = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
+~~~
 
 ## 5b. Chống anti-pattern AI (DRAFT)
 
@@ -113,4 +185,3 @@ Tiêu chí **chất lượng** reviewer phải xác nhận thêm (không chỉ s
 - [ ] Không duplication mới trong context vượt rule-of-three (§5); không dead code/commented-out code.
 - [ ] Ngân sách complexity §5a pass (Ruff xanh, không per-file-ignore mới không lý do).
 - [ ] Không anti-pattern §5b (speculative abstraction, defensive check thừa, async không cần).
-

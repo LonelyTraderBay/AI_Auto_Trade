@@ -41,4 +41,5 @@
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
-| 0.1.0 | 2026-07-31 | Khởi tạo khung register với baseline mapping từ tài liệu hiện có; mọi nghĩa vụ pháp lý PENDING OD-007. | Technical Operator | Pending |
+| 0.1.1 | 2026-08-02 | Làm rõ attribution: Technical Operator là role soạn thảo khung register; Account Owner là owner nội dung/nghĩa vụ (header). Không đổi nội dung mapping. | Technical Operator (soạn thảo; owner tài liệu: Account Owner) | Pending |
+| 0.1.0 | 2026-07-31 | Khởi tạo khung register với baseline mapping từ tài liệu hiện có; mọi nghĩa vụ pháp lý PENDING OD-007. | Technical Operator (soạn thảo; owner tài liệu: Account Owner) | Pending |

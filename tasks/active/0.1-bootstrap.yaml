@@ -19,6 +19,7 @@ non_goals:
 preconditions:
   - "Gate Phase 0.0 PASSED với gate record được Account Owner ký."
   - "ADR 0001-0005, 0007, 0011, 0012, 0014 ở trạng thái APPROVED."
+  - "ENG-REPO-001 §2a/§2b và ENG-PY-001 §5a/§5a-ref được Account Owner APPROVED (hết DRAFT) — acceptance criteria 3 và 8 phụ thuộc trực tiếp vào hai section này."
   - "Toàn bộ task 0.0.x DONE và chuyển vào tasks/completed/."
   - "Task card này được reviewer chuyển sang READY."
 blockers:
@@ -61,12 +62,12 @@ impact:
 acceptance_criteria:
   - "Fresh clone bootstrap được bằng đúng chuỗi lệnh ghi trong README (uv sync --locked trở đi), không cần bước thủ công không tài liệu hóa."
   - "Bootstrap command profile §13.2 chạy xanh: uv sync --locked, ruff format --check, ruff check, pyright, pytest (suite có thể tối thiểu nhưng phải chạy thật)."
-  - "Cấu trúc src/ai_auto_trade/{shared_kernel,contexts,adapters,apps} khớp master §4.6; các context directory rỗng đúng danh sách §4.2 (ai_memory và adapters/llm chưa tạo — Phase 6)."
+  - "Danh sách file tạo mới khớp 100% manifest ENG-REPO-001 §2b — không file thừa, không file thiếu; cấu trúc src/ai_auto_trade/{shared_kernel,contexts,adapters,apps} khớp master §4.6; mọi __init__.py rỗng theo ENG-REPO-001 §2a (trừ package gốc được 1 dòng docstring); không tạo trước thư mục phase sau (ai_memory, adapters/llm, adapters/nautilus, apps/secret_ingress)."
   - "AGENTS.md là bản rút gọn có thể thực thi của master §16; README trỏ đúng thứ tự đọc master -> AGENTS.md -> DOCS_INDEX -> task card."
   - ".env.example chỉ chứa key mẫu/placeholder, secret scan không phát hiện leak."
   - "Không có code import exchange SDK, LLM SDK hoặc đọc live credential."
-  - "Mọi dependency trong pyproject có lý do và locked version; không package ngoài phạm vi bootstrap."
-  - "Cấu hình Ruff trong pyproject.toml chứa tối thiểu các rule family theo ENG-PY-001 §5a (C90 max-complexity=10, PLR0911/0912/0913/0915, ERA, D convention=google cho domain/application, SIM, ANN); Pyright strict; giá trị config trở thành authority sau reviewer approve."
+  - "Dependency set đóng theo ENG-REPO-001 §2b: [project].dependencies rỗng; [dependency-groups].dev đúng 3 package ruff/pyright/pytest pinned exact version qua uv.lock; không hypothesis/pytest-cov/plugin nào khác ở task này."
+  - "pyproject.toml tái tạo đúng khối chuẩn tham chiếu ENG-PY-001 §5a-ref (Ruff select đầy đủ gồm I/PGH/RUF, line-length 100, mccabe max-complexity=10, pydocstyle google, per-file-ignores duy nhất tests/** = [D]; Pyright strict); chỗ duy nhất AI điền là version <pinned>; mọi sai khác khác phải có lý do bằng văn bản trong report; giá trị config trở thành authority sau reviewer approve."
 required_commands:
   - "uv sync --locked"
   - "uv run ruff format --check ."
@@ -79,4 +80,5 @@ rollback_or_forward_fix: "Skeleton chưa có runtime state; rollback bằng reve
 known_risks:
   - "Card này được soạn trước khi gate Phase 0.0 pass; mọi trường có thể bị Account Owner sửa khi review. Không được thực thi khi status chưa là READY."
   - "CI allowlist enforcement chưa tồn tại (Task 0.2); scope task này tạm được kiểm bằng validator thủ công đã ghi trong gate record Phase 0.0."
+  - "Secret scan tại acceptance criterion 5 dùng validator tạm uvx detect-secrets (dev-dependency set đóng không chứa scanner; CI scanner là Task 0.2) — lệnh và exit code phải ghi vào evidence."
 waiver_id: null

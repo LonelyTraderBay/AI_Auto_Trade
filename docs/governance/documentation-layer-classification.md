@@ -3,17 +3,20 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-CLASS-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.4.0 |
 | Trạng thái | DRAFT |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực; chỉ có hiệu lực khi trạng thái APPROVED |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.5; docs/governance/document-control.md §6; docs/governance/DOCS_INDEX.md |
 | Related requirements | Không tạo requirement mới; đây là artifact tham khảo, không phải đặc tả kỹ thuật |
-| Related ADR | Không có ADR liên quan hiện hành; di chuyển vật lý đã được Account Owner yêu cầu thực thi trực tiếp (bỏ qua bước ADR-0017/RACI review đề xuất ở Mục 5) |
+| Related ADR | Không có ADR liên quan hiện hành; di chuyển vật lý đã được Account Owner yêu cầu thực thi trực tiếp (bỏ qua bước ADR-0017/RACI review đề xuất ở Mục 5) — khoảng trống hợp thức hóa được theo dõi tại RAID I-009 |
+| Change summary | 0.4.0 (2026-08-02): addendum §6 cập nhật corpus 103 → 105 tệp (bổ sung 2 validation record gate Phase 0.0); ghi nhận minh bạch khoảng trống approval của lần tái cấu trúc (RAID I-009) — không tự tạo approval hồi tố. |
 
-> Tài liệu này là một artifact **tham khảo (reference)**. Mục 1–4 là bản ghi phân tích/phân loại tại thời điểm soạn thảo (2026-07-31) và bảng ánh xạ ở Mục 3 mô tả trạng thái **cũ → mới**; các đường dẫn "cũ" trong Mục 1–4 là lịch sử, không còn tồn tại trên đĩa. **Việc di chuyển vật lý theo đúng bảng ánh xạ ở Mục 3 đã được thực thi** theo yêu cầu trực tiếp của Account Owner (xem Mục 6, v0.2.0) — bỏ qua lộ trình RACI review/ADR-0017 khuyến nghị ở Mục 5. Cấu trúc hiện tại của repo phản ánh đúng cột "Đường dẫn mới" trong bảng ở Mục 3.
+> Tài liệu này là một artifact **tham khảo (reference)**. Mục 1–4 là bản ghi phân tích/phân loại tại thời điểm soạn thảo (2026-07-31) và bảng ánh xạ ở Mục 3 mô tả trạng thái **cũ → mới**; các đường dẫn "cũ" trong Mục 1–4 là lịch sử, không còn tồn tại trên đĩa. **Việc di chuyển vật lý theo đúng bảng ánh xạ ở Mục 3 đã được thực thi** theo yêu cầu trực tiếp của Account Owner (xem Mục 7, v0.2.0) — bỏ qua lộ trình RACI review/ADR-0017 khuyến nghị ở Mục 5. Cấu trúc hiện tại của repo phản ánh đúng cột "Đường dẫn mới" trong bảng ở Mục 3.
+>
+> **Ghi nhận khoảng trống governance (audit 2026-08-02):** theo GOV-DOC-001 §4, một yêu cầu trực tiếp trong trao đổi không phải approval record hợp lệ (thiếu actor/role/UTC/scope/evidence path). Việc thực thi trước khi có record như vậy là một ngoại lệ đã xảy ra, được theo dõi tại **RAID I-009**; nó phải được hợp thức hóa bằng chính quyết định ký gate Phase 0.0 của Account Owner (gate record liệt kê tái cấu trúc GOV-CLASS-001 trong phạm vi phê duyệt). Không artifact nào — kể cả tài liệu này — được tự ghi approval hồi tố thay cho Account Owner.
 
 **Phạm vi:** Toàn bộ 81 tệp tài liệu hiện có trong repo (`docs/`, root repo, `contracts/errors/error-catalog.md`) + phân tích theo mục (17 mục) của `AI_AUTO_TRADE_MASTER_SPEC.md`.
 
@@ -368,9 +371,65 @@ Lộ trình triển khai an toàn, theo thứ tự ưu tiên rủi ro thấp →
 
 ---
 
-## 6. Nhật ký thay đổi
+## 6. Addendum — Phân loại tệp bổ sung sau bản ghi 81 tệp (2026-08-02)
+
+Sau bản ghi 81 tệp (Mục 1–3, đóng băng lịch sử tại 2026-07-31), corpus tài liệu đã tăng từ **81 lên 105 tệp** trong cùng phạm vi (`docs/`, root repo, `contracts/errors/error-catalog.md`): 22 tệp bổ sung tại đợt audit chéo 2026-08-02 và 2 validation record gate Phase 0.0 bổ sung cùng ngày (row 23–24). **Mục 1–3 là bản ghi lịch sử và không được sửa**. Phát hiện đáng chú ý: lớp **Frontend lần đầu khác 0** (8 tệp), do bộ tài liệu Frontend pack được khởi tạo làm input Phase 5/6 (chưa cho phép code).
+
+### 6.1. Bảng phân loại 24 tệp bổ sung
+
+| # | Tệp | Layer |
+|---|---|---|
+| 1 | docs/frontend/README.md | Frontend |
+| 2 | docs/frontend/product/frontend-charter.md | Frontend |
+| 3 | docs/frontend/product/screen-inventory.md | Frontend |
+| 4 | docs/frontend/architecture/api-integration-contract.md | Frontend |
+| 5 | docs/frontend/architecture/flutter-app-architecture.md | Frontend |
+| 6 | docs/frontend/design/design-system.md | Frontend |
+| 7 | docs/frontend/security/frontend-security-policy.md | Frontend |
+| 8 | docs/frontend/engineering/frontend-testing-strategy.md | Frontend |
+| 9 | docs/backend/engineering/logging-standard.md | Backend |
+| 10 | docs/backend/engineering/versioning-release-policy.md | Backend |
+| 11 | docs/backend/security-ops/runbooks/venue-rate-limit.md | Backend |
+| 12 | docs/backend/security-ops/runbooks/outbox-dlq-backlog.md | Backend |
+| 13 | docs/backend/security-ops/runbooks/clock-drift.md | Backend |
+| 14 | docs/governance/waiver-register.md | Governance-Process |
+| 15 | docs/governance/compliance-register.md | Governance-Process |
+| 16 | docs/governance/templates/incident-record.md | Governance-Process |
+| 17 | docs/governance/evidence/tasks/0.1/README.md | Governance-Process |
+| 18 | docs/governance/documentation-layer-classification.md (tệp này — tự tham chiếu, không nằm trong danh sách 81 tệp gốc) | Governance-Process |
+| 19 | README.md (root repo) | Governance-Process |
+| 20 | AGENTS.md | Governance-Process |
+| 21 | SECURITY.md | Governance-Process |
+| 22 | CONTRIBUTING.md | Governance-Process |
+| 23 | docs/governance/evidence/gates/phase-0.0/validation-2026-08-02.md (EV-GATE-0.0-2026-08-02-01) | Governance-Process |
+| 24 | docs/governance/evidence/gates/phase-0.0/validation-2026-08-02-02.md (EV-GATE-0.0-2026-08-02-02 — record hiện hành sau đợt sửa audit toàn diện) | Governance-Process |
+
+Ghi chú: các control phi-Markdown ở root repo (`CODEOWNERS`, `.editorconfig`, `.gitignore`) là repo control, không tính vào corpus tài liệu Markdown được phân loại.
+
+### 6.2. Tổng hợp mới (105 tệp)
+
+Bảng tóm tắt ở Mục 1 là bản ghi lịch sử tại thời điểm 81 tệp và không được sửa; tổng hợp hiện hành là:
+
+| Layer | Số tệp (bản ghi 81) | Bổ sung | Số tệp (hiện hành 105) |
+|---|---|---|---|
+| Backend | 57 | +5 | 62 |
+| Governance-Process | 22 | +11 | 33 |
+| Shared-CrossCutting | 2 | 0 | 2 |
+| Frontend | 0 | +8 | 8 |
+| **Tổng** | **81** | **+24** | **105** |
+
+### 6.3. Đính chính bản ghi v0.2.0
+
+- `COMMIT_NOTES.md` được **giữ ở gốc repo**: tuỳ chọn nêu tại row 80 của bảng ánh xạ Mục 3 ("có thể giữ ở gốc repo — xem Mục 4") đã được chọn; tệp **không** được di chuyển vào `docs/governance/`.
+- Con số "80 tệp `git mv`" trong changelog v0.2.0 thực tế là **79**: 81 tệp trừ `contracts/errors/error-catalog.md` (row 81 — không đổi chỗ) và `COMMIT_NOTES.md` (row 80 — giữ ở gốc repo).
+
+---
+
+## 7. Nhật ký thay đổi
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.4.0 | 2026-08-02 | Audit toàn diện đợt 2: addendum §6 cập nhật corpus 103 → 105 tệp (row 23–24: hai validation record gate Phase 0.0 ngày 2026-08-02); thêm khối "Ghi nhận khoảng trống governance" — thực thi tái cấu trúc trước khi có approval record hợp lệ theo GOV-DOC-001 §4 được theo dõi tại RAID I-009 và phải được hợp thức hóa trong quyết định ký gate Phase 0.0; thêm row Change summary vào header. | Technical Operator | Pending |
+| 0.3.0 | 2026-08-02 | Thêm Mục 6 (Addendum): phân loại 22 tệp bổ sung sau bản ghi 81 tệp — corpus tăng lên 103 tệp (Backend 62, Governance-Process 31, Shared 2, Frontend 8 — lần đầu khác 0); đính chính v0.2.0 (COMMIT_NOTES.md giữ ở gốc repo; số tệp `git mv` thực tế là 79, không phải 80). Mục 1–3 lịch sử không đổi; changelog được đánh số lại thành Mục 7. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | **Thực thi** di chuyển vật lý theo đúng bảng ánh xạ ở Mục 3, theo yêu cầu trực tiếp của Account Owner (bỏ qua lộ trình RACI/ADR-0017 khuyến nghị ở Mục 5). 80 tệp `git mv` sang docs/{governance,shared,backend,frontend}/; docs/frontend/README.md placeholder được tạo; toàn bộ link tương đối, DOCS_INDEX.md, document-control.md §6, requirements-traceability.md, master spec §1.5/§4.6 và 7 task-card YAML (`tasks/active/*.yaml`) được cập nhật theo đường dẫn mới trong cùng thay đổi. Hồ sơ evidence Phase 0.0 đã đóng băng chỉ được sửa link, không sửa nội dung/quyết định evidence. | Technical Operator | Pending |
 | 0.1.0 | 2026-07-31 | Tạo bản phân loại Backend/Frontend/Shared/Governance đầu tiên cho toàn bộ 81 tệp tài liệu Phase 0.0 và `AI_AUTO_TRADE_MASTER_SPEC.md`; đề xuất cấu trúc Enterprise-Grade mục tiêu (chưa thực thi vật lý). | Technical Operator | Pending |

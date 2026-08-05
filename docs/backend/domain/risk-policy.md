@@ -2,13 +2,17 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| Document ID | DOM-RISK-001 (registry DOCS_INDEX; title giữ alias ngắn) |
 | Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Risk Approver và Account Owner phê duyệt |
 | Owner | Risk Approver |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-RSK-001, FR-EXEC-001, FR-REC-001, NFR-SAFE-001, NFR-AUD-001; ADR-0005, ADR-0007, ADR-0012 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.4–§5.6, §6.3, §7.7, §8.4–§8.10 |
+| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
 
 ## 1. Mục đích, authority và giới hạn
 

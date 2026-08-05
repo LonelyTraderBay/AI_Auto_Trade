@@ -2,12 +2,18 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| ADR ID | ADR-0007 |
+| Phiên bản | 0.1.0 |
 | Status | DRAFT — required for Phase 0.0; chưa mở gate |
 | Date | 2026-07-31 |
 | Owner | Risk Approver |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
+| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Decision deadline | Phase 0.0 gate |
+| Rà soát gần nhất | 2026-08-02 |
 | Related | FR-RSK-001, FR-EXEC-001, FR-REC-001, NFR-SAFE-001, NFR-AUD-001; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §5.4–§5.6, §6.3, §8.4–§8.10; DOM-003 |
 | Supersedes / superseded by | None / None |
+| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
 
 ## Context and decision drivers
 

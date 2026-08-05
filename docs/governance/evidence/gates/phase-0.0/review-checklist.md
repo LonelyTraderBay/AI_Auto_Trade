@@ -3,11 +3,14 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Checklist ID | GATE-0.0-CHECK-001 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
-| Required approver | Account Owner |
+| Required approver | Account Owner (pending) |
+| Ngày tạo / Rà soát gần nhất | 2026-07-31 / 2026-08-02 |
 | Related gate | [GATE-0.0-001](gate-record.md) |
 | Related master | §1.5, Phase 0.0, §15 |
+| Change summary | 0.2.0 (2026-08-02): bổ sung header Version/Rà soát/Change summary theo GOV-DOC-001 §3; ghi rõ tham chiếu SEC-ACCESS-001 tại mục 0.0.8 (tránh nhầm title-ID SEC-002 với requirement ID). |
 
 ## 0.0.1 Governance and product
 
@@ -50,6 +53,22 @@
 - [ ] BYOK raw key has exactly one isolated write-only/no-store enrollment path; it is absent from durable command/event/audit/log/proxy/WAF/APM/fixture/config/database metadata, never body-hashed/fingerprinted and cannot be read back.
 - [ ] Owner scope, re-auth, dual-role validate/activate, emergency suspend/revoke, provider/model/endpoint/policy-profile allowlist, data-egress/DNS/redirect policy, budget/quota, rotation/revoke lease, outage/unknown-outcome and no-silent-fallback behavior are reviewable.
 - [ ] AI remains proposal-only, off the trading hot path, without venue credential or execution tool; Task 0.0.6 remains REVIEW and Phase 6 remains blocked until ADR/OD/security evidence is approved.
+
+## 0.0.7 Register, standard và template bổ sung sau pack ban đầu
+
+- [ ] Waiver register và compliance register được review; không waiver nào đụng safety invariant.
+- [ ] Logging standard và versioning/release policy nhất quán với CI/CD design và repository conventions.
+- [ ] Incident-record template khớp master Phụ lục C và escalation flow của runbook.
+- [ ] Runbook index phủ RB-001..RB-012; 3 runbook mới (venue-rate-limit, outbox-dlq-backlog, clock-drift) được review.
+- [ ] Root controls (README/AGENTS/SECURITY/CONTRIBUTING/CODEOWNERS) khớp DOCS_INDEX và thực tế repo.
+- [ ] Task card 0.1 validate schema và giữ BLOCKED cho tới khi gate pass.
+
+## 0.0.8 Frontend pack (chỉ là input Phase 5/6)
+
+- [ ] FE pack nhất quán với openapi.yaml, master §11.5 và SEC-ACCESS-001 (access-control-matrix, title SEC-002).
+- [ ] Chưa có frontend code.
+- [ ] FR-FE-001..007 đã đăng ký trong requirements-traceability với gate Phase 5/6.
+- [ ] GAP register (FE-SCREEN-001 §4) được theo dõi qua OD-010/I-005.
 
 ## Final decision
 

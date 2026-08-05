@@ -2,12 +2,18 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| ADR ID | ADR-0006 |
+| Phiên bản | 0.1.0 |
 | Status | DRAFT — not required before Phase 5; no adoption authorized |
 | Date | 2026-07-31 |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
+| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Decision deadline | Before runtime use, no later than Phase 5 (master §15.1) |
+| Rà soát gần nhất | 2026-08-02 |
 | Related | FR-STR-001, FR-EXEC-001, NFR-DET-001; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §3.1, §4, §10; ADR-0002, ADR-0005 |
 | Supersedes / superseded by | None / None |
+| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
 
 ## Context and decision drivers
 

@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Technical Operator + Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Database unavailable, connection/lock exhaustion, disk threshold, replication/backup failure, integrity/ledger check failure / High; Critical for unsafe or financial/audit impact |
 | Scope / Incident commander | Affected environment/database/processes / Technical Operator + Security/Backup Owner |
 | Related | NFR-OPS-001, NFR-SEC-001; ADR-0003, ADR-0011, ADR-0012, ADR-0013; RB-005, RB-008 |
-| Change summary | Fail-closed procedure; no destructive database action. |
+| Change summary | Fail-closed procedure; no destructive database action. 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

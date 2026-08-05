@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | HTTP 429/418, venue ban notification, sustained request rejections / High; Critical if any open order is `UNKNOWN` while the order path is throttled/banned |
 | Scope / Incident commander | Affected venue, environment, API key/IP/egress path, order path vs market-data path / Technical Operator |
 | Related | FR-EXEC-001, FR-REC-001, NFR-OPS-001, NFR-SEC-001; ADR-0007; OPS-001, SEC-002; RB-001, RB-005, RB-007; master §11.3, §14 |
-| Change summary | Rate-limit/ban containment and staged resume procedure; drill of this runbook is a Phase 3 external-venue Go/No-Go condition (master §14). |
+| Change summary | Rate-limit/ban containment and staged resume procedure; drill of this runbook is a Phase 3 external-venue Go/No-Go condition (master §14). 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

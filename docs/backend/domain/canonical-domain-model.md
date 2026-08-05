@@ -2,12 +2,16 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.3.0 |
+| Document ID | DOM-MODEL-001 (registry DOCS_INDEX; title giữ alias ngắn) |
+| Phiên bản | 0.4.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Rà soát tiếp theo | Trước khi Task 0.4 bắt đầu |
+| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
 | Liên quan | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-RSK-001, FR-LED-001, FR-REC-001, FR-AI-001, NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-AI-001; ADR-0002, ADR-0003, ADR-0005, ADR-0007, ADR-0011, ADR-0012, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §4, §5, §7, §8, §10.6 |
 
@@ -129,9 +133,9 @@ Mọi integration event có `id`, `type`, `schema_version`, `source`, `occurred_
 
 ### 7.5 Fill (contract tối thiểu) — DRAFT, chờ owner review
 
-Fill phải có `fill_id` (UUIDv7), `order_id`, `client_order_id`, `venue_trade_id` (nullable khi venue không cung cấp — khi đó dedupe dùng khóa thay thế bên dưới), `price` (Decimal), `quantity` (Decimal), `fee_amount` (Decimal), `fee_asset`, `liquidity_flag` (`MAKER` | `TAKER` | `UNKNOWN`; `UNKNOWN` khi venue không báo), bốn timestamp `occurred_at`/`received_at`/`processed_at`/`recorded_at`, `sequence` (monotonic theo order, `UNIQUE(order_id, sequence)`) và `correlation_id`.
+Fill phải có `fill_id` (UUIDv7), `order_id`, `client_order_id`, `venue_fill_id` (tên field theo master §7.6; nullable khi venue không cung cấp — khi đó dedupe dùng source fingerprint bên dưới), `price` (Decimal), `quantity` (Decimal), `fee_amount` (Decimal), `fee_asset`, `liquidity_flag` (`MAKER` | `TAKER` | `UNKNOWN`; `UNKNOWN` khi venue không báo), bốn timestamp `occurred_at`/`received_at`/`processed_at`/`recorded_at`, `sequence` (monotonic theo order, `UNIQUE(order_id, sequence)` — khóa ordering nội bộ) và `correlation_id`.
 
-Fill là immutable. Khóa phát hiện duplicate là `venue_trade_id` trong phạm vi venue/account khi có; nếu venue không cung cấp thì dùng `(order_id, sequence)`. Fee fields là bắt buộc cho ledger booking theo [accounting policy](accounting-policy.md) (DOM-004): fill thiếu thông tin fee phải được book với `fee = 0` tường minh kèm quality flag, không bao giờ được đoán ngầm.
+Fill là immutable. Khóa phát hiện duplicate là `venue_fill_id` trong phạm vi venue/account khi có; nếu venue không cung cấp thì dùng **source event fingerprint** — `UNIQUE (venue_id, account_id, source_event_id/fingerprint)` theo master §7.6, khớp DOM-002 §6 và §5 của chính tài liệu này. `(order_id, sequence)` chỉ là khóa ordering, không phải khóa dedupe (sửa theo audit 2026-08-02 — bản trước mâu thuẫn master §7.6). Fee fields là bắt buộc cho ledger booking theo [accounting policy](accounting-policy.md) (DOM-004): fill thiếu thông tin fee phải được book với `fee = 0` tường minh kèm quality flag, không bao giờ được đoán ngầm.
 
 ## 8. Invariant domain không được waiver
 
@@ -161,4 +165,5 @@ NautilusTrader không sở hữu canonical domain; chỉ có thể được thê
 
 | Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 2026-08-02 | 0.4.0 | Technical Operator | Pending | Audit toàn diện: §7.5 sửa mâu thuẫn với master §7.6 — đổi `venue_trade_id` thành `venue_fill_id` (đúng tên field master) và fallback dedupe từ `(order_id, sequence)` thành source event fingerprint (`UNIQUE (venue_id, account_id, source_event_id/fingerprint)`, khớp DOM-002 §6); `(order_id, sequence)` chỉ còn là khóa ordering |
 | 2026-07-31 | 0.3.0 | Technical Operator | Pending | Bổ sung §7.5 Fill contract tối thiểu (DRAFT), ghi chú value object master §5.2 tại §5, thêm glossary Verdict/`CancelIntent` và disambiguate hai nghĩa "proposal" tại §4, tham chiếu Fill contract từ pipeline §6 |

@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | FE-SCREEN-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -233,12 +233,14 @@ Các mandatory view sau (OPS-001 §4.2 + nhu cầu screen ở §3) **chưa có r
 | 5 | Kill-switch state per scope: không có GET route; chỉ suy ra được KILL_SWITCH_ACTIVE toàn cục từ Runtime.safe_state | OPS-001 §4.2 view 5 → screen G | GET kill-switch state theo scope | **required-before-Phase-5** |
 | 6 | Orders list/filter: không có GET /orders (list) — UNKNOWN orders view cần list theo state + age | OPS-001 §4.2 view 1 → screen C | GET orders list (cursor + filter state/account/instrument) | **required-before-Phase-5** |
 | 7 | Commands list: không có GET /commands (list) — commands center chỉ theo dõi được ID tự lưu | Screen J (tiện vận hành, không thuộc OPS-001 §4.2) | GET commands list theo actor/scope | Nên có trước Phase 5, ưu tiên thấp hơn 1–6 |
-| 8 | Alignment `terminal_reason`: openapi.yaml Order.terminal_reason enum hiện là [RISK_REJECTED, REJECTED, CANCELLED, EXPIRED, FILLED, LOST] trong khi DOM-002 §5 (v0.2.0 DRAFT) định nghĩa reason chi tiết IOC_REMAINDER_CANCELLED / INTENT_EXPIRED / DECISION_EXPIRED / APPROVAL_EXPIRED / VENUE_TIF_EXPIRED | Screen C (order detail render terminal_reason) | Đồng bộ enum giữa DOM-002 và OpenAPI khi ADR-0005/0009 chốt; UI không tự bịa reason ngoài enum contract | Contract-alignment, cần đóng trước Phase 5 |
+| 8 | Alignment `terminal_reason`: openapi.yaml Order.terminal_reason enum hiện là [RISK_REJECTED, REJECTED, CANCELLED, EXPIRED, FILLED, LOST] trong khi DOM-002 §5 (DRAFT) định nghĩa reason chi tiết IOC_REMAINDER_CANCELLED / INTENT_EXPIRED / DECISION_EXPIRED / APPROVAL_EXPIRED / VENUE_TIF_EXPIRED | Screen C (order detail render terminal_reason) | Đồng bộ enum giữa DOM-002 và OpenAPI khi ADR-0005/0009 chốt; UI không tự bịa reason ngoài enum contract | Contract-alignment, cần đóng trước Phase 5 |
+| 9 | Incident filter: GET /incidents chỉ có cursor/limit, không có filter param severity/status trong khi FR-FE-003(a) yêu cầu filter | Screen H (incident list) | Thêm query param filter (severity, status) vào GET /incidents; tạm thời UI filter client-side trên trang đã tải | Nên có trước Phase 5 (phát hiện audit 2026-08-02) |
 
-AI budget/egress view (OPS-001 §4.2, Phase 6) hiện cũng chưa có route đọc budget/usage trong 12 route /ai/* của v1.1; GAP này thuộc điều kiện Phase 6, ghi nhận tại đây để theo dõi cùng ADR-0016/OD-008.
+AI budget/egress view (OPS-001 §4.2, Phase 6) hiện cũng chưa có route đọc budget/usage trong 11 path /ai/* (12 operation) của v1.1; GAP này thuộc điều kiện Phase 6, ghi nhận tại đây để theo dõi cùng ADR-0016/OD-008.
 
 ## Nhật ký thay đổi
 
 | Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 2026-08-02 | 0.2.0 | Technical Operator | Pending | Audit toàn diện: thêm GAP 9 (filter param cho GET /incidents — FR-FE-003 yêu cầu nhưng route chưa có); sửa cách đếm "12 route /ai/*" thành 11 path/12 operation |
 | 2026-07-31 | 0.1.0 | Technical Operator | Pending | Khởi tạo screen inventory DRAFT: IA + 13 nhóm screen (A–M) map vào 28 route /api/v1 của openapi.yaml v1.1.0-draft, role gating theo master §11.3/SEC-002, states bắt buộc (loading/empty/error/stale + đặc thù), phase gating 5/6; GAP register 8 mục required-before-Phase-5. Không cho phép implementation trước Phase 5 gate |

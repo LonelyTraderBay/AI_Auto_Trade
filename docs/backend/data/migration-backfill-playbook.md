@@ -2,13 +2,17 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Document ID | DATA-MIG-001 (registry DOCS_INDEX; title giữ alias ngắn) |
+| Phiên bản | 0.1.1 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-LED-001, FR-REC-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001; ADR-0003, ADR-0011, ADR-0012, ADR-0013 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §1.3, §7.5, §7.10–§7.12, §13, §15 |
+| Change summary | 0.1.1 (2026-08-02): §5.4 liên kết tường minh runbook RB-008 backup-restore; chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## 1. Purpose and safety rule
 
@@ -66,7 +70,7 @@ Check revision/schema snapshot, dictionary conformance, role grants, new constra
 
 ### 5.4 Roll forward or restore
 
-Choose the preapproved path: a new forward-fix revision for reversible logical defect, or restore a tested consistency set for corruption/unsafe data loss. Do not use destructive schema downgrade for financial/audit history. After restore, rebuild projections and reconcile before enabling strategy.
+Choose the preapproved path: a new forward-fix revision for reversible logical defect, or restore a tested consistency set for corruption/unsafe data loss theo runbook [RB-008 backup-restore](../security-ops/runbooks/backup-restore.md). Do not use destructive schema downgrade for financial/audit history. After restore, rebuild projections and reconcile before enabling strategy.
 
 ## 6. Special protections
 

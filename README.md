@@ -22,10 +22,10 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 
 AI_AUTO_TRADE_MASTER_SPEC.md   # hiến pháp kỹ thuật — nguồn sự thật cao nhất sau regulatory
 AGENTS.md                      # quy tắc bắt buộc cho AI coding agent (rút gọn §16)
 docs/
-  governance/                  # document control, RACI, traceability, ADR registry, templates, evidence
+  governance/                  # document control, RACI, traceability, DOCS_INDEX, layer classification, waiver/compliance register, ADR registry, templates, evidence
   shared/                      # glossary, non-functional requirements (áp dụng cả backend/frontend)
   backend/                     # product, architecture, domain, data, engineering, security-ops, ADR content
-  frontend/                    # trống có chủ đích — Flutter dashboard hoãn tới Phase 5
+  frontend/                    # bộ tài liệu Flutter dashboard (FE-*-001, input Phase 5/6 — chưa cho phép code)
 contracts/                     # OpenAPI 3.1, JSON Schema (command/event/config), error catalog, fixtures
 tasks/                         # task card YAML — authority phạm vi thực thi (validate bằng task-card schema)
 ```

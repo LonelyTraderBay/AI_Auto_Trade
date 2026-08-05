@@ -3,15 +3,16 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | PRD-NFR-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.2, §5, §6, §7, §12, §13 và §14 |
-| Related requirements | NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-SEC-001, NFR-OPS-001, NFR-AI-001; SEC-CRED-001, SEC-AUTH-001, SEC-AUD-001, SEC-SUP-001, SEC-DATA-001, SEC-AI-001–003 |
+| Related requirements | NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-SEC-001, NFR-OPS-001, NFR-AI-001; SEC-CRED-001, SEC-AUTH-001, SEC-AUD-001, SEC-SUP-001, SEC-DATA-001, SEC-GOV-001, SEC-KEY-001, SEC-AI-001–003 |
 | Related ADR | ADR-0001–0005, ADR-0007, ADR-0011–0016 theo phạm vi |
+| Change summary | 0.3.0 (2026-08-02): §8 nâng cấp thành định nghĩa canonical cho toàn bộ `SEC-*` (audit 2026-08-02 phát hiện `SEC-*` chỉ có one-liner trong traceability registry, không có requirement authority); bổ sung SEC-GOV-001 và SEC-KEY-001 vốn được task card 0.0.1/0.0.4/0.0.5 tham chiếu nhưng chưa được định nghĩa ở đâu. |
 
 > Non-functional requirements là acceptance criteria ngang qua mọi context. Chúng không phải tùy chọn chỉ vì một task không thêm feature mới.
 
@@ -128,15 +129,34 @@ Các constraint dưới đây là phương thức bắt buộc để chứng min
 | Error/failure | External transient retry theo policy; unknown outcome reconcile, không blind retry; security/infrastructure fail closed. |
 | Waiver | Chỉ SHOULD/non-safety goal có waiver; không waiver OMS/risk/ledger/audit/credential/migration/external-venue invariant. |
 
-## 8. Security/control mapping
+## 8. Security/control requirements (SEC-*) và mapping
+
+### 8.1 Định nghĩa canonical SEC-*
+
+Đây là định nghĩa canonical của các security/control requirement. `docs/governance/requirements-traceability.md` §4 chỉ là registry tham chiếu, không phải requirement authority. Mỗi SEC requirement được chứng minh bằng control/policy artifact và negative test tương ứng, không bằng khẳng định.
+
+| ID | Requirement (MUST) | Acceptance evidence chính | Phase gate / nguồn |
+|---|---|---|---|
+| SEC-CRED-001 | Credential tách theo environment/account; trade key không có quyền withdrawal; credential không xuất hiện trong code/log/UI/AI worker. | Secret scan CI; deployment manifest review; secrets policy (SEC-004) §2–§4; RB-007 drill. | Phase 0–3; Master §6.1, §12.1 |
+| SEC-AUTH-001 | Trước external venue, Control API xác thực actor, phân quyền action, rate limit và audit command nguy hiểm; machine identity tách riêng theo process. | Authorization/re-auth test theo OpenAPI security scheme; SEC-002/SEC-003; ADR-0015. | Phase 3; Master §11.3 |
+| SEC-AUD-001 | Audit/event/ledger evidence append-only, traceable và redacted; mọi approval có actor/role/UTC/version. | Append-only/trace test; gate/task evidence theo template; ADR-0004/0011/0012. | Phase 0.0–1; Master §1.5, §7.8, §11.3 |
+| SEC-SUP-001 | Dependency/image/artifact được pin version, scan, kiểm checksum/SBOM theo phase; không dependency tự phát. | Lockfile/image/SBOM evidence trong CI; ADR-0014. | Phase 0–4; Master §12.2, §13 |
+| SEC-DATA-001 | Dữ liệu nhạy cảm, backup và fixture được phân loại/redact/encrypt theo policy; retention có decision trước Phase 2. | Restore/redaction test; classification/retention matrix; ADR-0013 + OD-007. | Phase 0–2; Master §7.11–§7.12, §12.2 |
+| SEC-GOV-001 | Mọi thay đổi artifact/task/gate tuân theo document-control lifecycle: approval có actor/role/UTC/evidence; task card YAML là authority scope thực thi; không artifact nào tự chuyển APPROVED. | Document-control (GOV-DOC-001) §4–§7 tuân thủ; task-card schema validation; gate record đúng template TMP-GATE-001. | Phase 0.0–0; Master §1.6, §13.2, §14.2 |
+| SEC-KEY-001 | Secret/key vận hành theo secrets-and-key-management policy: không secret trong repo/log/fixture/evidence; enrollment/rotation/revocation có procedure và runbook; secret provider được approve trước khi enrollment. | Secrets policy (SEC-004); secret pattern scan; RB-007/RB-008 drill evidence. | Phase 0–3; Master §12.1 |
+| SEC-AI-001 | AI worker proposal-only: sanitized input, không execution tool, không trade credential, không config promotion. | Negative-security test cho ai_memory; ADR-0008/0016. | Phase 6; Master §10.6–§10.8, §12.1 |
+| SEC-AI-002 | BYOK key chỉ đi qua secret ingress write-only; không read-back, không log/persist/echo; tách theo owner/provider/environment. | No-hash/no-read-back, secret-leak và owner-scope negative test; ADR-0016. | Phase 6; Master §10.6, §12.1 |
+| SEC-AI-003 | Provider/model/endpoint egress allowlist, data classification, budget/quota/no-fallback và owner-scope isolation được enforce và audit. | Egress/DNS/redirect, quota, drift, outage/no-fallback test; ADR-0016. | Phase 6; Master §10.6, §12.4–§12.6 |
+
+### 8.2 NFR ↔ SEC mapping
 
 | NFR | SEC mapping |
 |---|---|
 | NFR-DET-001 | SEC-SUP-001, SEC-DATA-001 |
 | NFR-AUD-001 | SEC-AUD-001, SEC-DATA-001 |
 | NFR-SAFE-001 | SEC-AUD-001, SEC-CRED-001, SEC-AUTH-001 |
-| NFR-SEC-001 | SEC-CRED-001, SEC-AUTH-001, SEC-SUP-001, SEC-AI-001 |
-| NFR-OPS-001 | SEC-AUD-001, SEC-DATA-001, SEC-CRED-001 |
+| NFR-SEC-001 | SEC-CRED-001, SEC-AUTH-001, SEC-KEY-001, SEC-SUP-001, SEC-AI-001 |
+| NFR-OPS-001 | SEC-AUD-001, SEC-DATA-001, SEC-CRED-001, SEC-GOV-001 |
 | NFR-AI-001 | SEC-AI-001, SEC-AI-002, SEC-AI-003, SEC-CRED-001, SEC-AUTH-001, SEC-AUD-001 |
 
 ## 9. Review and change policy
@@ -147,5 +167,6 @@ NFR acceptance must be verified by actual command/procedure, exit/result, eviden
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
-| 0.1.0 | 2026-07-31 | Chuẩn hóa acceptance/evidence cho baseline non-functional requirements. | Technical Operator | Pending |
+| 0.3.0 | 2026-08-02 | §8 nâng cấp thành định nghĩa canonical SEC-* (trước đây chỉ có one-liner trong traceability); bổ sung SEC-GOV-001, SEC-KEY-001 (được task card 0.0.1/0.0.4/0.0.5 tham chiếu nhưng chưa định nghĩa); cập nhật mapping §8.2. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Thêm NFR-AI-001 cho vận hành BYOK đa provider, egress/budget và failure isolation. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Chuẩn hóa acceptance/evidence cho baseline non-functional requirements. | Technical Operator | Pending |

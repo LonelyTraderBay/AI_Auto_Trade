@@ -3,11 +3,13 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ENG-LOG-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.1.1 |
 | Trạng thái | DRAFT |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
-| Rà soát gần nhất | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
+| Change summary | 0.1.1 (2026-08-02): bổ sung 2 row header còn thiếu theo GOV-DOC-001 §3 (Ngày hiệu lực, Change summary) — audit toàn diện; nội dung logging không đổi. |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §12.1–§12.5; docs/backend/engineering/coding-standards-python.md §5; docs/backend/security-ops/slo-sli-alert-policy.md |
 | Related | NFR-AUD-001, NFR-OPS-001, SEC-AUD-001 |
 

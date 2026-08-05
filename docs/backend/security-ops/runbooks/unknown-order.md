@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Technical Operator + Risk Approver / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Order state `UNKNOWN`, cancel outcome unknown, or age > `unknown_order_sla_s` / Critical after SLA |
 | Scope / Incident commander | Affected venue-account-instrument-order / Technical Operator; Risk Approver for exposure decision |
 | Related | FR-EXEC-001, FR-REC-001, NFR-OPS-001; ADR-0005, ADR-0007, ADR-0012; OPS-001 |
-| Change summary | Design procedure; execute only after Control API/runtime is approved. |
+| Change summary | Design procedure; execute only after Control API/runtime is approved. 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

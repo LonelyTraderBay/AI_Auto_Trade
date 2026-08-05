@@ -2,13 +2,17 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.2.0 |
+| Document ID | DOM-OMS-001 (registry DOCS_INDEX; title giữ alias ngắn) |
+| Phiên bản | 0.3.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-REC-001, NFR-AUD-001, NFR-SAFE-001; ADR-0004, ADR-0005, ADR-0007, ADR-0012 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.4–§5.8, §7.2–§7.7, §8.6–§8.9 |
+| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
 
 ## 1. Authority và phạm vi
 
@@ -61,7 +65,17 @@
 | `LOST` | late proven terminal result | proven terminal state | approved terminal correction; retain LOST incident history |
 | `LOST` | late evidence says open/partial | `LOST` | open EXTERNAL case; block exposure; never reopen aggregate |
 
-Any event not shown is invalid and must be rejected/audited rather than guessed.
+Any event not shown is invalid and must be rejected/audited rather than guessed. Ngoại lệ duy nhất: các transition PROPOSED tại §5a — chúng cũng **chưa hợp lệ** cho tới khi master §5.5/ADR-0005 ratify (RAID I-010); trước đó mọi event thuộc nhóm này phải bị reject/audit như event không hợp lệ.
+
+### 3a. Transition PROPOSED do ma trận expiry §5 hàm ý (chưa hợp lệ — chờ ratify, RAID I-010)
+
+Audit 2026-08-02 phát hiện §5 tạo terminal outcome từ các state chưa có transition tương ứng trong §3/master §5.5. Danh sách đề xuất được liệt kê tường minh để Account Owner ratify qua amendment master §5.5 + ADR-0005, thay vì để implementation tự chế:
+
+| Từ | Guard / evidence | Sang | Ghi chú |
+|---|---|---|---|
+| `CREATED` / `RISK_APPROVED` / `SUBMISSION_QUEUED` | intent `expires_at` đến hạn trước venue call | `EXPIRED` (`terminal_reason=INTENT_EXPIRED`) | không venue call; audit reason (§5 row 1) |
+| `SUBMISSION_QUEUED` | `RiskDecision` expiry tại queue-claim (stale decision) | `EXPIRED` hoặc `REJECTED` (`terminal_reason=DECISION_EXPIRED`) | release reservation stale; master §5.4 (§5 row 2) |
+| `OPEN` / `PARTIALLY_FILLED` | venue tự cancel remainder theo TIF (evidence IOC) — không qua `CANCEL_REQUESTED` | `CANCELLED` (`terminal_reason=IOC_REMAINDER_CANCELLED`) | evidence + release remaining reservation (§5 bảng TIF) |
 
 ## 4. Submission and cancellation protocol
 
@@ -72,7 +86,7 @@ Any event not shown is invalid and must be rejected/audited rather than guessed.
 5. Recovery queries client order ID, history, open orders and recent fills under the venue capability contract. It records evidence, never fabricates an acknowledgement.
 6. Cancellation is a distinct operation. Replace is modelled as terminal cancellation followed by a new OrderIntent/new ClientOrderId only after evidence/policy permit it.
 
-## 5. Time-in-force và ma trận expiry (DRAFT — cần owner approval cùng ADR-0005/0009)
+## 5. Time-in-force và ma trận expiry (DRAFT — cần owner approval cùng ADR-0005/0009; transition hàm ý xem §3a, RAID I-010)
 
 TIF values được hỗ trợ theo capability profile: `GTC` (default), `IOC`, `FOK`, `GTD`. Mỗi venue capability profile phải khai báo rõ TIF nào được hỗ trợ; TIF không được hỗ trợ bị reject trước submission theo master §5.4 (no-silent-fallback), không được thay thế ngầm.
 
@@ -135,5 +149,7 @@ Changing a state, transition, terminal meaning, submission retry or cancel/repla
 
 | Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 2026-08-02 | 0.3.0 | Technical Operator | Pending | Audit toàn diện: thêm §3a liệt kê tường minh 3 nhóm transition PROPOSED do ma trận expiry §5 hàm ý (INTENT_EXPIRED/DECISION_EXPIRED trước submission, IOC remainder venue tự cancel) — trước đây mâu thuẫn với tuyên bố "any event not shown is invalid" của §3; gắn RAID I-010 chờ ratify master §5.5/ADR-0005 |
 | 2026-07-31 | 0.2.0 | Technical Operator | Pending | Thêm §5 Time-in-force và ma trận expiry (DRAFT, cần ADR-0005/0009); bổ sung side effect "block conflicting intent" cho `UNKNOWN -> RECONCILING` và liệt kê rõ sáu target state của `RECONCILING` tại §3; đánh số lại §5–§9 cũ thành §6–§10 |
+| 2026-07-31 | 0.1.0 | Technical Operator | Pending | Khởi tạo state machine 16 state (xem git history — row này được bổ sung lại cho đủ lineage) |
 

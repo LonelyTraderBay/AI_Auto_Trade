@@ -4,6 +4,7 @@
 |---|---|
 | Document ID | ARC-C4-002 |
 | Phiên bản | 0.3.0 |
+| Change summary | 0.3.0: xem Nhật ký thay đổi; row này được bổ sung 2026-08-02 theo GOV-DOC-001 §3 (audit toàn diện — không đổi nội dung container/ownership). |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |

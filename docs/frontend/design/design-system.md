@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | FE-DS-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.1.1 |
 | Trạng thái | DRAFT |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -40,7 +40,7 @@ Màu là **semantic token**, không phải màu trang trí: một state luôn ma
 Ghi chú bắt buộc:
 
 - `UNKNOWN` và `LOST` phải kèm visual weight cao nhất (nhóm danger) vì chúng gắn với nghĩa vụ reconcile và block exposure (DOM-002 §3, §9: "A `LOST` order blocks conflicting exposure").
-- `EXPIRED` là một state duy nhất; UI phân biệt nguyên nhân bằng `terminal_reason` (`INTENT_EXPIRED`, `DECISION_EXPIRED`, `APPROVAL_EXPIRED`, `VENUE_TIF_EXPIRED`) hiển thị phụ, không tạo state UI mới (DOM-002 §5).
+- `EXPIRED` là một state duy nhất; UI phân biệt nguyên nhân bằng `terminal_reason` (`INTENT_EXPIRED`, `DECISION_EXPIRED`, `APPROVAL_EXPIRED`, `VENUE_TIF_EXPIRED`) hiển thị phụ, không tạo state UI mới (DOM-002 §5). **Lưu ý contract:** enum `Order.terminal_reason` của openapi v1.1 chưa chứa các reason chi tiết này (GAP 8, FE-SCREEN-001 §4; RAID I-006) — client chỉ nhận và render giá trị thuộc enum contract hiện hành, phần chi tiết chỉ áp dụng sau khi OD-010 đóng GAP.
 - `EXTERNAL` không phải OMS state (DOM-002 §1, glossary §2) — không được render như một order state; hiển thị như classification của reconciliation case.
 
 ### 2.2 Incident severity → 4 mức
@@ -138,4 +138,5 @@ Dangerous action (danh sách theo master §11.3 — xem FE-SEC-001 §4) dùng pa
 
 | Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 2026-08-02 | 0.1.1 | Technical Operator | Pending | Audit toàn diện: §2.1 ghi chú tường minh enum terminal_reason chi tiết chưa có trong openapi v1.1 (GAP 8/I-006) — client chỉ render giá trị enum contract hiện hành. |
 | 2026-07-31 | 0.1.0 | Technical Operator | Pending | Khởi tạo design system: nguyên tắc operations-first, semantic color mapping cho 16 OMS state / severity / safe_state / BYOK connection state, data display rules (Decimal/timestamp/UUID), terminology theo glossary và layout patterns 4-state + danger zone. |

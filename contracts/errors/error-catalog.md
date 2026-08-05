@@ -2,11 +2,12 @@
 
 | Trường | Giá trị |
 |---|---|
-| Contract ID / Version / Status | C-ERR-001 / v1.1 / IN_REVIEW |
-| Owner / Approver | Technical Operator / Account Owner |
+| Contract ID / Version / Status | C-ERR-001 / 1.1.1 / IN_REVIEW |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
 | Canonical path | `contracts/errors/error-catalog.md` |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Related | FR-OPS-001, FR-AI-001, NFR-SEC-001, NFR-AI-001; ADR-0005, ADR-0007, ADR-0012, ADR-0015, ADR-0016; C-API-001 |
-| Change summary | Safe error vocabulary and HTTP mapping for OpenAPI v1 skeleton, gồm BYOK AI provider errors không lộ key/provider raw payload. |
+| Change summary | 1.1.1 (2026-08-02): chuẩn hóa version 2 thành phần "v1.1" thành semantic version 3 thành phần theo GOV-DOC-001 §3; bổ sung Effective date/Last review (audit toàn diện — không đổi code/HTTP mapping nào, vẫn 26 code). 1.1.0 trở về trước: safe error vocabulary and HTTP mapping for OpenAPI v1 skeleton, gồm BYOK AI provider errors không lộ key/provider raw payload. |
 
 ## 1. Envelope invariant
 

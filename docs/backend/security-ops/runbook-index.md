@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.2.0 / IN_REVIEW |
-| Owner / Approver | Security/Backup Owner / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | NFR-OPS-001, NFR-AI-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; OPS-001; master §12.6–§12.8 |
-| Change summary | Bổ sung RB-010 venue rate-limit/ban, RB-011 outbox/DLQ backlog, RB-012 clock drift vào catalog theo audit supplement. |
+| Version / Status | 1.2.2 / IN_REVIEW |
+| Owner / Approver | Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Related | NFR-OPS-001, NFR-AI-001, SEC-AI-002, SEC-AI-003; OPS-001; master §12.6–§12.8 |
+| Change summary | Bổ sung RB-010 venue rate-limit/ban, RB-011 outbox/DLQ backlog, RB-012 clock drift vào catalog theo audit supplement; sửa dangling requirement ID theo audit 2026-08-02. |
 
 ## 1. Use policy
 
@@ -43,4 +43,7 @@ Runbooks are dry-run/reviewed before paper. While paper/testnet/canary is active
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 1.2.2 | 2026-08-02 | Audit toàn diện: cập nhật Last review; sắp changelog newest-first; ghi chú 12 runbook có version/status riêng (đều DRAFT) — đã phản ánh trong DOCS_INDEX row OPS-RUN-001. | Technical Operator | Pending |
+| 1.2.1 | 2026-08-02 | Bỏ dangling ID SEC-OPS-001 khỏi Related (NFR-OPS-001 đã có sẵn) theo audit 2026-08-02. | Technical Operator | Pending |
 | 1.2.0 | 2026-07-31 | Thêm RB-010 (venue rate-limit/IP-ban/key-ban), RB-011 (outbox/DLQ backlog), RB-012 (clock drift/NTP failure) vào catalog với owner, trigger và required-before phase. | Technical Operator | Pending |
+| 1.0.0–1.1.x | 2026-07-31 | Khởi tạo catalog RB-001..RB-009 (lineage chi tiết: xem git history — row bổ sung cho đủ chuỗi version). | Technical Operator | Pending |

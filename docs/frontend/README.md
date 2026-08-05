@@ -3,12 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | FE-INDEX-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.2.1 |
 | Trạng thái | DRAFT |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
-| Rà soát gần nhất | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
+| Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §11.5, §14 Phase 5/6; docs/governance/DOCS_INDEX.md; contracts/api/openapi.yaml |
 | Phase hiệu lực | Phase 5 (dashboard core), Phase 6 (BYOK screens) |
+| Change summary | 0.2.1 (2026-08-02): bổ sung Ngày hiệu lực + Tham chiếu chuẩn theo GOV-DOC-001 §3 (audit toàn diện); nội dung chỉ mục không đổi. |
 
 > **Bộ tài liệu này là input thiết kế cho Phase 5/6 — không cho phép bắt đầu code frontend** trước khi gate các phase trước PASS và task card Phase 5 chuyển READY (master §14, §2.3). Mọi nội dung được trích xuất/neo trực tiếp vào contract backend (`contracts/api/openapi.yaml` là canonical duy nhất cho HTTP); khi mâu thuẫn, backend contract thắng. Mọi lựa chọn công nghệ trong pack đánh dấu DRAFT chờ Account Owner phê duyệt.
 

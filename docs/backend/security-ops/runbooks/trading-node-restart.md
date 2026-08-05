@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Process crash, health failure, forced restart, lease heartbeat loss, configuration/image mismatch / High; Critical with in-flight external uncertainty or split brain |
 | Scope / Incident commander | Affected runtime instance/deployment/account scope / Technical Operator |
 | Related | FR-EXEC-001, FR-REC-001, NFR-OPS-001; ADR-0004, ADR-0005, ADR-0012; RB-001, RB-003 |
-| Change summary | Restart procedure that preserves fencing/idempotency/reconciliation. |
+| Change summary | Restart procedure that preserves fencing/idempotency/reconciliation. 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

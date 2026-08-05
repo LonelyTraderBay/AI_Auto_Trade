@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
-| Owner / Approver | Security/Backup Owner / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | NFR-SEC-001, NFR-AI-001, SEC-OPS-001, SEC-AI-002, SEC-AI-003; ADR-0010, ADR-0015, ADR-0016; SEC-001; runbook RB-007 |
-| Change summary | Quy tắc lifecycle/injection, gồm BYOK AI secret-enrollment write-only; không chọn secret provider hoặc ghi secret thực. |
+| Version / Status | 1.1.2 / IN_REVIEW |
+| Owner / Approver | Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Related | NFR-SEC-001, NFR-AI-001, NFR-OPS-001, SEC-KEY-001, SEC-AI-002, SEC-AI-003; ADR-0010, ADR-0015, ADR-0016; SEC-001; runbook RB-007 |
+| Change summary | 1.1.2 (2026-08-02, Technical Operator soạn thay Owner, Pending): đồng bộ Last review với ngày sửa; thêm SEC-KEY-001 vào Related (policy này là acceptance evidence chính của SEC-KEY-001 theo PRD-NFR-001 §8.1); thêm "(pending)" cho Approver. 1.1.1 (2026-08-02): sửa dangling requirement ID. 1.1.0/1.0.0 (2026-07-31): quy tắc lifecycle/injection, gồm BYOK AI secret-enrollment write-only; không chọn secret provider hoặc ghi secret thực. |
 
 ## 1. Scope and prohibition
 

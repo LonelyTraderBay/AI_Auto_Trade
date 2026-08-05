@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.1 / IN_REVIEW |
-| Owner / Approver | Technical Operator / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | FR-OPS-001, FR-EXEC-001, FR-AI-001, NFR-SEC-001, NFR-AI-001; ADR-0004, ADR-0005, ADR-0012, ADR-0014, ADR-0016 |
-| Change summary | 1.1.1 (2026-07-31, Technical Operator, Pending): sửa dangling ID FR-OMS-001 -> FR-EXEC-001 tại header Related và hai row C-CMD-002/C-EVT-002. 1.1.0: registry cho Phase 0.0 baseline contracts, gồm DRAFT Phase 6 provider-neutral BYOK metadata/lifecycle contracts; implementation/validator command chưa tồn tại. |
+| Version / Status | 1.1.2 / IN_REVIEW |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Related | FR-OPS-001, FR-EXEC-001, FR-AI-001, NFR-SEC-001, NFR-AI-001; ADR-0004, ADR-0005, ADR-0007, ADR-0010, ADR-0012, ADR-0014, ADR-0015, ADR-0016 |
+| Change summary | 1.1.2 (2026-08-02, Technical Operator, Pending): đồng bộ header Related với các row (thêm ADR-0007 của C-CMD-001, ADR-0010 của C-CFG-002, ADR-0015 của C-API-001/C-CMD-001); ghi nhận giới hạn skeleton: openapi v1.1 chưa khai per-route response cho nhóm code 409/422/429/503 (RISK_REJECTED, COMMAND_STATE_CONFLICT, AI_*…) — bổ sung tại Task 0.2 cùng route contract tests; C-ERR-001 chuẩn hóa version 1.1.1. 1.1.1 (2026-07-31): sửa dangling ID FR-OMS-001 -> FR-EXEC-001 tại header Related và hai row C-CMD-002/C-EVT-002. 1.1.0: registry cho Phase 0.0 baseline contracts, gồm DRAFT Phase 6 provider-neutral BYOK metadata/lifecycle contracts; implementation/validator command chưa tồn tại. |
 
 ## 1. Registry rule
 

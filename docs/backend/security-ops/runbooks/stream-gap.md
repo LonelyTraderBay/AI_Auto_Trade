@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.2 / DRAFT |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Disconnect, sequence gap, malformed stream, or freshness > approved max age / High; Critical if stale input reached submission |
 | Scope / Incident commander | Affected feed, venue, account/instrument, consumer process / Technical Operator |
-| Related | FR-DATA-001, FR-RSK-001, NFR-OPS-001; ADR-0007, ADR-0009; OPS-001 |
-| Change summary | Design procedure for public and private feed recovery. |
+| Related | FR-MKT-001, FR-RSK-001, NFR-OPS-001; ADR-0007, ADR-0009; OPS-001 |
+| Change summary | Design procedure for public and private feed recovery; sửa dangling requirement ID theo audit 2026-08-02. 1.0.2 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

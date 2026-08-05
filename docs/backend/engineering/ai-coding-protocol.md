@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.0 / IN_REVIEW |
+| Version / Status | 1.1.1 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-07-31 |
-| Related | NFR-SEC-001, NFR-OPS-001; ADR-0014; master §1.5, §13, §16; ENG-PY-001 §5a/§5b |
-| Change summary | 1.1.0 (2026-07-31, Technical Operator, Pending): thêm quy tắc chất lượng/anti-pattern vào §4 và §5.3 — "đơn giản nhất pass acceptance" là nghĩa vụ, tham chiếu ngân sách ENG-PY-001 §5a/§5b. 1.0.1: đổi title ID ENG-005 -> ENG-AI-001. 1.0.0: operational protocol chống AI suy đoán/sửa vượt scope. |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-01 |
+| Related | NFR-SEC-001, NFR-OPS-001; ADR-0014; master §1.5, §13, §16; ENG-PY-001 §5a/§5b; ENG-REPO-001 §2a/§2b |
+| Change summary | 1.1.1 (2026-08-01, Technical Operator, Pending): thêm điều cấm §4 "cấu trúc file không phải chỗ AI sáng tạo" — chỉ tạo file trong topology/manifest, tool config tái tạo khối chuẩn §5a-ref. 1.1.0: thêm quy tắc chất lượng/anti-pattern vào §4 và §5.3 — "đơn giản nhất pass acceptance" là nghĩa vụ, tham chiếu ngân sách ENG-PY-001 §5a/§5b. 1.0.1: đổi title ID ENG-005 -> ENG-AI-001. 1.0.0: operational protocol chống AI suy đoán/sửa vượt scope. |
 
 ## 1. Authority và phạm vi
 
@@ -42,6 +42,7 @@ AI chỉ thay đổi path khớp `allowed_globs`; `forbidden_globs` luôn thắn
 - Không dùng `Any`, `type: ignore`, `noqa`, bare/broad except, test skip/xfail, mock domain logic hoặc TODO để che safety risk nếu không có waiver ID còn hạn.
 - Không sửa migration đã apply, public v1 contract hoặc deployment manifest chạy thực tế.
 - **Chất lượng code là non-negotiable như safety**: không speculative abstraction/wrapper chưa có consumer thứ hai, không defensive check cho điều kiện type system/contract đã loại trừ, không `async` không có concurrent caller, không dead code/commented-out code, không comment diễn tả lại code, không vượt ngân sách complexity — chi tiết và enforcement tại ENG-PY-001 §5a/§5b; reviewer từ chối diff vi phạm mà không cần lý do thêm.
+- **Cấu trúc file không phải chỗ AI sáng tạo**: chỉ tạo file thuộc topology master §4.6 / layout module ENG-REPO-001 §2a / manifest của task card (Task 0.1 = ENG-REPO-001 §2b); `allowed_globs` là trần, không phải giấy phép sinh file tự do; tool config tái tạo khối chuẩn ENG-PY-001 §5a-ref thay vì tự thiết kế.
 
 ## 5. Quy trình bắt buộc
 

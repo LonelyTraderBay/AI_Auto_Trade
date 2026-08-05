@@ -2,13 +2,17 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| Document ID | DATA-TXN-001 (registry DOCS_INDEX; title giữ alias ngắn) |
 | Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, NFR-SAFE-001, NFR-AUD-001; ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §6.3, §7.2–§7.8, §8.4–§8.9 |
+| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
 
 ## 1. Objective and non-negotiable rules
 

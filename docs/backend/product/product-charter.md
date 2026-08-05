@@ -3,13 +3,14 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | PRD-CHARTER-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.1.1 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 (đối chiếu master v2.2.2) |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.2, §2, §8–§12 và §14 |
+| Change summary | 0.1.1 (2026-08-02): sửa câu tối nghĩa §4 ("chỉ vì… hay chỉ do…"); ghi nhận đã rà soát lại theo master v2.2.2; thêm row Change summary theo GOV-DOC-001 §3. |
 | Related requirements | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001; NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-SEC-001, NFR-OPS-001 |
 | Related ADR | ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012, ADR-0014 |
 
@@ -65,7 +66,7 @@ MVP chỉ bao gồm:
 - modular monolith do một người phát triển/vận hành, với ranh giới context rõ;
 - API/CLI control plane trước dashboard.
 
-Không có live trade hoặc canary vì Charter còn DRAFT/IN_REVIEW hay do code chạy được. Các gate và owner decision tại master vẫn bắt buộc.
+Không có live trade hoặc canary **chỉ vì** Charter tồn tại (dù còn DRAFT/IN_REVIEW) hay **chỉ do** code chạy được. Các gate và owner decision tại master vẫn bắt buộc.
 
 ## 5. Ngoài phạm vi hiện tại
 
@@ -149,4 +150,5 @@ Charter chỉ có thể chuyển APPROVED khi:
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.1.1 | 2026-08-02 | Audit toàn diện: sửa câu tối nghĩa §4; rà soát lại theo master v2.2.2 (bản 0.1.0 soạn từ master v2.0 — không phát hiện lệch scope); thêm row Change summary. | Technical Operator | Pending |
 | 0.1.0 | 2026-07-31 | Tạo product charter MVP từ master v2.0. | Technical Operator | Pending |

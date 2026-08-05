@@ -3,12 +3,13 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-TECH-001 |
-| Phiên bản | 0.3.0 |
+| Phiên bản | 0.3.2 |
+| Change summary | 0.3.2: xem Nhật ký thay đổi; row này được bổ sung 2026-08-02 theo GOV-DOC-001 §3 (audit toàn diện — không đổi technology matrix). |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-01 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §3, §4.3–§4.8, §6, §7, §13 và §15.1 |
 | Related requirements | NFR-DET-001, NFR-SEC-001, NFR-OPS-001, SEC-SUP-001 |
 | Related ADR | ADR-0001, ADR-0002, ADR-0003, ADR-0014; ADR-0006/0008/0016 only when applicable |
@@ -74,7 +75,7 @@ src/ai_auto_trade/
 contracts/{api,commands,events,config,errors,fixtures}/
 configs/{base,environments,services,venues,strategies,risk,deployments}/
 migrations/
-tests/{architecture,unit,property,contract,integration,replay,golden,chaos,e2e}/
+tests/{architecture,unit,property,state_machine,contract,integration,replay,golden,chaos,e2e,fixtures,factories}/
 ~~~
 
 Rules:
@@ -124,7 +125,7 @@ Exact command profile follows master §13.2 and the approved task card. A comman
 
 ## 8. Runtime và tooling decisions bổ sung (DRAFT — cần Account Owner phê duyệt trước Task 0.1/0.2)
 
-Các quyết định dưới đây là đề xuất bổ sung theo audit, chưa được phê duyệt; toàn bộ bảng mang trạng thái DRAFT — đề xuất, cần Account Owner phê duyệt.
+Các quyết định dưới đây là đề xuất bổ sung theo audit, chưa được phê duyệt; toàn bộ bảng mang trạng thái DRAFT — đề xuất, cần Account Owner phê duyệt. Cụm quyết định này được theo dõi qua RAID I-008; các package ngoài danh sách allowed (httpx, websockets, uvicorn, opentelemetry-python) chỉ được đưa vào dependency khi có amendment ADR-0014 hoặc ADR mới theo trigger §9 — không muộn hơn trước Task 0.2. Task 0.1 không bị ảnh hưởng (runtime dependencies rỗng theo ENG-PY-001 §5a-ref).
 
 | Chủ đề | Đề xuất | Phạm vi | Lý do ngắn |
 |---|---|---|---|
@@ -163,3 +164,5 @@ Create or amend ADR before:
 | 0.1.0 | 2026-07-31 | Tạo technology/language/repository baseline bám master v2.0. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Làm rõ provider-neutral BYOK: OpenAI SDK chỉ là adapter tùy chọn ở Phase 6. | Technical Operator | Pending |
 | 0.3.0 | 2026-07-31 | Thêm §8 Runtime và tooling decisions bổ sung (DRAFT — cần Account Owner phê duyệt trước Task 0.1/0.2); thêm Import Linter vào technology matrix §2 (master §13.1). | Technical Operator | Pending |
+| 0.3.1 | 2026-08-01 | Sửa cây tests/ trong §4 khớp master §4.6 v2.2.0: bổ sung `state_machine/`, `fixtures/`, `factories/` (trước đó thiếu — mâu thuẫn với ENG-REPO-001 và master). | Technical Operator | Pending |
+| 0.3.2 | 2026-08-02 | Thêm câu tracking vào lead-in §8: cụm quyết định theo dõi qua RAID I-008; package ngoài allowed list cần amendment ADR-0014/ADR mới theo trigger §9 trước Task 0.2; Task 0.1 không bị ảnh hưởng (runtime dependencies rỗng theo ENG-PY-001 §5a-ref). | Technical Operator | Pending |

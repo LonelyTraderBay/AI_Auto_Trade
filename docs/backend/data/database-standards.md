@@ -2,13 +2,17 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 0.1.0 |
+| Document ID | DATA-STD-001 (registry DOCS_INDEX; title giữ alias ngắn) |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-LED-001, FR-REC-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001; ADR-0003, ADR-0011, ADR-0012, ADR-0013 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §3.2, §5.1, §7.4–§7.12, §12 |
+| Change summary | 0.2.0 (2026-08-02): §3 ghi ngoại lệ tường minh cho quy tắc table-plural (outbox/inbox/…, master §7.6) và cho logical name identity dạng TEXT (`consumer_id`); chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## 1. Scope and authority
 
@@ -26,8 +30,8 @@ These are mandatory physical-database conventions for PostgreSQL 16.x. They do n
 
 | Object | Mandatory convention |
 |---|---|
-| Schema/table/column/index/constraint | lowercase `snake_case`; table plural; constraint name expresses scope/purpose |
-| Internal identity | `<thing>_id` of type `UUID`; UUIDv7 created by application, never venue ID/serial identity |
+| Schema/table/column/index/constraint | lowercase `snake_case`; table plural theo mặc định — ngoại lệ hợp lệ: tên tập hợp/cơ chế dạng số ít đã chốt trong inventory master §7.6 (`outbox`, `inbox`, `outbox_delivery_state`, `limit_state`, `feed_health`, `audit_log`); constraint name expresses scope/purpose |
+| Internal identity | `<thing>_id` of type `UUID`; UUIDv7 created by application, never venue ID/serial identity — ngoại lệ: logical name identity dạng TEXT được dictionary khai rõ (ví dụ `consumer_id` của inbox, DATA-003 §3) |
 | External identity | explicit `venue_order_id`, `venue_fill_id`, `source_event_id`, etc.; not internal PK |
 | Money/price/quantity/fee/PnL | `NUMERIC(38,18)` with non-negative/positive CHECK as domain requires |
 | Time | `TIMESTAMPTZ`; UTC only; `*_at` semantic vocabulary from Master §5.1 |

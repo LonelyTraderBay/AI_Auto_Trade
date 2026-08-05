@@ -3,12 +3,13 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-SEQ-001 |
-| Phiên bản | 0.3.0 |
+| Phiên bản | 0.4.0 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 |
+| Change summary | 0.4.0 (2026-08-02): §11 branch fill-khi-đang-cancel đi qua UNKNOWN/reconciliation thay vì persist FILLED trực tiếp (master §5.5 không có transition CANCEL_REQUESTED → FILLED — RAID I-010); §4 persist RECONCILING ngay khi reconciliation bắt đầu; §5 ghi chú chuỗi Ops status đầy đủ theo master §8.9; sửa trích dẫn "§6.3.11" thành "§6.3 (invariant 11)"; DRAFT rule CancelIntent gắn tracking RAID I-011. |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §5, §6, §7.2–§7.7, §8, §10.6 và §11 |
 | Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001, FR-AI-001; NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-AI-001 |
 | Related ADR | ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012, ADR-0016 |
@@ -108,6 +109,7 @@ sequenceDiagram
 
     Node->>DB: order state UNKNOWN; audit correlation/evidence
     Node->>Rec: request recovery workflow
+    Rec->>DB: state RECONCILING; block conflicting intent/exposure scope (master §5.5 - UNKNOWN sang RECONCILING khi reconciliation bắt đầu)
     Rec->>Venue: query by ClientOrderId if supported
     Rec->>Venue: query history, open orders and recent fills
     alt evidence resolves canonical order
@@ -115,7 +117,7 @@ sequenceDiagram
         Rec->>DB: persist evidence; derive canonical state and fill/ledger effects
         Rec-->>Ops: reconciliation case RESOLVED or clean result
     else evidence remains insufficient before SLA
-        Rec->>DB: state RECONCILING; block conflicting intent/exposure scope
+        Rec->>DB: giữ RECONCILING; cập nhật case/evidence
         Rec-->>Ops: alert with case/evidence
     else SLA elapsed
         Rec->>DB: state LOST + immutable incident/evidence history
@@ -152,6 +154,8 @@ sequenceDiagram
         Node->>Ops: remain non-executing; alert/observe only
     end
 ~~~
+
+Diagram trên là bản giản lược; chuỗi Ops status đầy đủ theo master §8.9 là `BOOTING → LEASE_ACQUIRED → CONFIG_VALIDATED → LOCAL_STATE_LOADED → VENUE_CONNECTED → RECONCILING → MARKET_HEALTH_CHECK → READY → STRATEGIES_ENABLED`; các status không vẽ (`LEASE_ACQUIRED`, `LOCAL_STATE_LOADED`, `VENUE_CONNECTED`) vẫn bắt buộc khi implement.
 
 On lost lease, the node stops claiming/sending new orders. In-flight request with unknown outcome is marked/reconciled. Shutdown blocks new intent, drains within configured timeout, flushes outbox/checkpoint, persists audit and does not cancel all open orders unless a separate policy requires it.
 
@@ -303,7 +307,8 @@ sequenceDiagram
         else venue reports already filled
             Venue-->>Exec: fill evidence
             Exec->>Ledger: process fills first (immutable fill/fee booking)
-            Exec->>DB: persist FILLED; cancel outcome ghi nhận là vô hiệu
+            Exec->>DB: persist UNKNOWN với pending_operation=CANCEL kèm fill evidence
+            Note over Exec,DB: canonical FILLED chỉ được derive qua reconciliation §4 - master §5.5 chưa có transition CANCEL_REQUESTED sang FILLED trực tiếp (RAID I-010)
         else timeout or disconnect
             Exec->>DB: persist UNKNOWN với pending_operation=CANCEL; không blind retry
             Note over Exec,DB: reconcile theo §4
@@ -313,7 +318,7 @@ sequenceDiagram
 
 **Guards:** cancel attempt/pending_operation được persist trước external call, giống submit path ở §3; unknown cancel outcome đi qua reconciliation (§4), không tự retry.
 
-**DRAFT rule cần owner approval:** CancelIntent KHÔNG qua full risk evaluation vì là exposure-reducing action; nó vẫn phải qua authorization/audit path và bị chặn khi kill switch scope cấm cancel-path hoặc khi reconciliation đang block order đó. Quy tắc này chưa có trong master — cần amendment master §8.6 hoặc ADR. (DRAFT — đề xuất, cần Account Owner phê duyệt.)
+**DRAFT rule cần owner approval:** CancelIntent KHÔNG qua full risk evaluation vì là exposure-reducing action; nó vẫn phải qua authorization/audit path và bị chặn khi kill switch scope cấm cancel-path hoặc khi reconciliation đang block order đó. Quy tắc này chưa có trong master — cần amendment master §8.6 hoặc ADR. (DRAFT — đề xuất, cần Account Owner phê duyệt; tracking: RAID I-011.)
 
 ## 12. Các flow chưa có diagram (chuẩn prose)
 
@@ -324,7 +329,7 @@ Các flow sau là deliberate prose-only ở phase này; diagram sẽ được b�
 | Kill-switch activation / scope cascade | master §8.10 + runbook kill-switch.md |
 | Manual-approval continuation | master §5.4 / §8.4 |
 | Market-data gap recovery | master §9.4 + runbook stream-gap.md |
-| Lease loss mid-flight | master §6.3.11 / §8.9 |
+| Lease loss mid-flight | master §6.3 (invariant 11) / §8.9 |
 | Outbox relay failure | master §7.2–§7.3 |
 | Config/deploy rollout-rollback | master §6.6 |
 
@@ -335,3 +340,4 @@ Các flow sau là deliberate prose-only ở phase này; diagram sẽ được b�
 | 0.1.0 | 2026-07-31 | Tạo normative runtime sequence baseline cho core safety flows. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Thêm sequence BYOK enrollment/validation và inference failure isolation cho Phase 6. | Technical Operator | Pending |
 | 0.3.0 | 2026-07-31 | Chèn durable command store `operations.commands` vào §6 (không direct API→Runtime call, master §7.6/§4.7); thêm §11 Cancel order sequence (kèm DRAFT risk-gate rule chờ owner approval); thêm §12 danh mục flow prose-only. | Technical Operator | Pending |
+| 0.4.0 | 2026-08-02 | Audit toàn diện: §11 fill-khi-đang-cancel đi qua UNKNOWN/reconciliation (RAID I-010); §4 persist RECONCILING khi reconciliation bắt đầu; §5 note chuỗi Ops status đầy đủ §8.9; sửa "§6.3.11"; DRAFT rule CancelIntent gắn RAID I-011; header thêm Change summary. | Technical Operator | Pending |

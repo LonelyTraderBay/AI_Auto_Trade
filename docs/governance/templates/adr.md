@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | TMP-ADR-001 |
 | Artifact type | Reusable ADR template |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.1.1 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -13,8 +13,9 @@
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1.5, §1.6, §15.1 và Phụ lục C.2 |
 | Related requirements | Theo ADR được tạo |
 | Related ADR | ADR-0014 (template/governance policy) |
+| Change summary | 0.1.1 (2026-08-02): sửa hướng dẫn tên file thành `NNNN-<slug>.md` (khớp document-control §6 v0.3.1 và 16 file thực tế; trước đây ghi `ADR-NNNN-<slug>.md`); bỏ IN_REVIEW khỏi bộ Status ADR theo master §15.1. |
 
-> Copy template này thành docs/backend/adr/ADR-NNNN-<slug>.md. Không giữ placeholder trong ADR gửi review. Chỉ ADR có status APPROVED mới là authority để mở gate hoặc implementation task.
+> Copy template này thành `docs/backend/adr/NNNN-<slug>.md` (ID tham chiếu dạng ADR-NNNN — khớp document-control §6 và 16 file hiện hành). Không giữ placeholder trong ADR gửi review. Chỉ ADR có status APPROVED mới là authority để mở gate hoặc implementation task.
 
 ---
 
@@ -24,7 +25,7 @@
 |---|---|
 | ADR ID | ADR-NNNN |
 | Phiên bản | 0.1.0 |
-| Status | DRAFT / IN_REVIEW / APPROVED / REJECTED / SUPERSEDED |
+| Status | DRAFT / APPROVED / REJECTED / SUPERSEDED (bộ trạng thái ADR theo master §15.1 — không dùng IN_REVIEW cho ADR) |
 | Date | YYYY-MM-DD |
 | Owner | <role/actor chịu trách nhiệm soạn và duy trì> |
 | Approver | <role/actor có thẩm quyền; pending nếu chưa duyệt> |

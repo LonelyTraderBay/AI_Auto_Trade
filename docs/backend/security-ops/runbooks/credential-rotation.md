@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Security/Backup Owner / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Scheduled rotation, provider/venue revocation, privilege drift, suspected exposure or personnel/access change / High; Critical for possible trade credential compromise |
 | Scope / Incident commander | Credential reference/environment/process/account scope / Security/Backup Owner |
-| Related | NFR-SEC-001, SEC-AUTH-001; ADR-0010, ADR-0015; SEC-004; RB-004, RB-008 |
-| Change summary | Rotation procedure using references/manifest, never secret values. |
+| Related | NFR-SEC-001, SEC-AUTH-001; ADR-0010, ADR-0015; SEC-004; RB-004, RB-008; OPS-001 |
+| Change summary | Rotation procedure using references/manifest, never secret values. 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

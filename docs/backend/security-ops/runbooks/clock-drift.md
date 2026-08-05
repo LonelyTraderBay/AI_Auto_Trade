@@ -2,11 +2,13 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.0.0 / DRAFT |
+| Version / Status | 1.0.1 / DRAFT |
+| Owner / Approver | Technical Operator / Account Owner (pending) |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
 | Trigger / Severity | Drift alert beyond `clock_drift_threshold_ms` (new policy field, DRAFT — cần phê duyệt), NTP sync failure/unreachable time source / High; time underpins lease, idempotency and audit ordering |
 | Scope / Incident commander | Affected host/process, lease/leader scope, idempotency/audit windows in the drift interval / Technical Operator |
 | Related | NFR-OPS-001, NFR-SEC-001; ADR-0007; OPS-001; RB-001, RB-005; threat T-011 |
-| Change summary | Fail-closed drift containment, supervised resync and time-dependent invariant verification; required before testnet (Phase 3). |
+| Change summary | Fail-closed drift containment, supervised resync and time-dependent invariant verification; required before testnet (Phase 3). 1.0.1 (2026-08-02): bổ sung Owner/Approver + Effective/Last review theo GOV-DOC-001 §3 (audit toàn diện). |
 
 ## Safe-state objective
 

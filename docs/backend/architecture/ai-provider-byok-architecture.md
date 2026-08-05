@@ -3,14 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-AI-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | DRAFT — thiết kế Phase 6, chưa cho phép runtime/provider/key thật |
 | Owner | Technical Operator + Security/Backup Owner |
 | Approver | Account Owner |
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-07-31 |
 | Tham chiếu chuẩn | [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §6.4, §10.1, §10.6–§10.8, §11–§12, §14 Phase 6 |
-| Related requirements | FR-AI-001, NFR-AI-001, SEC-AI-002, SEC-AI-003 |
+| Related requirements | FR-AI-001, NFR-AI-001, SEC-AI-001, SEC-AI-002, SEC-AI-003 |
+| Change summary | 0.2.0 (2026-08-02): bổ sung changelog (§10) và row Change summary — audit phát hiện đây là file duy nhất trong scope architecture không có nhật ký thay đổi; thêm SEC-AI-001 vào Related (zero-execution/proposal-only là nội dung cốt lõi §1/§3). Nội dung kiến trúc không đổi. |
 | Related ADR | ADR-0008, ADR-0015, ADR-0016 |
 
 > Tài liệu này làm rõ “đa provider” và “BYOK” để agent không tự giả định OpenAI là bắt buộc hoặc tự cho phép endpoint tùy ý. Nó là design authority DRAFT, không phải authorization để tạo key, gọi provider, tạo endpoint, migration hay runtime dependency.
@@ -250,3 +251,10 @@ Policy defines hard limit by owner scope, connection, provider/model, environmen
 ## 9. Approval gates
 
 Before any provider runtime or key enrollment, ADR-0008 and ADR-0016 must be `APPROVED`, OD-008 resolved, auth/machine identity and secret topology approved, provider catalog/capability evidence reviewed, and Phase 6 gate evidence complete. This document never upgrades Phase 0.0, Phase 6 or any security gate by itself.
+
+## 10. Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.2.0 | 2026-08-02 | Bổ sung changelog + row Change summary theo GOV-DOC-001 §3 (audit toàn diện); thêm SEC-AI-001 vào Related requirements. Nội dung kiến trúc không đổi. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Khởi tạo kiến trúc AI đa provider/BYOK (DRAFT Phase 6): catalog, connection lifecycle, secret ingress write-only, egress/budget policy, failure isolation. | Technical Operator | Pending |

@@ -2,13 +2,17 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
+| Document ID | DATA-DICT-001 (registry DOCS_INDEX; title giữ alias ngắn) |
 | Phiên bản | 0.3.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt; không phải DDL |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner (pending) |
 | Ngày soạn | 2026-07-31 |
+| Ngày hiệu lực | Chưa hiệu lực |
+| Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-OPS-001, FR-AI-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0012, ADR-0013, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.1, §7.4–§7.13, §13; [Data architecture](data-architecture.md); [ERD](erd.md) |
+| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
 
 ## 1. Authority and scope
 

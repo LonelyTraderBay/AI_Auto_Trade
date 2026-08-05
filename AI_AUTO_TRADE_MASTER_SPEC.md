@@ -4,17 +4,19 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.2.0 |
+| Phiên bản | 2.2.2 |
 | Trạng thái | Phase 0.0 — Documentation Closure (IN_REVIEW) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
 | Ngôn ngữ chính | Python 3.12.x |
 | Mục tiêu | Xây một nền tảng giao dịch có thể kiểm thử, audit, phục hồi và nâng cấp từng phần |
 | Nguyên tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
-| Lần rà soát gần nhất | 2026-07-31 |
+| Lần rà soát gần nhất | 2026-08-02 |
 | Thay đổi chính v2.1 | Bổ sung thiết kế DRAFT cho AI đa provider/BYOK: user chọn provider/model đã duyệt, secret ingress write-only, provider catalog, egress/budget và zero-execution boundary |
 | Thay đổi chính v2.1.1 | Cập nhật §1.5 artifact pack tree và các tham chiếu đường dẫn docs/ theo tái cấu trúc lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001); không đổi quyết định kiến trúc/domain/risk/security nào |
 | Thay đổi chính v2.2.0 | Sửa mâu thuẫn nội bộ do audit sâu phát hiện: §8.11 deadline accounting policy thống nhất "trước Phase 1" (khớp §7.8); §7.6 bổ sung `outbox_delivery_state` vào platform inventory; §4.6 bổ sung `tests/state_machine/`; §4.7 bổ sung `apps/secret_ingress` (Phase 6) và làm rõ ai_worker binding lease; §4.8 chốt fixture format theo registry. Chỉ sửa nhất quán, không thêm capability mới |
+| Thay đổi chính v2.2.1 | Audit chéo hậu bổ sung: §1.5 cây frontend phản ánh 8 artifact FE-* (hết placeholder); §14.2 Task 0.1 output trỏ manifest ENG-REPO-001 §2b và ghi nhận README/AGENTS đã tồn tại; §16.1 bỏ "Từ Task 0.1" cho AGENTS.md; §0.3 thêm OD-009 (vị trí repo frontend + Dart gates) và OD-010 (đóng GAP OpenAPI cho mandatory ops views). Chỉ sửa nhất quán/registry, không thêm capability |
+| Thay đổi chính v2.2.2 | Audit toàn diện 2026-08-02: §14.2 đăng ký Task 0.0.6 (AI BYOK baseline) và sửa mô tả 0.0.0 thành "0.0.1–0.0.6"; đồng bộ owner/reviewer 0.0.3/0.0.4 với card YAML; gỡ deadlock nghiệm thu Phase 0.0 ↔ precondition card 0.1 (card đủ điều kiện chuyển READY khi gate ký, không yêu cầu READY trước gate); recap ADR bổ sung "0016 trước Phase 6"; §3.1 thống nhất deadline ADR Nautilus với §15.1; §1.5 bổ sung waiver-register/compliance-register/incident-record/versioning-release-policy/logging-standard vào cây; §4.6 bổ sung .gitignore, COMMIT_NOTES.md; §16.2 sửa `expiry` thành `expiry_at` khớp schema; control panel cập nhật validation record hiện hành. Chỉ sửa nhất quán/registry, không thêm capability |
 
 ---
 
@@ -53,7 +55,7 @@
 | Gate gần nhất | Phase 0.0 — IN_REVIEW | Account Owner | Evidence/gate record chưa được ký |
 | Blocker code | Required ADR, artifact review và schema validation chưa được Account Owner phê duyệt | Account Owner | §1.5, §14 và §15 |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-07-31 | Account Owner | v2.0 |
+| Lần rà soát | 2026-08-02 | Account Owner | v2.2.2; technical validation đã chạy lại theo đường dẫn hiện hành (EV-GATE-0.0-2026-08-02-02, thay chuỗi EV-0.0.6 → EV-GATE-0.0-2026-08-02-01 đã stale); blocker code còn lại là review/approve artifact pack + ADR của Account Owner |
 
 ### 0.1 Cách bắt đầu đúng
 
@@ -91,6 +93,8 @@ Không đặt tham số live bằng phỏng đoán. Mọi quyết định mở d
 | OD-006 | Control-plane authentication provider and session model | Phase 3 | Security/Backup Owner | Trước Phase 3 | ADR + permission matrix | OPEN |
 | OD-007 | Legal/compliance applicability and data-retention obligations | Phase 2/3 | Account Owner | Trước Phase 2 | Assessment record | OPEN |
 | OD-008 | AI BYOK: provider/model catalog, owner scope, secret ingress, data-egress/privacy, budget và fallback policy | Phase 6 | Account Owner + Security/Backup Owner | Trước Phase 6 | ADR-0016 + catalog/policy + security review | OPEN |
+| OD-009 | Vị trí repo frontend (monorepo `frontend/` vs repo riêng) và Dart quality-gate baseline (FE-ARC-001 §8–§9) | Phase 5 | Account Owner | Trước Phase 5 task card đầu tiên | Decision record + cập nhật FE-ARC-001 §8/§9, ENG-REPO-001 | OPEN |
+| OD-010 | Đóng GAP register OpenAPI (FE-SCREEN-001 §4): route cho mandatory ops views + đồng bộ terminal_reason enum với DOM-002 | Phase 5 (view 1–6 cũng là testnet gate evidence theo OPS-SLO-001 — title OPS-001 — §4.2) | Technical Operator + Account Owner | Trước Phase 5 task card đầu tiên | openapi.yaml version mới + fixture + contract review record | OPEN |
 
 Một record OPEN chặn phase được nêu. Chỉ chuyển sang RESOLVED khi có evidence URI/path và actor đã phê duyệt.
 
@@ -171,9 +175,11 @@ docs/
     raid-register.md
     requirements-traceability.md
     documentation-layer-classification.md
+    waiver-register.md
+    compliance-register.md
     adr/
       README.md
-    templates/{adr,task-card,gate-record}.md
+    templates/{adr,task-card,gate-record,incident-record}.md
     evidence/{gates,tasks}/
   shared/
     glossary.md
@@ -183,13 +189,14 @@ docs/
     architecture/{c4-context,c4-container,runtime-sequences,language-and-technology-policy,ai-provider-byok-architecture}.md
     domain/{canonical-domain-model,oms-state-machine,risk-policy,accounting-policy}.md
     data/{data-architecture,erd,data-dictionary,database-standards,transaction-and-concurrency,db-operations,migration-backfill-playbook}.md
-    engineering/{repository-conventions,coding-standards-python,test-strategy,ci-cd-design,ai-coding-protocol}.md
+    engineering/{repository-conventions,coding-standards-python,test-strategy,ci-cd-design,ai-coding-protocol,versioning-release-policy,logging-standard}.md
     security-ops/{threat-model,access-control-matrix,auth-session-policy,secrets-and-key-management,slo-sli-alert-policy,runbook-index,ai-byok-security-policy}.md
     security-ops/runbooks/
     adr/0001-…0016-*.md
     contracts/contract-registry.md
   frontend/
-    README.md  # placeholder có chủ đích, chưa có nội dung trước Phase 5
+    README.md  # FE-INDEX-001 — chỉ mục bộ tài liệu frontend (input Phase 5/6, không cho phép code trước gate)
+    {product,architecture,design,security,engineering}/  # FE-CHARTER/SCREEN/API/ARC/DS/SEC/TEST-001
 contracts/
   api/openapi.yaml
   commands/
@@ -335,7 +342,7 @@ NautilusTrader **không sở hữu canonical domain**. Hệ thống này vẫn s
 - canonical event contracts;
 - audit và reconciliation.
 
-NautilusTrader chỉ được dùng sau adapter cho backtest/runtime khi phù hợp. Một logic không được triển khai hai lần. Trước Phase 5, phải có ADR xác định rõ mapping và phần nào Nautilus thực sự đảm nhiệm.
+NautilusTrader chỉ được dùng sau adapter cho backtest/runtime khi phù hợp. Một logic không được triển khai hai lần. Phải có ADR xác định rõ mapping và phần nào Nautilus thực sự đảm nhiệm trước khi Nautilus được đưa vào runtime, và không muộn hơn khi mở Phase 5 (khớp deadline ADR-0006 tại §15.1).
 
 ### 3.2 Các lựa chọn kỹ thuật đã đóng
 
@@ -469,7 +476,9 @@ ai-auto-trade/
   AGENTS.md
   CONTRIBUTING.md
   CODEOWNERS
+  COMMIT_NOTES.md
   .editorconfig
+  .gitignore
   pyproject.toml
   uv.lock
   docker-compose.yml
@@ -2090,12 +2099,13 @@ Không có evidence thì gate là FAIL. Không dùng câu “ổn định”, �
 
 | Task | Output bắt buộc | Owner / approver |
 |---|---|---|
-| 0.0.0 Bootstrap task authority | Tạo record YAML/card cho 0.0.1–0.0.5 theo §16.2 và Appendix C; không tạo application/runtime/DB code | Technical Operator / Account Owner |
+| 0.0.0 Bootstrap task authority | Tạo record YAML/card cho 0.0.1–0.0.6 theo §16.2 và Appendix C; không tạo application/runtime/DB code | Technical Operator / Account Owner |
 | 0.0.1 Governance & product | `DOCS_INDEX`, document-control, RACI, RAID register, glossary, product charter, FR/NFR và requirement traceability | Technical Operator / Account Owner |
 | 0.0.2 Architecture & toolchain | C4 context/container, runtime sequences, language/repository policy; ADR 0001, 0002, 0014 `APPROVED` | Technical Operator / Account Owner |
-| 0.0.3 Domain & data design | canonical domain/OMS/risk/accounting policy; data architecture, ERD, dictionary, database standards, transaction-concurrency, DB ops, migration playbook; ADR 0003, 0004, 0005, 0007, 0011, 0012 `APPROVED` | Technical Operator + Risk Approver / Account Owner |
-| 0.0.4 Contract & security baseline | OpenAPI skeleton, command/event/config schemas, error catalog, fixtures; threat model, access-control matrix, auth-session policy, secrets policy, SLO/alert policy | Technical + Security/Backup Owner / Account Owner |
+| 0.0.3 Domain & data design | canonical domain/OMS/risk/accounting policy; data architecture, ERD, dictionary, database standards, transaction-concurrency, DB ops, migration playbook; ADR 0003, 0004, 0005, 0007, 0011, 0012 `APPROVED` | Technical Operator (tham vấn Risk Approver cho risk policy) / Account Owner — khớp card 0.0.3 |
+| 0.0.4 Contract & security baseline | OpenAPI skeleton, command/event/config schemas, error catalog, fixtures; threat model, access-control matrix, auth-session policy, secrets policy, SLO/alert policy | Technical Operator / reviewer Security/Backup Owner (card 0.0.4), gate approve bởi Account Owner |
 | 0.0.5 Delivery controls | repository/coding/test/CI/AI protocol, ADR/task-card/gate templates, task-card YAML schema + CI binding design, first approved Task 0.1 card | Technical Operator / reviewer named in task card |
+| 0.0.6 AI provider/BYOK baseline | ADR-0016, ARC-AI-001, SEC-AI-POL-001, 8 AI provider/policy/connection schema + fixtures, RB-009, cập nhật registry/traceability liên quan | Technical Operator / reviewer Security/Backup Owner + Account Owner (card 0.0.6) |
 
 **Nghiệm thu Phase 0.0:**
 
@@ -2104,7 +2114,7 @@ Không có evidence thì gate là FAIL. Không dùng câu “ổn định”, �
 - ADR 0001–0005, 0007, 0011, 0012 và 0014 ở trạng thái `APPROVED`; ADR khác được tạo khi policy yêu cầu nhưng có thể `DRAFT` nếu chưa đến deadline.
 - ERD/data dictionary mô tả mọi bảng sẽ xuất hiện ở Task 0.3; không tồn tại migration/DDL không có dictionary entry.
 - OpenAPI/schema skeleton pass validation và fixture không chứa secret.
-- Có task YAML/card cho mọi task 0.0.x, ít nhất một gate record mẫu đã review và Task 0.1 đã `READY`. Không bắt đầu Phase 0 nếu thiếu các record này.
+- Có task YAML/card cho mọi task 0.0.x, ít nhất một gate record mẫu đã review, và Task 0.1 card tồn tại + pass task-card schema validation + đủ điều kiện chuyển `READY` ngay khi gate được ký (card 0.1 giữ `BLOCKED` với precondition "gate Phase 0.0 PASSED" cho tới thời điểm đó — reviewer chuyển `BLOCKED → READY` là hành động đầu tiên sau khi gate ký, không phải điều kiện trước gate). Không bắt đầu Phase 0 nếu thiếu các record này.
 
 ### Phase 0 — Foundation
 
@@ -2114,14 +2124,14 @@ Không có evidence thì gate là FAIL. Không dùng câu “ổn định”, �
 
 | Task | Input | Output/acceptance |
 |---|---|---|
-| 0.1 Bootstrap | Phase 0.0 approved artifact pack + task card | repo skeleton, `AGENTS.md` rút gọn từ §16, uv lock, README, .env.example không secret |
+| 0.1 Bootstrap | Phase 0.0 approved artifact pack + task card | repo skeleton theo manifest ENG-REPO-001 §2b, cập nhật README/`AGENTS.md` hiện có, uv lock, .env.example không secret |
 | 0.2 Guardrails | skeleton | Ruff, strict type, pytest, Hypothesis, import rule, `contracts validate` command và CI xanh |
 | 0.3 Persistence contract | ADR 0003/0004/0012 + ERD/data dictionary approved | PostgreSQL compose, Alembic base, outbox/inbox migration, contract registry skeleton |
 | 0.4 Architecture contract | ADR 0001/0002/0014 | empty contexts, event schema sample, dependency test |
 | 0.5 Operations skeleton | §6/§11 + OpenAPI/config schema approved | local-only Control API skeleton, config schema/validation path, audit/error envelope |
 | 0.6 Capability draft | OD-001 chưa resolve | capability matrix template; không gọi venue |
 
-ADR required before Phase 0 starts đã được đóng ở Phase 0.0: 0001–0005, 0007, 0011, 0012, 0014. ADR 0006 chỉ required trước khi NautilusTrader được đưa vào runtime; ADR 0013 trước Phase 2; ADR 0015 và 0009 trước Phase 3; ADR 0010 trước Phase 4; ADR 0008 trước Phase 6.
+ADR required before Phase 0 starts đã được đóng ở Phase 0.0: 0001–0005, 0007, 0011, 0012, 0014. ADR 0006 chỉ required trước khi NautilusTrader được đưa vào runtime (không muộn hơn khi mở Phase 5, §15.1); ADR 0013 trước Phase 2; ADR 0015 và 0009 trước Phase 3; ADR 0010 trước Phase 4; ADR 0008 và 0016 trước Phase 6.
 
 **Nghiệm thu:**
 
@@ -2378,7 +2388,7 @@ Task chỉ DONE khi:
 
 ### 16.1 Authority và trạng thái task
 
-Từ Task 0.1, `AGENTS.md` ở root là bản rút gọn có thể thực thi của section này. AI phải đọc master, `AGENTS.md`, task card và ADR/contract liên quan trước khi sửa implementation file. Trong Pre-Phase 0 và Phase 0.0, AI chỉ được hoàn thiện/review artifact pack theo task được duyệt; chưa được tạo application, migration hoặc runtime implementation.
+`AGENTS.md` ở root (đã tồn tại từ Phase 0.0, được cập nhật tại Task 0.1) là bản rút gọn có thể thực thi của section này. AI phải đọc master, `AGENTS.md`, task card và ADR/contract liên quan trước khi sửa implementation file. Trong Pre-Phase 0 và Phase 0.0, AI chỉ được hoàn thiện/review artifact pack theo task được duyệt; chưa được tạo application, migration hoặc runtime implementation.
 
 Task chỉ ở một trạng thái:
 
@@ -2397,7 +2407,7 @@ Machine-readable task card là authority cho scope thực thi: `tasks/active/<TA
 Task YAML phải có tối thiểu:
 
 ~~~text
-task_id / phase / status / owner / reviewer / expiry
+task_id / phase / status / owner / reviewer / expiry_at
 branch_pattern và PR Task-ID binding
 FR-NFR-SEC-ADR-contract references
 goal / non_goals / preconditions / blockers

@@ -3,13 +3,13 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | FE-API-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.1.1 |
 | Trạng thái | DRAFT |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực — chờ Account Owner phê duyệt và Phase 5 task card READY |
 | Rà soát gần nhất | 2026-07-31 |
-| Tham chiếu chuẩn | `contracts/api/openapi.yaml` (C-API-001 v1.1.0-draft); `contracts/errors/error-catalog.md` (C-ERR-001 v1.1); AI_AUTO_TRADE_MASTER_SPEC.md §1.5, §5.1, §5.8, §11.2, §11.3, §12.1; SEC-003 (`docs/backend/security-ops/auth-session-policy.md`); NFR (`docs/shared/product/non-functional-requirements.md`) §7; FE-ARC-001 |
+| Tham chiếu chuẩn | `contracts/api/openapi.yaml` (C-API-001 v1.1.0-draft); `contracts/errors/error-catalog.md` (C-ERR-001 1.1.1); AI_AUTO_TRADE_MASTER_SPEC.md §1.5, §5.1, §5.8, §11.2, §11.3, §12.1; SEC-003 (`docs/backend/security-ops/auth-session-policy.md`); NFR (`docs/shared/product/non-functional-requirements.md`) §7; FE-ARC-001 |
 | Related requirements | FR-OPS-001, FR-AI-001; NFR-SEC-001, NFR-SAFE-001, NFR-AUD-001, NFR-AI-001 |
 | Related ADR | ADR-0014, ADR-0015 (pending), ADR-0016 |
 
@@ -121,7 +121,7 @@ Quy tắc chung bắt buộc:
 
 ## 9. Correlation
 
-- `X-Correlation-Id` là header **optional**; client NÊN gửi UUIDv7 tự sinh cho **mọi request** — "Optional UUIDv7 supplied by the caller; runtime generates one if absent" (`openapi.yaml` parameter `CorrelationId`, có mặt trên mọi operation).
+- `X-Correlation-Id` là header **optional**; client NÊN gửi UUIDv7 tự sinh cho **mọi request** — "Optional UUIDv7 supplied by the caller; runtime generates one if absent" (`openapi.yaml` parameter `CorrelationId`, có mặt trên mọi operation **trừ** `getHealth`/`getReadiness` — hai probe này không khai parameter trong v1.1; gửi kèm vẫn vô hại, server bỏ qua).
 - `correlation_id` (từ `CommandAccepted`, `CommandStatus`, `ErrorEnvelope`, `Order`...) phải được hiển thị trong error view và audit view để user trace/báo cáo sự cố (NFR-AUD-001; master §11.3: mọi command nguy hiểm có correlation ID).
 
 ## 10. Cache policy và client logging
@@ -134,4 +134,5 @@ Quy tắc chung bắt buộc:
 
 | Phiên bản | Ngày | Tác giả | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 0.1.1 | 2026-08-02 | Technical Operator | Pending | Audit toàn diện: §9 sửa khẳng định "mọi operation" — `CorrelationId` không khai trên getHealth/getReadiness trong v1.1. |
 | 0.1.0 | 2026-07-31 | Technical Operator | Pending | Bản DRAFT đầu tiên: nguồn sự thật OpenAPI, wire types, async command pattern, idempotency (kèm ngoại lệ credential-enrollments), If-Match, re-auth proof, pagination, bảng 26 error codes với hành vi UI, correlation và cache/logging policy. |

@@ -3,15 +3,16 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | PRD-FR-001 |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.2.1 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §2.2, §5, §8–§11 và §14 |
 | Related requirements | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, FR-OPS-001, FR-AI-001 |
 | Related ADR | ADR-0001–0005, ADR-0007, ADR-0011, ADR-0012, ADR-0014; phase-dependent ADR khác theo GOV-TRACE-001 |
+| Change summary | 0.2.1 (2026-08-02): thêm row Change summary; ghi rõ các ID `SEC-*` trong Dependencies có định nghĩa canonical tại PRD-NFR-001 §8.1 (trước audit 2026-08-02, `SEC-*` chỉ có one-liner trong traceability registry). |
 
 > Mỗi requirement bên dưới còn DRAFT/IN_REVIEW cho tới khi approver xác nhận. Implementation chỉ dùng requirement đã có task card, ADR/contract applicable APPROVED và gate cho phép.
 
@@ -180,5 +181,6 @@ Mỗi FR cần có contract versioned, data dictionary hoặc domain policy khi 
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
-| 0.1.0 | 2026-07-31 | Chuẩn hóa acceptance criteria cho baseline functional requirements. | Technical Operator | Pending |
+| 0.2.1 | 2026-08-02 | Audit toàn diện: thêm row Change summary; các ID `SEC-*` trong Dependencies nay có định nghĩa canonical tại PRD-NFR-001 §8.1. Không đổi nội dung FR nào. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Thêm FR-AI-001 cho BYOK đa provider, lifecycle kết nối và zero-execution boundary. | Technical Operator | Pending |
+| 0.1.0 | 2026-07-31 | Chuẩn hóa acceptance criteria cho baseline functional requirements. | Technical Operator | Pending |

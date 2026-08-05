@@ -3,15 +3,16 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-DOC-001 |
-| Phiên bản | 0.3.1 |
+| Phiên bản | 0.3.3 |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực; chỉ có hiệu lực khi trạng thái APPROVED |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-02 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §1, §14.2, §15.4 và Phụ lục C |
 | Related requirements | NFR-AUD-001, NFR-OPS-001, NFR-AI-001, SEC-AUD-001, SEC-AI-002, SEC-AI-003 |
 | Related ADR | ADR-0014; ADR-0016 (DRAFT/required for Phase 6) |
+| Change summary | 0.3.3 (2026-08-02): sửa §6 — vị trí chuẩn chỉ "áp dụng dự kiến", không tự tuyên bố hiệu lực khi tài liệu còn IN_REVIEW (mâu thuẫn header phát hiện bởi audit); không đổi quy tắc lifecycle/version nào. |
 
 > Tài liệu này quy định cách quản lý artifact của dự án. Nó không phê duyệt kiến trúc, risk policy, contract hoặc thay đổi runtime nào. Khi còn trạng thái DRAFT hoặc IN_REVIEW, tài liệu chỉ là đề xuất để review.
 
@@ -85,18 +86,19 @@ Không sửa lịch sử approval để phản ánh quyết định mới. Tạo
 
 | Artifact | Vị trí chuẩn | Quy ước |
 |---|---|---|
-| Governance (control/RACI/RAID/traceability/index/layer classification) | docs/governance/ | Tên kebab-case, Markdown, header bắt buộc. |
+| Governance (control/RACI/RAID/traceability/index/layer classification/waiver-register/compliance-register) | docs/governance/ | Tên kebab-case, Markdown, header bắt buộc. |
 | Shared/cross-cutting (glossary, NFR áp dụng cả backend/frontend) | docs/shared/ | Tên kebab-case, Markdown, header bắt buộc. |
 | Backend product/architecture/domain/data/engineering/security-ops | docs/backend/{product,architecture,domain,data,engineering,security-ops}/ | Tên kebab-case, Markdown, header bắt buộc. |
-| Frontend (chưa có nội dung; khởi tạo khi Phase 5 bắt đầu) | docs/frontend/ | Tên kebab-case, Markdown, header bắt buộc. |
+| Frontend product/architecture/design/security/engineering (input Phase 5/6, chưa cho phép code) | docs/frontend/{product,architecture,design,security,engineering}/ | Tên kebab-case, Markdown, header bắt buộc. |
 | ADR — registry/index | docs/governance/adr/ | README.md là registry; xem GOV-CLASS-001 cho lý do tách khỏi nội dung ADR. |
 | ADR — nội dung quyết định | docs/backend/adr/ | Tên file NNNN-<slug>.md (ID tham chiếu dạng ADR-NNNN); số không tái sử dụng. |
 | Contract | contracts/ (không di chuyển theo tái cấu trúc docs/); registry tại docs/backend/contracts/contract-registry.md | File versioned; canonical path ghi trong contract registry. |
+| Template (ADR, task-card, gate-record, incident-record) | docs/governance/templates/ | Copy theo hướng dẫn trong từng template; không điền nội dung thật vào file template. |
 | Task card authority | tasks/active hoặc tasks/completed | YAML validate bằng task-card schema; Markdown chỉ là readable render. |
 | Gate/task evidence | docs/governance/evidence/gates hoặc docs/governance/evidence/tasks | Có hash/path, runner, UTC time và liên kết Task/Gate ID. |
 | Generated artifact | generated/ hoặc đường dẫn task nêu rõ | Có banner/source link; không sửa tay. |
 
-Vị trí chuẩn trên có hiệu lực kể từ v0.3.0 (tái cấu trúc theo lớp Backend/Frontend/Shared/Governance, xem `documentation-layer-classification.md` — GOV-CLASS-001). Cấu trúc cũ (`docs/00-governance` … `docs/06-security-ops`, `docs/adr`, `docs/templates`, `docs/evidence`) không còn là vị trí chuẩn; mọi tham chiếu cũ trong artifact khác phải được cập nhật khi phát hiện.
+Vị trí chuẩn trên được áp dụng dự kiến kể từ v0.3.0 (tái cấu trúc theo lớp Backend/Frontend/Shared/Governance, xem `documentation-layer-classification.md` — GOV-CLASS-001) và chỉ có hiệu lực chính thức khi tài liệu này APPROVED, nhất quán với header. Cấu trúc cũ (`docs/00-governance` … `docs/06-security-ops`, `docs/adr`, `docs/templates`, `docs/evidence`) không còn là vị trí chuẩn; mọi tham chiếu cũ trong artifact khác phải được cập nhật khi phát hiện.
 
 `docs/governance/DOCS_INDEX.md` là registry điều hướng của artifact pack và phải được cập nhật trước gate Phase 0.0. Registry không thay thế metadata trong từng artifact.
 
@@ -124,6 +126,8 @@ Vị trí chuẩn trên có hiệu lực kể từ v0.3.0 (tái cấu trúc theo
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.3.3 | 2026-08-02 | Audit toàn diện đợt 2: §6 sửa câu "có hiệu lực kể từ v0.3.0" thành "áp dụng dự kiến" (tài liệu IN_REVIEW không được tự tuyên bố hiệu lực); thêm row Change summary vào header theo đúng §3 của chính tài liệu này. | Technical Operator | Pending |
+| 0.3.2 | 2026-08-02 | Sửa bảng vị trí chuẩn (§6) theo audit chéo 2026-08-02: row Frontend phản ánh cấu trúc thực tế docs/frontend/{product,architecture,design,security,engineering}/ (input Phase 5/6, chưa cho phép code); row Governance liệt kê thêm waiver-register, compliance-register; thêm row Template (docs/governance/templates/). | Technical Operator | Pending |
 | 0.3.1 | 2026-07-31 | Sửa quy ước tên file ADR ở §6 cho khớp thực tế (NNNN-slug.md, ID tham chiếu ADR-NNNN); ghi nhận các artifact governance mới: waiver-register (GOV-WAIVER-001), compliance-register (GOV-COMPL-001), template incident-record (GOV-TPL-INC-001). | Technical Operator | Pending |
 | 0.3.0 | 2026-07-31 | Cập nhật bảng "Vị trí chuẩn" (§6) theo tái cấu trúc docs/ sang lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001); không đổi quy tắc lifecycle/version/RACI nào khác. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Cập nhật register/control references cho hồ sơ DRAFT AI đa provider/BYOK; không phê duyệt runtime hay key. | Technical Operator | Pending |
