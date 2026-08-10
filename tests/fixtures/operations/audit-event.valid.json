@@ -1,0 +1,9 @@
+{
+  "command_id": "0190f000-0000-7000-8000-000000000011",
+  "actor_id": "0190f000-0000-7000-8000-000000000012",
+  "type": "operations.command_accepted.v1",
+  "schema_version": 1,
+  "status": "ACCEPTED",
+  "correlation_id": "0190f000-0000-7000-8000-000000000013",
+  "recorded_at": "2026-08-10T20:07:02Z"
+}

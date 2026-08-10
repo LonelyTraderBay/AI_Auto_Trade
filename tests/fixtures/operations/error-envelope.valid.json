@@ -1,0 +1,8 @@
+{
+  "code": "VALIDATION_FAILED",
+  "message": "Manifest is invalid",
+  "details": {"field": "run_mode"},
+  "correlation_id": "0190f000-0000-7000-8000-000000000010",
+  "retryable": false,
+  "remediation_hint": "Correct the manifest and validate again"
+}

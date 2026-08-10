@@ -1,0 +1,10 @@
+{
+  "config_version": 1,
+  "environment": "local",
+  "service": {
+    "bind_host": "127.0.0.1"
+  },
+  "operations": {
+    "audit_enabled": true
+  }
+}

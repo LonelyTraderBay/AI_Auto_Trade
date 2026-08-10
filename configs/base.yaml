@@ -1,0 +1,14 @@
+{
+  "config_version": 1,
+  "service": {
+    "name": "ai-auto-trade",
+    "mode": "local"
+  },
+  "operations": {
+    "audit_enabled": true,
+    "config_precedence": ["base", "environment"]
+  },
+  "logging": {
+    "level": "INFO"
+  }
+}
