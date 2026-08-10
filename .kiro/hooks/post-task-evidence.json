@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Post-Task Evidence — Run Required Commands + Generate Report",
+      "trigger": "PostTaskExec",
+      "action": {
+        "type": "agent",
+        "prompt": "## Post-task evidence collection — Task 0.1\n\nA task has completed. Execute the following and record results for evidence.\n\n**Step 1 — Run all required_commands from task card**\nRun each command in sequence and capture exit code:\n\n```bash\nuv sync --locked\nuv run ruff format --check .\nuv run ruff check .\nuv run pyright\nuv run pytest\n```\n\nFor each command record: command string, exit code (0=pass), stdout/stderr summary.\n\n**Step 2 — Verify closed manifest (ENG-REPO-001 §2b)**\nConfirm these files exist and no extra files were created:\n- `pyproject.toml`, `uv.lock`, `.env.example`\n- `src/ai_auto_trade/__init__.py` (contains exactly 1 docstring line)\n- `src/ai_auto_trade/py.typed` (empty marker)\n- All 9 context directories under `src/ai_auto_trade/contexts/<ctx>/{domain,application,ports}/__init__.py`\n- `src/ai_auto_trade/{shared_kernel,adapters,adapters/venues,adapters/persistence,adapters/notifications,apps,apps/control_api,apps/trading_node,apps/workers,apps/cli}/__init__.py`\n- `tests/unit/test_bootstrap.py`\n\n**Step 3 — Verify forbidden paths untouched**\nConfirm git diff does NOT touch: `migrations/`, `configs/`, `infra/`, `contracts/`, `.github/`, `.env`, `docs/backend/`, `docs/shared/`, `docs/governance/*.md`\n\n**Step 4 — Secret scan**\nRun: `uvx detect-secrets scan src/ tests/ pyproject.toml .env.example`\nConfirm 0 secrets detected.\n\n**Step 5 — Generate evidence report**\nWrite a summary report to `docs/governance/evidence/tasks/0.1/bootstrap-evidence.md` containing:\n- Task ID: 0.1\n- UTC timestamp of run\n- Git commit SHA (`git rev-parse HEAD`)\n- Each required_command with exit code and output summary\n- Manifest verification result (all files present: yes/no)\n- Secret scan result\n- Proposed status: REVIEW (AI cannot self-approve to DONE)\n- Any blockers or open risks\n\n**IMPORTANT**: Only set task status to REVIEW, never DONE. Human reviewer must approve.\n\nReport the evidence summary in your response."
+      }
+    }
+  ]
+}

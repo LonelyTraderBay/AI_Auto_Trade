@@ -1,0 +1,71 @@
+task_id: "0.3"
+phase: "0"
+status: "DONE"
+unblocked_at: "2026-08-06T14:00:00Z"
+completed_at: "2026-08-06T15:30:00Z"
+approved_by: "Account Owner 2026-08-06"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/0.3-*"
+references:
+  requirements: ["FR-EXEC-001", "FR-LED-001", "FR-REC-001", "NFR-AUD-001", "NFR-SAFE-001"]
+  adrs: ["ADR-0003", "ADR-0004", "ADR-0012"]
+  contracts: ["contracts/config/task-card.v1.schema.json"]
+goal: "PostgreSQL compose, Alembic base migration với 4 bảng platform delivery baseline (outbox, outbox_delivery_state, inbox, dead_letters) và contract registry skeleton — đúng data-dictionary §3–6 và ADR-0003/0004/0012 APPROVED."
+non_goals:
+  - "Không tạo bảng ngoài platform schema."
+  - "Không tạo bảng risk, execution, portfolio_ledger, operations (deferred)."
+  - "Không viết adapter, repository hoặc application code."
+  - "Không kết nối venue hay bất kỳ external service nào ngoài PostgreSQL dev local."
+preconditions:
+  - "Task 0.2 DONE."
+  - "ADR-0003, ADR-0004, ADR-0012 APPROVED."
+  - "data-dictionary §3–6 định nghĩa đủ 4 bảng platform."
+blockers: []
+allowed_globs:
+  - "docker-compose.yml"
+  - "pyproject.toml"
+  - "uv.lock"
+  - "migrations/**"
+  - "src/ai_auto_trade/adapters/persistence/**"
+  - "tests/integration/__init__.py"
+  - "tests/integration/test_platform_migrations.py"
+  - "docs/governance/evidence/tasks/0.3/**"
+forbidden_globs:
+  - "src/ai_auto_trade/contexts/**"
+  - "configs/**"
+  - "infra/**"
+  - "contracts/**"
+  - ".github/**"
+  - ".env"
+  - "docs/backend/**"
+  - "docs/shared/**"
+  - "docs/governance/*.md"
+impact:
+  database: true
+  api: false
+  event: false
+  config: false
+  dependency: true
+  security: false
+acceptance_criteria:
+  - "docker-compose.yml định nghĩa service postgres:16-alpine với port 5432, env DATABASE_URL, healthcheck và volume."
+  - "Alembic được cấu hình trong pyproject.toml hoặc alembic.ini; alembic revision base (initial) tồn tại trong migrations/."
+  - "Migration tạo đúng 4 bảng theo data-dictionary §3–6: platform.outbox, platform.outbox_delivery_state, platform.inbox, platform.dead_letters — với tất cả constraint/index được ghi."
+  - "uv run alembic upgrade head chạy thành công khi postgres đang chạy (hoặc test dùng container ephemeral)."
+  - "uv sync --locked, ruff format --check, ruff check, pyright, pytest, validate_contracts.py đều exit 0."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run python scripts/validate_contracts.py"
+evidence_path: "docs/governance/evidence/tasks/0.3/"
+gate_impact: "Phase 0"
+rollback_or_forward_fix: "Alembic downgrade hoặc drop schema platform. Migration immutable sau apply."
+known_risks:
+  - "Integration test cần postgres — dùng docker-compose hoặc skip khi DB không available."
+  - "alembic.ini hoặc pyproject.toml tool.alembic section phải chỉ đúng migrations/ path."
+waiver_id: null

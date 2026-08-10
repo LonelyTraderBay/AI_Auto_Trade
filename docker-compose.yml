@@ -1,0 +1,27 @@
+# docker-compose.yml — local development database
+# Task 0.3 | Refs: ADR-0003, NFR-OPS-001
+# NO credentials in this file — uses env vars from .env (not committed)
+# For local dev only; production uses immutable deployment manifest
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ai_auto_trade_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-aat_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_local}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aat_dev} -d ${POSTGRES_DB:-ai_auto_trade_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_dev_data:
+    driver: local

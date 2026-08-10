@@ -9,12 +9,18 @@ secrets/
 # --- Python ---
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
 *.egg-info/
 .eggs/
 build/
 dist/
 .venv/
 venv/
+
+# --- uv ---
+.uv/
 
 # --- Tooling caches ---
 .ruff_cache/

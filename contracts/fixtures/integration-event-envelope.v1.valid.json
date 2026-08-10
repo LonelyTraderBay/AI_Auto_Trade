@@ -1,16 +1,19 @@
 {
-  "id": "018f8c7c-0040-7040-8040-000000000040",
-  "type": "execution.order_acknowledged.v1",
+  "id": "01932d4e-7a3b-7000-8000-000000000001",
+  "type": "platform.outbox_published.v1",
   "schema_version": 1,
-  "source": "execution",
-  "occurred_at": "2026-07-31T00:00:00Z",
-  "recorded_at": "2026-07-31T00:00:01Z",
-  "correlation_id": "018f8c7c-0041-7041-8041-000000000041",
-  "causation_id": "018f8c7c-0042-7042-8042-000000000042",
-  "trace_id": "018f8c7c-0043-7043-8043-000000000043",
-  "subject_id": "018f8c7c-0044-7044-8044-000000000044",
-  "partition_key": "order:018f8c7c-0044-7044-8044-000000000044",
+  "source": "platform",
+  "occurred_at": "2026-08-06T00:00:00Z",
+  "received_at": null,
+  "processed_at": null,
+  "recorded_at": "2026-08-06T00:00:01Z",
+  "correlation_id": "01932d4e-7a3b-7000-8000-000000000002",
+  "causation_id": null,
+  "trace_id": "01932d4e-7a3b-7000-8000-000000000003",
+  "subject_id": "01932d4e-7a3b-7000-8000-000000000004",
+  "partition_key": "order-01932d4e-7a3b-7000-8000-000000000005",
   "data": {
-    "event_name": "ORDER_ACKNOWLEDGED"
+    "outbox_id": "01932d4e-7a3b-7000-8000-000000000006",
+    "event_type": "platform.outbox_published.v1"
   }
 }

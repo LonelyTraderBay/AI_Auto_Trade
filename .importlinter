@@ -1,0 +1,69 @@
+[importlinter]
+root_packages =
+    ai_auto_trade
+include_external_packages = True
+
+[importlinter:contract:domain-no-framework]
+name = Domain must not import framework/vendor packages
+type = forbidden
+source_modules =
+    ai_auto_trade.contexts.reference.domain
+    ai_auto_trade.contexts.market_data.domain
+    ai_auto_trade.contexts.strategy.domain
+    ai_auto_trade.contexts.risk.domain
+    ai_auto_trade.contexts.execution.domain
+    ai_auto_trade.contexts.portfolio_ledger.domain
+    ai_auto_trade.contexts.research.domain
+    ai_auto_trade.contexts.operations.domain
+    ai_auto_trade.contexts.platform.domain
+forbidden_modules =
+    fastapi
+    sqlalchemy
+    pydantic
+    ccxt
+    openai
+    httpx
+    aiohttp
+    requests
+
+
+[importlinter:contract:app-no-adapter]
+name = Application layer must not import adapters
+type = forbidden
+source_modules =
+    ai_auto_trade.contexts.reference.application
+    ai_auto_trade.contexts.market_data.application
+    ai_auto_trade.contexts.strategy.application
+    ai_auto_trade.contexts.risk.application
+    ai_auto_trade.contexts.execution.application
+    ai_auto_trade.contexts.portfolio_ledger.application
+    ai_auto_trade.contexts.research.application
+    ai_auto_trade.contexts.operations.application
+    ai_auto_trade.contexts.platform.application
+forbidden_modules =
+    ai_auto_trade.adapters
+
+[importlinter:contract:domain-no-application]
+name = Domain layer must not import application or adapter layers
+type = forbidden
+source_modules =
+    ai_auto_trade.contexts.reference.domain
+    ai_auto_trade.contexts.market_data.domain
+    ai_auto_trade.contexts.strategy.domain
+    ai_auto_trade.contexts.risk.domain
+    ai_auto_trade.contexts.execution.domain
+    ai_auto_trade.contexts.portfolio_ledger.domain
+    ai_auto_trade.contexts.research.domain
+    ai_auto_trade.contexts.operations.domain
+    ai_auto_trade.contexts.platform.domain
+forbidden_modules =
+    ai_auto_trade.adapters
+    ai_auto_trade.contexts.reference.application
+    ai_auto_trade.contexts.market_data.application
+    ai_auto_trade.contexts.strategy.application
+    ai_auto_trade.contexts.risk.application
+    ai_auto_trade.contexts.execution.application
+    ai_auto_trade.contexts.portfolio_ledger.application
+    ai_auto_trade.contexts.research.application
+    ai_auto_trade.contexts.operations.application
+    ai_auto_trade.contexts.platform.application

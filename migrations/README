@@ -1,0 +1,6 @@
+Alembic migration directory — Task 0.3
+Rules:
+- Applied revisions are IMMUTABLE — never edit after apply
+- Each revision must link a Task ID in the message
+- Financial/audit tables: no cascade delete, no destructive downgrade
+- Run: uv run alembic upgrade head

@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Post-Save Python Quality — Ruff + Pyright",
+      "trigger": "PostFileSave",
+      "matcher": "\\.py$",
+      "action": {
+        "type": "command",
+        "command": "cd /d \"%WORKSPACE_DIR%\" && uv run ruff format --check \"%FILE_PATH%\" 2>&1 && uv run ruff check \"%FILE_PATH%\" 2>&1 && uv run pyright \"%FILE_PATH%\" 2>&1 && echo \"[QUALITY PASS] %FILE_PATH%\" || echo \"[QUALITY FAIL] Fix errors above before committing\""
+      }
+    }
+  ]
+}

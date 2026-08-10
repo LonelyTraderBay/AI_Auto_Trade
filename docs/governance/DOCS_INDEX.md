@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-INDEX-001 |
-| Phiên bản | 0.8.0 |
-| Trạng thái | IN_REVIEW |
+| Phiên bản | 0.9.0 |
+| Trạng thái | APPROVED |
 | Owner | Technical Operator |
-| Approver | Account Owner (pending) |
+| Approver | Account Owner |
 | Ngày tạo | 2026-07-31 |
-| Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-08-02 |
+| Ngày hiệu lực | 2026-08-06 |
+| Rà soát gần nhất | 2026-08-06 |
 | Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.2.2 |
-| Change summary | 0.8.0 (2026-08-02): sửa va chạm ID SEC-AUTH-001 (doc-ID mới SEC-AUTH-POL-001), thêm alias title-ID cho 13 tài liệu SEC/OPS/DATA/REG, tách row template theo ID/status, cập nhật row gate/task evidence theo record hiện hành. |
+| Change summary | 0.9.0 (2026-08-06): Gate Phase 0.0 PASSED — Account Owner approved 2026-08-06. Status updated: DOCS_INDEX APPROVED; ADR 0001–0005/0007/0011/0012/0014 APPROVED; task 0.0.x DONE→completed; task 0.1 READY. |
 
 ## Mục đích và trạng thái
 
@@ -127,10 +127,10 @@ Kể từ v0.3.0, cây thư mục `docs/` được tổ chức theo lớp **Back
 | AI BYOK provider/policy/connection schemas | [catalog](../../contracts/config/ai-provider-catalog.v1.schema.json) · [endpoint](../../contracts/config/ai-endpoint-profile.v1.schema.json) · [egress](../../contracts/config/ai-data-egress-policy.v1.schema.json) · [usage](../../contracts/config/ai-usage-policy.v1.schema.json) · [profile](../../contracts/config/ai-policy-profile.v1.schema.json) · [connection](../../contracts/config/ai-provider-connection.v1.schema.json) · [lifecycle command](../../contracts/commands/ai/provider-connection-command.v1.schema.json) · [lifecycle event](../../contracts/events/ai/provider-connection-event.v1.schema.json) | IN_REVIEW — Phase 6 DRAFT |
 | Error catalog | [contracts/errors/error-catalog.md](../../contracts/errors/error-catalog.md) | IN_REVIEW |
 | ADR set (registry) | [ADR register](adr/README.md) | IN_REVIEW — individual ADRs remain DRAFT until Account Owner approval |
-| ADR set (content, 0001–0016) | [docs/backend/adr/](../backend/adr/) | DRAFT (16/16) — chờ Account Owner approval theo master §15.1 |
+| ADR set (content, 0001–0016) | [docs/backend/adr/](../backend/adr/) | ADR 0001–0005, 0007, 0011, 0012, 0014 APPROVED (2026-08-06); ADR 0006, 0008–0010, 0013, 0015–0016 DRAFT (deadline later phases) |
 | Templates — TMP-ADR-001 · TMP-TASK-001 · TMP-GATE-001 | [adr](templates/adr.md) · [task-card](templates/task-card.md) · [gate-record](templates/gate-record.md) | IN_REVIEW |
 | Template — GOV-TPL-INC-001 | [incident-record](templates/incident-record.md) | DRAFT |
-| Task controls | [tasks/active/](../../tasks/active/) | IN_REVIEW — 0.0.x REVIEW; [0.1-bootstrap.yaml](../../tasks/active/0.1-bootstrap.yaml) BLOCKED chờ gate |
+| Task controls | [tasks/active/](../../tasks/active/) | DONE — 0.0.x completed (tasks/completed/); [0.1-bootstrap.yaml](../../tasks/active/0.1-bootstrap.yaml) READY |
 | Repo-root controls | [README](../../README.md) · [AGENTS.md](../../AGENTS.md) · [SECURITY.md](../../SECURITY.md) · [CONTRIBUTING.md](../../CONTRIBUTING.md) · [CODEOWNERS](../../CODEOWNERS) · [COMMIT_NOTES.md](../../COMMIT_NOTES.md) — ghi chú lịch sử commit, giữ ở gốc | IN_REVIEW — bổ sung trước Task 0.1 theo audit hoàn thiện hồ sơ |
 | Gate evidence | [gate record](evidence/gates/phase-0.0/gate-record.md) · [review checklist](evidence/gates/phase-0.0/review-checklist.md) · [validation 2026-08-02](evidence/gates/phase-0.0/validation-2026-08-02.md) · [validation 2026-08-02 lần 2 (hiện hành)](evidence/gates/phase-0.0/validation-2026-08-02-02.md) | IN_REVIEW — gate chưa pass; local technical validation LOCAL_PASS |
 | Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — README review pointer cho 0.0.0–0.0.6 và 0.1; riêng 0.0.6 có [validation 2026-07-30](evidence/tasks/0.0.6/validation-2026-07-30.md) đã stale (RAID I-007), được thay bởi chuỗi EV-GATE-0.0-2026-08-02 |
@@ -143,6 +143,7 @@ Update this register and `docs/governance/document-control.md` in the same revie
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.9.0 | 2026-08-06 | Gate Phase 0.0 PASSED — Account Owner approval. ADR 0001-0005/0007/0011/0012/0014 → APPROVED; task 0.0.x → completed; task 0.1 → READY; DOCS_INDEX → APPROVED. | Account Owner | Account Owner 2026-08-06 |
 | 0.8.0 | 2026-08-02 | Audit toàn diện đợt 2 (6 cụm song song): đổi doc-ID SEC-AUTH-001 → SEC-AUTH-POL-001 (hết va chạm requirement ID); alias title-ID cho 13 tài liệu SEC-001..004/OPS-001..002/DATA-001..007 + REG-001; row ADR content ghi đúng "DRAFT (16/16)"; tách row template theo ID/status (GOV-TPL-INC-001 DRAFT); row gate/task evidence phản ánh chuỗi validation EV-GATE-0.0-2026-08-02-01/-02 và trạng thái stale của EV-0.0.6; header index bổ sung Ngày hiệu lực/Rà soát/Change summary; master authority v2.2.2. | Technical Operator | Pending |
 | 0.7.0 | 2026-08-02 | Đồng bộ audit chéo 2026-08-02: addendum GOV-CLASS (103 tệp, Frontend lần đầu khác 0), FR-FE-001..007 vào traceability, RACI thêm row waiver, RAID thêm D-008/I-005..I-008, checklist 0.0.7/0.0.8, document-control §6 sửa row Frontend/Governance + thêm row Templates; master authority v2.2.1 + OD-009/010; thêm alias title-ID cho 4 tài liệu domain (DOM-001..004) và link COMMIT_NOTES.md vào repo-root controls. | Technical Operator | Pending |
 | 0.6.0 | 2026-07-31 | Khởi tạo bộ tài liệu Frontend 8 artifact (FE-INDEX/CHARTER/SCREEN/API/ARC/DS/SEC/TEST-001, DRAFT) — trích xuất từ contract backend, input Phase 5/6; docs/frontend/ không còn là placeholder rỗng. | Technical Operator | Pending |

@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Pre-Write Guard — Task Scope + Forbidden Glob Check",
+      "trigger": "PreToolUse",
+      "matcher": "fs_write|str_replace|fs_append",
+      "action": {
+        "type": "agent",
+        "prompt": "## File write guard — verify before proceeding\n\nA file write operation is about to execute. Verify scope compliance:\n\n**Check 1 — Forbidden globs (Task 0.4)**\nThe target file path must NOT match any of these patterns:\n- `src/ai_auto_trade/contexts/**`\n- `src/ai_auto_trade/adapters/**`\n- `src/ai_auto_trade/apps/**`\n- `migrations/versions/0001_*`\n- `configs/**`\n- `infra/**`\n- `.github/**`\n- `.env` (exact)\n- `docs/backend/**`\n- `docs/shared/**`\n- `docs/governance/*.md`\n\nIf the path matches ANY forbidden glob → output `{\"hookSpecificOutput\": {\"permissionDecision\": \"ask\", \"permissionDecisionReason\": \"Path matches forbidden_globs in Task 0.4 card. This write is out of scope.\"}}` and STOP.\n\n**Check 2 — Allowed globs compliance (Task 0.4)**\nFor Task 0.4, only these file paths are legitimate deliverables:\n- `tests/architecture/**`\n- `tests/contract/__init__.py`\n- `tests/contract/test_event_envelope.py`\n- `contracts/events/platform/**`\n- `contracts/fixtures/**`\n- `migrations/versions/0002_platform_idempotency_keys.py`\n- `docs/governance/evidence/tasks/0.4/**`\n- `tasks/active/0.4-architecture-contract.yaml`\n- `tasks/completed/0.4-architecture-contract.yaml`\n- `.kiro/hooks/pre-write-task-guard.json`\n\nIf the file is NOT in the allowed list → output `{\"hookSpecificOutput\": {\"permissionDecision\": \"ask\", \"permissionDecisionReason\": \"Path not in Task 0.4 allowed_globs. This write may be out of scope.\"}}` and STOP.\n\n**Check 3 — Secret / credential detection**\nScan the content being written for:\n- API keys, tokens, passwords (patterns: `sk-`, `AKIA`, `ghp_`, `xox`, `-----BEGIN`)\n- Hardcoded IPs/endpoints that look like production\n- Any value that looks like a real credential\n\nIf detected → output `{\"hookSpecificOutput\": {\"permissionDecision\": \"ask\", \"permissionDecisionReason\": \"Potential secret or credential detected in file content. Review before writing.\"}}` and STOP.\n\n**Check 4 — Phase-future directory guard**\nBlock creation of these directories/files regardless of task:\n- `src/ai_auto_trade/contexts/ai_memory/**`\n- `src/ai_auto_trade/adapters/llm/**`\n- `src/ai_auto_trade/adapters/nautilus/**`\n- `src/ai_auto_trade/apps/secret_ingress/**`\n\nIf all checks pass → proceed normally (do NOT output the ask decision)."
+      }
+    }
+  ]
+}

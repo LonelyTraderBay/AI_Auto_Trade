@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Pre-Task Preflight — AGENTS.md §1 Checklist",
+      "trigger": "PreTaskExec",
+      "action": {
+        "type": "agent",
+        "prompt": "## Pre-task preflight — AGENTS.md §1 (mandatory, in order)\n\nBefore executing ANY task, verify ALL of the following. If any check fails → report BLOCKED with reason, do NOT proceed.\n\n**Step 1 — Working tree**\nRun `git status` and `git diff --stat`. Confirm:\n- Working tree is clean OR changes are within current task scope\n- Current branch matches `branch_pattern` from the active task card (pattern: `task/0.1-*`)\n\n**Step 2 — Phase/gate state**\nRead `AI_AUTO_TRADE_MASTER_SPEC.md` §0 control panel.\n- Gate Phase 0.0: must show PASSED\n- Current phase: Phase 0 (bootstrap)\n- No new blockers since last session\n\n**Step 3 — Task card authority**\nRead `tasks/active/0.1-bootstrap.yaml`:\n- status must be `READY` or `IN_PROGRESS`\n- expiry_at: 2026-09-30T00:00:00Z — confirm not expired\n- blockers must be empty []\n- Record: allowed_globs and forbidden_globs\n\n**Step 4 — Referenced ADR/contract verification**\nConfirm these files exist and are APPROVED:\n- `docs/backend/adr/0001-modular-monolith.md` → APPROVED\n- `docs/backend/adr/0002-hexagonal-architecture.md` → APPROVED\n- `docs/backend/adr/0014-toolchain-repo-contract-authority.md` → APPROVED\n- `contracts/config/task-card.v1.schema.json` → exists\n\n**Step 5 — Scope boundary reminder**\nTask 0.1 allowed_globs (ceiling, not a free pass):\n```\nREADME.md, AGENTS.md, SECURITY.md, CONTRIBUTING.md, CODEOWNERS,\n.editorconfig, .gitignore, .env.example, pyproject.toml, uv.lock,\ndocker-compose.yml, src/ai_auto_trade/**, tests/**, scripts/**,\ndocs/governance/evidence/tasks/0.1/**\n```\nForbidden (always wins): `migrations/**, configs/**, infra/**, contracts/**, .github/**, .env, docs/backend/**, docs/shared/**, docs/governance/*.md`\n\nActual deliverables are the closed manifest in `ENG-REPO-001 §2b` — NOT everything in allowed_globs.\n\nReport checklist result before proceeding."
+      }
+    }
+  ]
+}

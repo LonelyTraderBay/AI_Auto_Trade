@@ -1,0 +1,71 @@
+task_id: "0.4"
+phase: "0"
+status: "DONE"
+unblocked_at: "2026-08-06T16:00:00Z"
+completed_at: "2026-08-06T17:00:00Z"
+approved_by: "Account Owner 2026-08-06"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/0.4-*"
+references:
+  requirements: ["NFR-DET-001", "NFR-AUD-001", "NFR-SAFE-001", "NFR-SEC-001"]
+  adrs: ["ADR-0001", "ADR-0002", "ADR-0014"]
+  contracts: ["contracts/config/task-card.v1.schema.json", "contracts/events/platform/integration-event-envelope.v1.schema.json"]
+goal: "Mo rong architecture contract tests: layer dependency rules (domain->stdlib, application->domain+ports, adapters->ports only), cross-context isolation, event envelope schema validation voi fixture, va idempotency_keys migration them vao platform schema."
+non_goals:
+  - "Khong viet domain/application/risk/execution logic."
+  - "Khong them adapter implementation."
+  - "Khong tao runtime configuration hoac venue integration."
+preconditions:
+  - "Task 0.3 DONE — repo skeleton + platform migration ton tai."
+  - "ADR-0001, ADR-0002, ADR-0014 APPROVED."
+  - "contracts/events/platform/integration-event-envelope.v1.schema.json ton tai."
+blockers: []
+allowed_globs:
+  - "tests/architecture/**"
+  - "tests/contract/__init__.py"
+  - "tests/contract/test_event_envelope.py"
+  - "contracts/events/platform/**"
+  - "contracts/fixtures/**"
+  - "migrations/versions/0002_platform_idempotency_keys.py"
+  - "docs/governance/evidence/tasks/0.4/**"
+  - "tasks/active/0.4-architecture-contract.yaml"
+forbidden_globs:
+  - "src/ai_auto_trade/contexts/**"
+  - "src/ai_auto_trade/adapters/**"
+  - "src/ai_auto_trade/apps/**"
+  - "migrations/versions/0001_*"
+  - "configs/**"
+  - "infra/**"
+  - ".github/**"
+  - ".env"
+  - "docs/backend/**"
+  - "docs/shared/**"
+  - "docs/governance/*.md"
+impact:
+  database: true
+  api: false
+  event: false
+  config: false
+  dependency: false
+  security: false
+acceptance_criteria:
+  - "tests/architecture/test_import_boundaries.py mo rong: test layer dependency rules pass."
+  - "tests/contract/test_event_envelope.py validate integration-event-envelope.v1.schema.json voi valid va invalid fixture."
+  - "contracts/fixtures/integration-event-envelope.v1.valid.json ton tai va validate pass."
+  - "uv sync --locked, ruff format --check, ruff check, pyright, pytest, validate_contracts.py deu exit 0."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run python scripts/validate_contracts.py"
+evidence_path: "docs/governance/evidence/tasks/0.4/"
+gate_impact: "Phase 0"
+rollback_or_forward_fix: "Xoa test files moi va fixture. Migration 0002 co the downgrade trong dev."
+known_risks:
+  - "import-linter contract mo rong can update .importlinter."
+  - "Fixture phai khong chua secret hoac real credential."
+waiver_id: null

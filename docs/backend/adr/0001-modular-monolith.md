@@ -3,17 +3,17 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | ADR ID | ADR-0001 |
-| Phiên bản | 0.1.0 |
-| Status | DRAFT — required for Phase 0.0; chưa mở gate |
+| Phiên bản | 0.2.0 |
+| Status | APPROVED — approved by Account Owner 2026-08-06T00:00:00Z |
 | Date | 2026-07-31 |
 | Owner | Technical Operator |
-| Approver | Account Owner (pending) |
-| Effective date | Chưa hiệu lực (chỉ điền khi APPROVED) |
+| Approver | Account Owner |
+| Effective date | 2026-08-06 |
 | Decision deadline | Phase 0.0 gate |
-| Rà soát gần nhất | 2026-08-02 |
+| Rà soát gần nhất | 2026-08-06 |
 | Related | FR-EXEC-001, FR-LED-001, FR-REC-001, NFR-OPS-001; [Master](../../../AI_AUTO_TRADE_MASTER_SPEC.md) §3–§4; ADR-0002, ADR-0014 |
 | Supersedes / superseded by | None / None |
-| Change summary | 0.1.0 (2026-08-02): chuẩn hóa header theo TMP-ADR-001/GOV-DOC-001 §3 — thêm ADR ID/Phiên bản/Effective date/Decision deadline/Rà soát/Change summary (audit toàn diện); nội dung quyết định không đổi (soạn 2026-07-31). |
+| Change summary | 0.2.0 (2026-08-06): Status → APPROVED; Account Owner decision 2026-08-06T00:00:00Z. |
 
 ## Context and decision drivers
 
@@ -46,7 +46,13 @@ Phase 0.0 approves topology only. Phase 0 creates repository guardrails; no serv
 
 ## Approval criteria
 
-- [ ] Account Owner accepts MVP scope and non-microservice default.
-- [ ] ADR-0002/0014 and architecture docs enforce context/process boundaries.
-- [ ] No task introduces a broker, extra database, orchestration platform or service without a new ADR.
+- [x] Account Owner accepts MVP scope and non-microservice default.
+- [x] ADR-0002/0014 and architecture docs enforce context/process boundaries.
+- [x] No task introduces a broker, extra database, orchestration platform or service without a new ADR.
+
+## Nhật ký thay đổi
+
+| Version | Date | Thay đổi | Owner | Approval |
+|---|---|---|---|---|
+| 0.2.0 | 2026-08-06 | Status → APPROVED; Account Owner decision 2026-08-06T00:00:00Z. | Account Owner | Account Owner |
 

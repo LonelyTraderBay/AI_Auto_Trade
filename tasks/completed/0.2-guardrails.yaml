@@ -1,0 +1,71 @@
+task_id: "0.2"
+phase: "0"
+status: "DONE"
+unblocked_at: "2026-08-06T06:00:00Z"
+completed_at: "2026-08-06T13:30:00Z"
+approved_by: "Account Owner 2026-08-06"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/0.2-*"
+references:
+  requirements: ["NFR-OPS-001", "NFR-SEC-001", "NFR-DET-001"]
+  adrs: ["ADR-0001", "ADR-0002", "ADR-0014"]
+  contracts: ["contracts/config/task-card.v1.schema.json"]
+goal: "Thêm guardrails enforcement: Hypothesis + import-linter vào dev deps, architecture boundary test, contracts validate command stub, và GitHub Actions CI workflow chạy full bootstrap command profile."
+non_goals:
+  - "Không viết business/domain logic."
+  - "Không tạo migration, database, endpoint hoặc venue integration."
+  - "Không thêm dependency ngoài Hypothesis, import-linter, pytest-cov stub."
+  - "Không tạo deployment config hoặc secret."
+preconditions:
+  - "Task 0.1 DONE — repo skeleton tồn tại, 5 required_commands chạy xanh."
+  - "ADR-0001, ADR-0002, ADR-0014 APPROVED."
+blockers: []
+allowed_globs:
+  - "pyproject.toml"
+  - "uv.lock"
+  - ".github/workflows/ci.yml"
+  - "tests/architecture/__init__.py"
+  - "tests/architecture/test_import_boundaries.py"
+  - "scripts/validate_contracts.py"
+  - "scripts/**"
+  - ".importlinter"
+  - "docs/governance/evidence/tasks/0.2/**"
+forbidden_globs:
+  - "src/**"
+  - "migrations/**"
+  - "configs/**"
+  - "infra/**"
+  - "contracts/**"
+  - ".env"
+  - "docs/backend/**"
+  - "docs/shared/**"
+  - "docs/governance/*.md"
+impact:
+  database: false
+  api: false
+  event: false
+  config: false
+  dependency: true
+  security: false
+acceptance_criteria:
+  - "uv sync --locked, ruff format --check, ruff check, pyright, pytest đều exit 0 sau khi thêm deps."
+  - "tests/architecture/test_import_boundaries.py có ít nhất 1 test chứng minh domain không import FastAPI/SQLAlchemy/Pydantic — test pass."
+  - "scripts/validate_contracts.py có thể chạy như: uv run python scripts/validate_contracts.py — exit 0 khi contracts/ hợp lệ (stub dùng jsonschema)."
+  - ".github/workflows/ci.yml tồn tại và chạy đủ: uv sync --locked, ruff format --check, ruff check, pyright, pytest trên Python 3.12 trong GitHub Actions."
+  - "Không có dependency ngoài Hypothesis và import-linter thêm vào dev group."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run python scripts/validate_contracts.py"
+evidence_path: "docs/governance/evidence/tasks/0.2/"
+gate_impact: "Phase 0"
+rollback_or_forward_fix: "Revert pyproject.toml và xóa workflow file. Không có runtime state."
+known_risks:
+  - "import-linter configuration cần .importlinter file — nằm ngoài src/ nên an toàn."
+  - "GitHub Actions chưa chạy thật trên CI — evidence là file workflow hợp lệ YAML + local command pass."
+waiver_id: null

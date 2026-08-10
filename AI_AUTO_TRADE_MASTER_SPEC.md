@@ -49,13 +49,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 0.0 — Documentation Closure (IN_REVIEW) | Account Owner | Không viết application/DB code |
-| Việc kế tiếp | Review/approve P0 artifact pack, ADR và contract skeleton | Account Owner | §1.5 và Phase 0.0 |
+| Việc kế tiếp | Thực thi Task 0.1: bootstrap Python repo skeleton theo ENG-REPO-001 §2b | Account Owner | §1.5 và Phase 0.0 |
 | Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
-| Gate gần nhất | Phase 0.0 — IN_REVIEW | Account Owner | Evidence/gate record chưa được ký |
-| Blocker code | Required ADR, artifact review và schema validation chưa được Account Owner phê duyệt | Account Owner | §1.5, §14 và §15 |
+| Gate gần nhất | Phase 0.0 — **PASSED** 2026-08-06 | Account Owner | Evidence/gate record đã được Account Owner ký |
+| Blocker code | Gate Phase 0.0 đã pass. Blocker tiếp theo: Task 0.1 bootstrap (READY) — chưa có CI, uv.lock, pyproject.toml | Account Owner | §1.5, §14 và §15 |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-02 | Account Owner | v2.2.2; technical validation đã chạy lại theo đường dẫn hiện hành (EV-GATE-0.0-2026-08-02-02, thay chuỗi EV-0.0.6 → EV-GATE-0.0-2026-08-02-01 đã stale); blocker code còn lại là review/approve artifact pack + ADR của Account Owner |
+| Lần rà soát | 2026-08-06 | Account Owner | v2.2.2; Gate Phase 0.0 PASSED — task 0.1 READY |
 
 ### 0.1 Cách bắt đầu đúng
 

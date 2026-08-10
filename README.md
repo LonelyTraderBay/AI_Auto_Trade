@@ -4,17 +4,28 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Trạng thái | **Phase 0.0 — Documentation Closure (IN_REVIEW)** — repo chỉ có tài liệu/contract, **chưa có application code** |
+| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0: PASSED 2026-08-06. Task 0.1 bootstrap IN_PROGRESS. |
 | Hiến pháp kỹ thuật | [AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md) |
-| Gate hiện tại | Phase 0.0 — NOT PASSED ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
+| Gate gần nhất | Phase 0.0 — PASSED 2026-08-06 ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
 | Quy tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
 
 ## Thứ tự đọc bắt buộc
 
-1. **[AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md)** — bắt đầu từ §0 control panel để biết phase hiện tại, blocker và việc kế tiếp.
-2. **[AGENTS.md](AGENTS.md)** — bản rút gọn có thể thực thi của master §16, bắt buộc cho mọi AI coding agent trước khi chạm vào bất kỳ file nào.
+1. **[AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md)** — master specification; bắt đầu từ §0 control panel để biết phase hiện tại, blocker và việc kế tiếp.
+2. **[AGENTS.md](AGENTS.md)** — AI coding agent rules (enforced); bản rút gọn có thể thực thi của master §16, bắt buộc cho mọi AI coding agent trước khi chạm vào bất kỳ file nào.
 3. **[docs/governance/DOCS_INDEX.md](docs/governance/DOCS_INDEX.md)** — chỉ mục toàn bộ artifact pack và trạng thái review từng tài liệu.
 4. **Task card hiện hành** trong [tasks/active/](tasks/active/) — authority phạm vi duy nhất; không có task card READY thì không được sửa implementation file.
+
+## Quick-start
+
+```bash
+# Prerequisites: Python 3.12.x, uv
+uv sync --locked
+uv run ruff format --check .
+uv run ruff check .
+uv run pyright
+uv run pytest
+```
 
 ## Cấu trúc repository
 
@@ -32,7 +43,7 @@ tasks/                         # task card YAML — authority phạm vi thực t
 
 `src/`, `migrations/`, `configs/`, `tests/`, `.github/` **chưa tồn tại theo chủ đích** — chúng chỉ được tạo từ Task 0.1 trở đi, sau khi gate Phase 0.0 PASSED và các ADR bắt buộc được APPROVED.
 
-## Bootstrap (chỉ hiệu lực từ khi Task 0.1 DONE)
+## Bootstrap (Task 0.1 IN_PROGRESS)
 
 ```bash
 uv sync --locked
@@ -41,8 +52,6 @@ uv run ruff check .
 uv run pyright
 uv run pytest
 ```
-
-Trước thời điểm đó, không có lệnh build/test nào để chạy — mọi validation là schema/link check trên tài liệu và contract (xem gate record Phase 0.0).
 
 ## Đóng góp và bảo mật
 

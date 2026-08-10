@@ -1,0 +1,34 @@
+task_id: "0.0.1"
+phase: "0.0"
+status: "DONE"
+completed_at: "2026-08-06T00:00:00Z"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-08-31T00:00:00Z"
+branch_pattern: "task/0.0.1-*"
+references:
+  requirements: ["FR-OPS-001", "NFR-AUD-001", "NFR-OPS-001", "SEC-GOV-001"]
+  adrs: ["ADR-0014"]
+  contracts: []
+goal: "Tạo governance, product baseline, glossary và traceability cho MVP."
+non_goals: ["Approve risk limits", "Choose venue", "Create implementation code"]
+preconditions: ["Task 0.0.0 exists."]
+blockers: []
+allowed_globs: ["docs/governance/DOCS_INDEX.md", "docs/governance/*.md", "docs/backend/product/**", "docs/shared/**", "docs/governance/evidence/tasks/0.0.1/**"]
+forbidden_globs: ["src/**", "migrations/**", "contracts/**", "configs/**", "infra/**"]
+impact:
+  database: false
+  api: false
+  event: false
+  config: false
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "Document control, RACI, RAID, requirements và glossary tồn tại và dùng ID chuẩn."
+  - "Mọi baseline FR/NFR/SEC map tới source/test/gate dự kiến."
+required_commands: ["Manual link and requirement-traceability review"]
+evidence_path: "docs/governance/evidence/tasks/0.0.1/"
+gate_impact: "Phase 0.0"
+rollback_or_forward_fix: "Sửa tài liệu trong review change; không xóa historical decision record."
+known_risks: ["RACI và scope cần Account Owner xác nhận."]
+waiver_id: null
