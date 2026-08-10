@@ -1,6 +1,6 @@
 task_id: "0.5.1"
 phase: "0"
-status: "BLOCKED"
+status: "READY"
 owner: "Technical Operator"
 reviewer: "Account Owner"
 expiry_at: "2026-09-30T00:00:00Z"
@@ -27,8 +27,9 @@ preconditions:
   - "ADR-0001, ADR-0002, ADR-0014 o trang thai APPROVED."
   - "contracts/config/deployment-manifest.v1.schema.json ton tai va da duoc review."
   - "contracts/errors/error-catalog.md ton tai."
-blockers:
-  - "Task card nay can Account Owner review va chuyen sang READY truoc khi AI duoc sua implementation file."
+  - "Phase 0.0 gate da duoc Account Owner revalidate PASS tai 2026-08-10T20:07:02Z."
+  - "Account Owner xac nhan mo task trong phien lam viec 2026-08-10T20:07:02Z."
+blockers: []
 allowed_globs:
   - "pyproject.toml"
   - "uv.lock"
@@ -40,6 +41,7 @@ allowed_globs:
   - "src/ai_auto_trade/apps/cli/**"
   - "configs/base.yaml"
   - "configs/environments/local.yaml"
+  - "configs/sample-manifest.yaml"
   - "configs/README.md"
   - "contracts/errors/error-catalog.md"
   - "tests/unit/contexts/operations/test_error_envelope.py"

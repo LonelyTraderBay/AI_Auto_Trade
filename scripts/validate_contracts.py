@@ -1,8 +1,9 @@
-"""Contract validation script — Task 0.2.
+"""Validate the JSON Schema subset of the repository contract pack.
 
-Validates all JSON Schema files in contracts/ against JSON Schema Draft 2020-12.
-Validates all fixture files in contracts/fixtures/ against their corresponding schemas.
-Exit code 0 = all valid. Exit code 1 = validation failure.
+This command intentionally validates only JSON Schema documents. OpenAPI, YAML
+fixtures, task-card allowlists, cross-file links and CI enforcement require
+separate procedures and must not be reported as covered by this command.
+Exit code 0 means every discovered schema is valid; exit code 1 means failure.
 
 Usage:
     uv run python scripts/validate_contracts.py
@@ -72,7 +73,7 @@ def main() -> int:
             print(f"  {err}")
         return 1
 
-    print("\nAll schemas valid.")
+    print(f"\nAll {len(list(contracts_dir.rglob('*.schema.json')))} schemas valid.")
     return 0
 
 

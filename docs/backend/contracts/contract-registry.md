@@ -2,15 +2,17 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.2 / IN_REVIEW |
+| Version / Status | 1.1.3 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner (pending) |
-| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-11 |
 | Related | FR-OPS-001, FR-EXEC-001, FR-AI-001, NFR-SEC-001, NFR-AI-001; ADR-0004, ADR-0005, ADR-0007, ADR-0010, ADR-0012, ADR-0014, ADR-0015, ADR-0016 |
-| Change summary | 1.1.2 (2026-08-02, Technical Operator, Pending): đồng bộ header Related với các row (thêm ADR-0007 của C-CMD-001, ADR-0010 của C-CFG-002, ADR-0015 của C-API-001/C-CMD-001); ghi nhận giới hạn skeleton: openapi v1.1 chưa khai per-route response cho nhóm code 409/422/429/503 (RISK_REJECTED, COMMAND_STATE_CONFLICT, AI_*…) — bổ sung tại Task 0.2 cùng route contract tests; C-ERR-001 chuẩn hóa version 1.1.1. 1.1.1 (2026-07-31): sửa dangling ID FR-OMS-001 -> FR-EXEC-001 tại header Related và hai row C-CMD-002/C-EVT-002. 1.1.0: registry cho Phase 0.0 baseline contracts, gồm DRAFT Phase 6 provider-neutral BYOK metadata/lifecycle contracts; implementation/validator command chưa tồn tại. |
+| Change summary | 1.1.3 (2026-08-11, Technical Operator, Pending): làm rõ task-card/AGENTS/Codex provenance là governance control, phân biệt validator local với CI enforcement và ghi nhận gate revalidation bắt buộc sau substantive artifact change; không đổi public contract. 1.1.2: đồng bộ Related và giới hạn OpenAPI skeleton. |
 
 ## 1. Registry rule
 
 OpenAPI is canonical for HTTP; versioned JSON Schema is canonical for command/event/config payload. Contract is DRAFT/IN_REVIEW and must not be implemented until task/ADR/gate conditions permit. Additive optional change needs compatibility evidence; semantic/removal/required/new-major behavior needs v2 and migration/deprecation plan. No schema/fixture contains a secret value or real venue/account data. The sole protocol-level secret field is OpenAPI's Phase 6 write-only `api_key` enrollment input; it has no example, cannot enter durable command/event/audit/outbox persistence, is never logged/read back, and is not a JSON Schema fixture/config field.
+
+Task-card YAML is the canonical execution scope, not a prose document. The card must pass `contracts/config/task-card.v1.schema.json`, bind to the branch/PR pattern, have an unexpired `expiry_at`, and be `READY` before implementation. A card may reference a DRAFT/IN_REVIEW contract only when its non-goal and gate explicitly prohibit implementation; otherwise the task is `BLOCKED`. Local validation output is evidence, not contract approval. Any substantive change to a gate-approved contract, master or control artifact invalidates the previous gate hash until revalidation and human sign-off.
 
 HTTP command request body is deliberately not the durable `C-CMD-001` record: server authentication derives actor/role, route derives command type/scope, header supplies idempotency key, server calculates canonical request hash and creates the `ACCEPTED` command record. Task 0.2 must add parity tests for every route mapping (body `reason`/`payload` -> C-CMD-001) and fail on drift; a client must never claim actor, status or request hash in HTTP JSON.
 

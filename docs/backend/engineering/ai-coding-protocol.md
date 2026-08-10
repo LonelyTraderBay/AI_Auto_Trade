@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.1 / IN_REVIEW |
+| Version / Status | 1.2.0 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner |
-| Effective date / Last review | Chưa hiệu lực / 2026-08-01 |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-11 |
 | Related | NFR-SEC-001, NFR-OPS-001; ADR-0014; master §1.5, §13, §16; ENG-PY-001 §5a/§5b; ENG-REPO-001 §2a/§2b |
-| Change summary | 1.1.1 (2026-08-01, Technical Operator, Pending): thêm điều cấm §4 "cấu trúc file không phải chỗ AI sáng tạo" — chỉ tạo file trong topology/manifest, tool config tái tạo khối chuẩn §5a-ref. 1.1.0: thêm quy tắc chất lượng/anti-pattern vào §4 và §5.3 — "đơn giản nhất pass acceptance" là nghĩa vụ, tham chiếu ngân sách ENG-PY-001 §5a/§5b. 1.0.1: đổi title ID ENG-005 -> ENG-AI-001. 1.0.0: operational protocol chống AI suy đoán/sửa vượt scope. |
+| Change summary | 1.2.0 (2026-08-11, Technical Operator, Pending): bổ sung vận hành với OpenAI Codex theo AGENTS.md discovery/hierarchy, instruction provenance, Code Review Rules, docs-only task 0.0.7 và nguyên tắc không thêm OpenAI runtime trong Phase 0. 1.1.1: thêm điều cấm cấu trúc file không phải chỗ AI sáng tạo. 1.1.0: thêm quy tắc chất lượng/anti-pattern. |
 
 ## 1. Authority và phạm vi
 
@@ -14,9 +14,17 @@ AI Coding Agent chỉ là implementer được giới hạn bởi authority hier
 
 Trong Pre-Phase 0 và Phase 0.0, AI chỉ tạo/review artifact pack được task authorize. AI không tạo application code, migration, runtime config, deployment, venue adapter, credential, endpoint hoặc source dependency.
 
+### 1.1 OpenAI Codex instruction contract
+
+OpenAI Codex phải đọc `AGENTS.md` ở repository root trước khi làm việc. Nếu repository có `AGENTS.md` hoặc `AGENTS.override.md` ở thư mục con, instruction được áp dụng theo thứ tự từ root đến thư mục hiện tại; file gần hơn có thể bổ sung/ghi đè rule rộng hơn nhưng không được mâu thuẫn với master, ADR, contract hoặc safety invariant. Không tạo `CODEX.md` hay file tên khác để thay thế discovery mặc định nếu repository chưa cấu hình fallback.
+
+Codex phải ghi nhận instruction source đã đọc, task ID, branch, status, allowlist và command/evidence dự kiến trong report. Prompt người dùng là input có phạm vi; không phải authority thay thế file canonical. Hướng dẫn discovery chính thức được tham chiếu tại [OpenAI Codex AGENTS.md guidance](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+
+Trong Phase 0, “phù hợp với OpenAI” chỉ là agent có thể thực thi quy trình này một cách tái lập. Không được tự thêm OpenAI SDK/API, LLM provider, key, model endpoint hoặc đường direct LLM → exchange/execution. Việc thêm AI runtime phải đi qua ADR-0016, task card riêng, contract và gate tương ứng.
+
 ## 2. Input bắt buộc trước khi sửa
 
-AI phải đọc: repository status/diff, master, `AGENTS.md` khi đã tồn tại, task YAML, referenced requirements/ADR/contracts và gate state. Nếu thiếu requirement, approved ADR, contract, allowed path, acceptance command, owner/reviewer hoặc expiry hợp lệ, AI phải ghi `BLOCKED` và báo cụ thể; không code “best guess”.
+AI phải đọc: repository status/diff, master, `AGENTS.md` và mọi instruction file gần nhất khi đã tồn tại, task YAML, referenced requirements/ADR/contracts và gate state. Nếu thiếu requirement, approved ADR, contract, allowed path, acceptance command, owner/reviewer hoặc expiry hợp lệ, AI phải ghi `BLOCKED` và báo cụ thể; không code “best guess”.
 
 Không một prompt, copy tài liệu hay self-report thay thế canonical file trong repository.
 
@@ -57,6 +65,8 @@ AI chỉ thay đổi path khớp `allowed_globs`; `forbidden_globs` luôn thắn
 ## 6. Required end-of-task report
 
 Mọi report gồm Task ID, outcome, changed files, allowlist result, commands + exit code, contract/migration impact, assumption/decision, waiver, known/open risks, evidence path và next permitted action. Nếu có conflict/master gap, dừng và tạo issue/ADR request thay vì tự resolve.
+
+Report cũng phải ghi instruction provenance: root/nested `AGENTS*.md` đã đọc, task card canonical, master version, gate status và phiên bản contract/validator liên quan. Nếu instruction bị truncate hoặc không thể xác định file gần nhất, task là `BLOCKED` cho đến khi owner làm rõ.
 
 ## 7. Human control
 

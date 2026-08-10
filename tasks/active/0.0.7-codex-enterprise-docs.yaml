@@ -1,0 +1,91 @@
+task_id: "0.0.7"
+phase: "0.0"
+status: "DONE"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/0.0.7-*"
+references:
+  requirements: ["FR-OPS-001", "NFR-OPS-001", "NFR-SEC-001", "NFR-AUD-001"]
+  adrs: ["ADR-0001", "ADR-0002", "ADR-0014"]
+  contracts:
+    - "contracts/config/task-card.v1.schema.json"
+    - "contracts/config/deployment-manifest.v1.schema.json"
+    - "contracts/errors/error-catalog.md"
+goal: "Dong bo governance va delivery documentation de OpenAI Codex co the thuc thi task theo chuan Enterprise-Grade: mot nguon su that, task allowlist machine-readable, quy trinh human approval ro rang, evidence co the truy vet, va khong mo rong runtime scope."
+non_goals:
+  - "Khong viet hoac sua business/domain/risk/execution logic."
+  - "Khong tao FastAPI endpoint, migration, database instance, venue adapter, LLM integration hoac OpenAI SDK runtime."
+  - "Khong tu phe duyet ADR, contract, gate, waiver hoac chuyen artifact sang APPROVED/DONE."
+  - "Khong thay doi public OpenAPI, event, command, config schema hoac migration trong task nay."
+  - "Khong them CI workflow hoac dependency moi; chi cap nhat tai lieu va validator neu duoc allowlist."
+preconditions:
+  - "Account Owner da uy quyen bat dau dong bo tai lieu trong phien lam viec 2026-08-11."
+  - "Working tree sach sau commit 4932f00 va branch khop task/0.0.7-*."
+  - "Gate Phase 0.0 da PASS nhung moi thay doi substantive phai tao evidence revalidation; khong tu coi gate da duoc mo lai."
+  - "ADR-0001, ADR-0002 va ADR-0014 dang APPROVED."
+  - "Task-card schema ton tai va duoc dung de validate card nay."
+blockers: []
+allowed_globs:
+  - "AI_AUTO_TRADE_MASTER_SPEC.md"
+  - "AGENTS.md"
+  - "README.md"
+  - "docs/governance/DOCS_INDEX.md"
+  - "docs/governance/documentation-layer-classification.md"
+  - "docs/governance/document-control.md"
+  - "docs/backend/engineering/ai-coding-protocol.md"
+  - "docs/backend/engineering/ci-cd-design.md"
+  - "docs/backend/contracts/contract-registry.md"
+  - "docs/governance/evidence/tasks/0.0.7/**"
+  - "docs/governance/evidence/gates/phase-0.0/gate-record.md"
+  - "tasks/active/0.0.7-*.yaml"
+  - "scripts/validate_contracts.py"
+forbidden_globs:
+  - "src/**"
+  - "tests/**"
+  - "migrations/**"
+  - "configs/**"
+  - "infra/**"
+  - ".github/**"
+  - "contracts/api/**"
+  - "contracts/commands/**"
+  - "contracts/events/**"
+  - "contracts/config/**"
+  - ".env"
+  - "docs/backend/adr/**"
+  - "docs/backend/domain/**"
+  - "docs/backend/data/**"
+  - "docs/backend/security-ops/**"
+impact:
+  database: false
+  api: false
+  event: false
+  config: true
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "Master, AGENTS, README va DOCS_INDEX cung chi mot trang thai: Task 0.0.7 dang thuc thi docs-only; Task 0.5.1 la buoc implementation tiep theo va chi duoc mo sau khi Account Owner review."
+  - "ENG-AI-001 ghi ro quy trinh OpenAI Codex: doc AGENTS.md theo hierarchy, xac nhan task READY, allowlist diff, exact commands, evidence va human review; khong tao CODEX.md thay cho AGENTS.md."
+  - "Task card 0.5.1 va 0.5.2 duoc registry ro trong master/DOCS_INDEX; moi card giu nguyen non-goals an toan va khong tu dong duoc coi la READY."
+  - "CI/CD design va contract registry ghi ro cac gate Enterprise-Grade can thuc thi, nhung khong claim implementation da ton tai neu repo chua co."
+  - "validate_contracts.py va cac quality command chay thanh cong; moi ket qua duoc luu trong docs/governance/evidence/tasks/0.0.7/."
+  - "Gate Phase 0.0 duoc danh dau can revalidation sau substantive change; task report de xuat REVIEW, khong tu phe duyet gate."
+  - "Diff khong chua secret, khong doi runtime/business logic va khong them dependency."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run python scripts/validate_contracts.py"
+  - "git diff --check"
+evidence_path: "docs/governance/evidence/tasks/0.0.7/"
+gate_impact: "Phase 0.0 gate revalidation required; no application/runtime gate is opened by this task."
+rollback_or_forward_fix: "Revert the task change set if review rejects it; restore the previous document versions and keep implementation tasks BLOCKED until the source-of-truth set is revalidated."
+known_risks:
+  - "Gate record approved on 2026-08-06 can be stale after substantive document changes; only Account Owner can revalidate or revoke it."
+  - "OpenAPI, JSON Schema and registry remain IN_REVIEW; this task documents the condition but does not approve contracts."
+  - "The current validator does not yet enforce every CI/CD design stage; evidence must distinguish local validation from CI enforcement."
+  - "Automated YAML task-card parsing is not available in the locked environment; Task 0.0.8 must add an approved, pinned validator before safe auto-runner implementation."
+  - "OpenAI Codex guidance is an external operational reference; runtime AI provider behavior remains out of scope and provider-neutral."
+waiver_id: null

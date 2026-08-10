@@ -5,8 +5,10 @@
 ## 0. Trạng thái hiện tại — đọc trước tiên
 
 - Phase hiện tại: **Phase 0 — Foundation (IN_PROGRESS)**. Gate Phase 0.0: **PASSED 2026-08-06**.
-- Task đã DONE (Account Owner approve 2026-08-06, card trong `tasks/completed/`): **0.1 Bootstrap, 0.2 Guardrails, 0.3 Persistence contract, 0.4 Architecture contract**. `tasks/active/` hiện **trống**.
-- Việc kế tiếp: **Task 0.5 — Operations skeleton** (master §14) — **chưa có task card**. Không có card `READY` trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16).
+- Task đã DONE (Account Owner approve 2026-08-06, card trong `tasks/completed/`): **0.1 Bootstrap, 0.2 Guardrails, 0.3 Persistence contract, 0.4 Architecture contract**.
+- Task đã hoàn tất: **0.0.7 — Codex Enterprise documentation** (`tasks/active/0.0.7-codex-enterprise-docs.yaml`, `DONE`, docs-only), Account Owner revalidate gate 2026-08-10T20:07:02Z.
+- Task hiện hành: **0.5.1 — Config/audit/error envelope** (`tasks/active/0.5.1-config-audit-envelope.yaml`, `READY`); **0.5.2 — Control API skeleton** phụ thuộc 0.5.1.
+- Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận.
 - Với mọi card READY: làm đúng và chỉ đúng `allowed_globs` của card đó; `forbidden_globs` thắng khi xung đột.
 - Trạng thái sống luôn ở master §0 control panel — kiểm tra lại mỗi phiên làm việc, đừng tin file này nếu hai bên lệch nhau.
 
@@ -20,6 +22,14 @@ Thực hiện đủ, theo thứ tự — thiếu bước nào thì trạng thái
 4. Đọc mọi ADR/contract/schema được card tham chiếu. Nếu một tham chiếu không tồn tại → BLOCKED.
 5. Kiểm tra locked version của thư viện định dùng so với tài liệu chính thức; không thêm dependency ngoài card.
 6. Mọi giả định về architecture/risk/security/database → dừng, escalate thành ADR hoặc Open Decision, không tự quyết.
+
+## 1.1 Quy tắc vận hành với OpenAI Codex
+
+- `AGENTS.md` ở root là instruction source bắt buộc của repository. Codex đọc file này trước khi làm việc; nếu có `AGENTS.md`/`AGENTS.override.md` ở thư mục con thì áp dụng theo thứ tự root → thư mục hiện tại, file gần hơn có thể bổ sung/ghi đè luật rộng hơn khi không mâu thuẫn với master.
+- Không tạo `CODEX.md`, `AI_INSTRUCTIONS.md` hoặc file thay thế khác để né discovery. Chỉ dùng fallback filename nếu cấu hình Codex của repository đã khai báo rõ.
+- Giữ instruction ngắn, cụ thể và có thể kiểm chứng; nếu tổng instruction bị cắt do giới hạn kích thước, phải tách phần chi tiết sang tài liệu được task tham chiếu và ghi link canonical.
+- Mỗi phiên phải ghi nhận instruction source đã đọc, task ID, branch, trạng thái card, allowlist và command/evidence dự kiến. Prompt người dùng không thay thế authority trong repository.
+- “Phù hợp với OpenAI” ở Phase 0 chỉ nghĩa là Codex thực thi đúng quy trình; **không** được tự thêm OpenAI SDK/API, LLM provider, credential hoặc đường dẫn AI → execution.
 
 ## 2. Thứ tự authority (master §1.5)
 
@@ -58,3 +68,11 @@ Artifact cấp thấp mâu thuẫn cấp cao → BLOCKED. Không sửa code đ�
 ## 5. Lối thoát an toàn
 
 Gặp bất kỳ điều nào sau đây → dừng ngay, ghi BLOCKED kèm lý do, không tiếp tục: yêu cầu ngoài scope card; tài liệu mâu thuẫn; cần quyết định owner chưa có; phát hiện secret/leak; test/command fail không rõ nguyên nhân; nghi ngờ đụng safety invariant.
+
+## Code Review Rules
+
+- Ưu tiên correctness, safety invariant, contract compatibility, auditability và recovery; không đánh đổi các mục này lấy tốc độ hoặc độ ngắn của diff.
+- Mọi thay đổi phải truy được tới task card READY, requirement/ADR/contract liên quan và evidence command; diff ngoài allowlist là lỗi chặn merge.
+- Không phê duyệt thay đổi chỉ vì test “đang xanh”; phải kiểm tra negative path, secret boundary, unknown outcome, idempotency và trạng thái gate.
+- Không dùng review để tự thay đổi status `APPROVED`, `READY`, `DONE`, waiver hoặc gate. Những quyết định đó cần đúng human role và evidence riêng.
+- Không dành review cho việc sửa format/lint tự động; các vấn đề đó phải do command quality gate báo. Review tập trung vào behavior, scope, safety và regression.

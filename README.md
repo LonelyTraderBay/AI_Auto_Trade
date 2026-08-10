@@ -4,7 +4,7 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0: PASSED 2026-08-06. Task 0.1–0.4 DONE; việc kế tiếp: Task 0.5 — Operations skeleton (chờ task card). |
+| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4 và 0.0.7 DONE; task hiện hành: 0.5.1 Operations config/audit/error envelope. |
 | Hiến pháp kỹ thuật | [AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md) |
 | Gate gần nhất | Phase 0.0 — PASSED 2026-08-06 ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
 | Quy tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
@@ -15,6 +15,8 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 
 2. **[AGENTS.md](AGENTS.md)** — AI coding agent rules (enforced); bản rút gọn có thể thực thi của master §16, bắt buộc cho mọi AI coding agent trước khi chạm vào bất kỳ file nào.
 3. **[docs/governance/DOCS_INDEX.md](docs/governance/DOCS_INDEX.md)** — chỉ mục toàn bộ artifact pack và trạng thái review từng tài liệu.
 4. **Task card hiện hành** trong [tasks/active/](tasks/active/) — authority phạm vi duy nhất; không có task card READY thì không được sửa implementation file.
+
+OpenAI Codex phải đọc `AGENTS.md` ở root trước khi sửa. `AGENTS.md` là instruction source chính; tài liệu này không cấp quyền vượt master, ADR, contract, gate hoặc task card. “OpenAI-compatible” ở Phase 0 chỉ là quy trình Codex có thể thực thi được, không phải cho phép thêm OpenAI runtime/API.
 
 ## Quick-start
 
@@ -47,7 +49,10 @@ tasks/                         # task card YAML — authority phạm vi thực t
 ## Trạng thái Phase 0
 
 - Task 0.1–0.4: **DONE** (Account Owner approve 2026-08-06) — card trong [tasks/completed/](tasks/completed/), evidence trong [docs/governance/evidence/tasks/](docs/governance/evidence/tasks/).
-- `tasks/active/` đang trống: Task 0.5 — Operations skeleton (master §14) chưa có task card. Không có card `READY` thì AI không sửa implementation file (master §16).
+- Task 0.0.7 — Codex Enterprise documentation: **DONE**, docs-only; evidence tại `docs/governance/evidence/tasks/0.0.7/`.
+- Task 0.5.1 — Config/audit/error envelope: **READY**, branch `task/0.5.1-*`; đây là task implementation hiện hành.
+- Task 0.5.2 — Control API skeleton: **BLOCKED**, phụ thuộc 0.5.1 DONE và Account Owner chuyển `READY`.
+- Không có card `READY` phù hợp thì AI không sửa implementation file (master §16).
 
 ## Đóng góp và bảo mật
 

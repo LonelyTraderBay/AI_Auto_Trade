@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.1 / IN_REVIEW |
+| Version / Status | 1.2.0 / IN_REVIEW |
 | Owner / Approver | Technical Operator / Account Owner (pending) |
-| Effective date / Last review | Chưa hiệu lực / 2026-08-02 |
+| Effective date / Last review | Chưa hiệu lực / 2026-08-11 |
 | Related | NFR-OPS-001, NFR-SEC-001; ADR-0012, ADR-0014; Phase 0.0.5 |
-| Change summary | 1.1.1 (2026-08-02, Technical Operator, Pending): tách attribution ở §1/§7 theo task card 0.1 — Task 0.1 chỉ tạo local command profile chạy tay/evidence, workflow `.github/workflows` + enforcement thuộc Task 0.2. 1.1.0 (2026-07-31, Technical Operator, Pending): đổi title ID ENG-004 -> ENG-CI-001; thêm trigger matrix DRAFT, xác nhận secret scanning tool detect-secrets, thêm dòng evidence retention theo ADR-0013. 1.0.0: thiết kế pipeline và enforcement trước khi workflow implementation được tạo ở Task 0.1/0.2. |
+| Change summary | 1.2.0 (2026-08-11, Technical Operator, Pending): bổ sung Codex instruction provenance, task 0.0.7 docs-only, phân biệt local technical validation với CI enforcement và yêu cầu gate revalidation sau substantive artifact change. 1.1.1: tách attribution Task 0.1/0.2. 1.1.0: thêm trigger matrix DRAFT, detect-secrets và evidence retention. |
 
 ## 1. Phạm vi
 
@@ -32,7 +32,7 @@ Phase 0.0 chỉ ghi thiết kế và validate artifact. Chưa có `.github/workf
 
 ~~~text
 preflight: task-card schema + expiry + branch/PR binding + changed-path allowlist
-  -> document/contract validation
+  -> instruction provenance + document/contract validation
   -> format -> lint -> type check -> architecture rules
   -> unit/property/state-machine
   -> schema compatibility
@@ -57,6 +57,12 @@ Rules:
 - Migration, API/event/config public, dependency, security/deployment/risk/OMS/ledger chỉ được phép nếu impact flag, reference và reviewer tương ứng xuất hiện trong card.
 - Unknown Task ID, expired card, malformed YAML hoặc diff ngoài scope là FAIL, không auto-fix.
 
+### Codex instruction provenance
+
+Local Codex preflight phải ghi root `AGENTS.md`, các `AGENTS.md`/`AGENTS.override.md` gần nhất, master version, task-card hash và gate status đã đọc. Prompt, commit message hoặc AI self-report không được thay thế các file canonical. Repository không dùng `CODEX.md` mặc định; nếu bật fallback phải ghi trong cấu hình Codex và evidence.
+
+Đây là thiết kế enforcement. Cho đến khi Task 0.2 cập nhật workflow, kết quả chạy tay chỉ được ghi là `LOCAL_PASS`; không được mô tả như CI đã enforce task allowlist, instruction discovery, secret scan hoặc compatibility.
+
 ## 5. Contract, security và supply-chain checks
 
 - Validate OpenAPI 3.1, JSON Schema 2020-12, fixture và cross-reference contract registry.
@@ -75,5 +81,4 @@ Deployment không auto-promote từ CI. Paper/testnet/canary cần manifest immu
 
 ## 7. Bootstrap acceptance
 
-Task 0.0.5 chỉ cần có design này, task-card schema/fixture và một procedure validate được ghi evidence. Task 0.1 chuyển design thành local command profile chạy tay và lưu evidence exit code; Task 0.2 chuyển design thành workflow `.github/workflows` và enforcement thực tế. Không claim pipeline xanh trước khi command tồn tại và exit code được lưu.
-
+Task 0.0.5/0.0.7 chỉ cần có design này, task-card schema/fixture và một procedure validate được ghi evidence. Task 0.1 chuyển design thành local command profile chạy tay và lưu evidence exit code; Task 0.2 chuyển design thành workflow `.github/workflows` và enforcement thực tế. Không claim pipeline xanh trước khi command tồn tại và exit code được lưu. Mọi thay đổi substantive vào artifact đã approved phải đánh dấu gate stale/revalidation required trước khi mở implementation task.
