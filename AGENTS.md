@@ -5,8 +5,9 @@
 ## 0. Trạng thái hiện tại — đọc trước tiên
 
 - Phase hiện tại: **Phase 0 — Foundation (IN_PROGRESS)**. Gate Phase 0.0: **PASSED 2026-08-06**.
-- Task hiện hành: **Task 0.1 — Bootstrap** (`tasks/active/0.1-bootstrap.yaml`, status: READY).
-- Trong Phase 0, Task 0.1: AI **chỉ được** tạo skeleton repo theo manifest ENG-REPO-001 §2b. **Cấm** viết business/domain/risk/execution logic, tạo migration, database instance, runtime config, venue/LLM integration, CI workflows (.github/**).
+- Task đã DONE (Account Owner approve 2026-08-06, card trong `tasks/completed/`): **0.1 Bootstrap, 0.2 Guardrails, 0.3 Persistence contract, 0.4 Architecture contract**. `tasks/active/` hiện **trống**.
+- Việc kế tiếp: **Task 0.5 — Operations skeleton** (master §14) — **chưa có task card**. Không có card `READY` trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16).
+- Với mọi card READY: làm đúng và chỉ đúng `allowed_globs` của card đó; `forbidden_globs` thắng khi xung đột.
 - Trạng thái sống luôn ở master §0 control panel — kiểm tra lại mỗi phiên làm việc, đừng tin file này nếu hai bên lệch nhau.
 
 ## 1. Thủ tục bắt buộc trước MỌI task

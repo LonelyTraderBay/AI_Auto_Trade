@@ -423,12 +423,18 @@ Bảng tóm tắt ở Mục 1 là bản ghi lịch sử tại thời điểm 81 
 - `COMMIT_NOTES.md` được **giữ ở gốc repo**: tuỳ chọn nêu tại row 80 của bảng ánh xạ Mục 3 ("có thể giữ ở gốc repo — xem Mục 4") đã được chọn; tệp **không** được di chuyển vào `docs/governance/`.
 - Con số "80 tệp `git mv`" trong changelog v0.2.0 thực tế là **79**: 81 tệp trừ `contracts/errors/error-catalog.md` (row 81 — không đổi chỗ) và `COMMIT_NOTES.md` (row 80 — giữ ở gốc repo).
 
+### 6.4. Đính chính 2026-08-10 — COMMIT_NOTES.md đã xóa
+
+- `COMMIT_NOTES.md` (row 80 bảng ánh xạ Mục 3, phân loại Governance-Process) đã được **xóa khỏi repo theo quyết định của Account Owner ngày 2026-08-10**; nội dung vẫn nằm trong git history. Row 80 và Mục 6.3 là bản ghi lịch sử, không sửa.
+- Corpus hiện hành: Governance-Process 33 → **32**, tổng 105 → **104** tệp. Bảng Mục 6.2 giữ nguyên như bản ghi tại thời điểm 2026-08-02.
+
 ---
 
 ## 7. Nhật ký thay đổi
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.4.1 | 2026-08-10 | Thêm Mục 6.4: đính chính COMMIT_NOTES.md đã xóa khỏi repo theo quyết định Account Owner 2026-08-10 (nội dung trong git history); corpus hiện hành 105 → 104 tệp (Governance-Process 33 → 32). Bản ghi lịch sử Mục 1–3, 6.2–6.3 không đổi. | Technical Operator | Pending |
 | 0.4.0 | 2026-08-02 | Audit toàn diện đợt 2: addendum §6 cập nhật corpus 103 → 105 tệp (row 23–24: hai validation record gate Phase 0.0 ngày 2026-08-02); thêm khối "Ghi nhận khoảng trống governance" — thực thi tái cấu trúc trước khi có approval record hợp lệ theo GOV-DOC-001 §4 được theo dõi tại RAID I-009 và phải được hợp thức hóa trong quyết định ký gate Phase 0.0; thêm row Change summary vào header. | Technical Operator | Pending |
 | 0.3.0 | 2026-08-02 | Thêm Mục 6 (Addendum): phân loại 22 tệp bổ sung sau bản ghi 81 tệp — corpus tăng lên 103 tệp (Backend 62, Governance-Process 31, Shared 2, Frontend 8 — lần đầu khác 0); đính chính v0.2.0 (COMMIT_NOTES.md giữ ở gốc repo; số tệp `git mv` thực tế là 79, không phải 80). Mục 1–3 lịch sử không đổi; changelog được đánh số lại thành Mục 7. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | **Thực thi** di chuyển vật lý theo đúng bảng ánh xạ ở Mục 3, theo yêu cầu trực tiếp của Account Owner (bỏ qua lộ trình RACI/ADR-0017 khuyến nghị ở Mục 5). 80 tệp `git mv` sang docs/{governance,shared,backend,frontend}/; docs/frontend/README.md placeholder được tạo; toàn bộ link tương đối, DOCS_INDEX.md, document-control.md §6, requirements-traceability.md, master spec §1.5/§4.6 và 7 task-card YAML (`tasks/active/*.yaml`) được cập nhật theo đường dẫn mới trong cùng thay đổi. Hồ sơ evidence Phase 0.0 đã đóng băng chỉ được sửa link, không sửa nội dung/quyết định evidence. | Technical Operator | Pending |

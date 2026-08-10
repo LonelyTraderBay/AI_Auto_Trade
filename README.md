@@ -4,7 +4,7 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0: PASSED 2026-08-06. Task 0.1 bootstrap IN_PROGRESS. |
+| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0: PASSED 2026-08-06. Task 0.1–0.4 DONE; việc kế tiếp: Task 0.5 — Operations skeleton (chờ task card). |
 | Hiến pháp kỹ thuật | [AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md) |
 | Gate gần nhất | Phase 0.0 — PASSED 2026-08-06 ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
 | Quy tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
@@ -25,6 +25,7 @@ uv run ruff format --check .
 uv run ruff check .
 uv run pyright
 uv run pytest
+uv run python scripts/validate_contracts.py
 ```
 
 ## Cấu trúc repository
@@ -41,17 +42,12 @@ contracts/                     # OpenAPI 3.1, JSON Schema (command/event/config)
 tasks/                         # task card YAML — authority phạm vi thực thi (validate bằng task-card schema)
 ```
 
-`src/`, `migrations/`, `configs/`, `tests/`, `.github/` **chưa tồn tại theo chủ đích** — chúng chỉ được tạo từ Task 0.1 trở đi, sau khi gate Phase 0.0 PASSED và các ADR bắt buộc được APPROVED.
+`src/`, `tests/`, `migrations/`, `.github/` đã được tạo bởi Task 0.1–0.4. `configs/` và `infra/` **chưa tồn tại theo chủ đích** — chúng chỉ được tạo bởi task card tương ứng ở phase sau, khi ADR bắt buộc được APPROVED.
 
-## Bootstrap (Task 0.1 IN_PROGRESS)
+## Trạng thái Phase 0
 
-```bash
-uv sync --locked
-uv run ruff format --check .
-uv run ruff check .
-uv run pyright
-uv run pytest
-```
+- Task 0.1–0.4: **DONE** (Account Owner approve 2026-08-06) — card trong [tasks/completed/](tasks/completed/), evidence trong [docs/governance/evidence/tasks/](docs/governance/evidence/tasks/).
+- `tasks/active/` đang trống: Task 0.5 — Operations skeleton (master §14) chưa có task card. Không có card `READY` thì AI không sửa implementation file (master §16).
 
 ## Đóng góp và bảo mật
 

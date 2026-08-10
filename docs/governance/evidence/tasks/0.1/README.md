@@ -1,13 +1,11 @@
-# Evidence placeholder — Task 0.1 Bootstrap
+# Evidence — Task 0.1 Bootstrap
 
 | Thuộc tính | Giá trị |
 |---|---|
 | Task | `0.1` |
-| Status | BLOCKED — chờ gate Phase 0.0 PASSED và card chuyển READY |
+| Status | DONE 2026-08-06 (Account Owner approve; card tại `tasks/completed/0.1-bootstrap.yaml`) |
 | Owner | Technical Operator |
 | Reviewer | Account Owner |
-| Scope | Repo skeleton bootstrap; xem `tasks/active/0.1-bootstrap.yaml` |
+| Scope | Repo skeleton bootstrap |
 
-Chỉ lưu evidence an toàn: command/procedure, UTC timestamp, runner/version, exit code, artifact path/hash, quyết định reviewer và gate link. Không lưu secret, credential, `.env` thật hoặc log chưa redaction.
-
-Chưa có evidence nào được ghi. Task này không được thực thi khi status chưa là READY.
+Evidence chính thức: [bootstrap-evidence.md](bootstrap-evidence.md). Chỉ lưu evidence an toàn: command/procedure, UTC timestamp, runner/version, exit code, artifact path/hash, quyết định reviewer và gate link. Không lưu secret, credential, `.env` thật hoặc log chưa redaction.

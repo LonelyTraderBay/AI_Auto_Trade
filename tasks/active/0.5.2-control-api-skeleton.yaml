@@ -1,0 +1,103 @@
+task_id: "0.5.2"
+phase: "0"
+status: "BLOCKED"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/0.5.2-*"
+references:
+  requirements: ["FR-OPS-001", "NFR-OPS-001", "NFR-SEC-001", "NFR-AUD-001"]
+  adrs: ["ADR-0001", "ADR-0002", "ADR-0014"]
+  contracts:
+    - "contracts/api/openapi.yaml"
+    - "contracts/config/deployment-manifest.v1.schema.json"
+    - "contracts/config/task-card.v1.schema.json"
+    - "contracts/errors/error-catalog.md"
+    - "contracts/events/platform/integration-event-envelope.v1.schema.json"
+goal: "Xay dung local-only Control API skeleton bang FastAPI: health/readiness/runtime routes va command route stubs theo openapi.yaml — dung tren output cua Task 0.5.1, chua auth/RBAC thuc, chua thuc thi command."
+non_goals:
+  - "Khong implement authentication/authorization/RBAC thuc (ADR-0015 chua APPROVED); auth chi la stub/no-op voi ghi chu ro rang."
+  - "Khong implement handler thuc cho strategy activation, kill switch, reconciliation, backtest hoac bat ky command anh huong den venue/position/risk nao."
+  - "Khong ket noi database thuc ngoai in-memory projection stub."
+  - "Khong ket noi venue, exchange SDK, LLM provider, notification channel hoac external service."
+  - "Khong tao deployment manifest that, credential, account scope hay runtime configuration co secret."
+  - "Khong them migration/database schema moi; khong doi platform migrations hien co."
+  - "Khong mo route AI/BYOK credential-enrollments (Phase 6)."
+preconditions:
+  - "Task 0.5.1 DONE va chuyen vao tasks/completed/."
+  - "ADR-0001, ADR-0002, ADR-0014 o trang thai APPROVED."
+  - "contracts/api/openapi.yaml ton tai va duoc xac nhan du on dinh cho Phase 0 skeleton."
+  - "Error envelope va audit event domain object tu Task 0.5.1 ton tai."
+blockers:
+  - "Task 0.5.1 chua DONE."
+  - "Task card nay can Account Owner review va chuyen sang READY sau khi 0.5.1 hoan thanh."
+allowed_globs:
+  - "pyproject.toml"
+  - "uv.lock"
+  - "src/ai_auto_trade/apps/control_api/**"
+  - "src/ai_auto_trade/apps/cli/**"
+  - "src/ai_auto_trade/contexts/operations/application/**"
+  - "configs/services/control-api.yaml"
+  - "contracts/errors/error-catalog.md"
+  - "tests/unit/apps/test_control_api.py"
+  - "tests/contract/test_control_api_contract.py"
+  - "tests/fixtures/control-api/**"
+  - "docs/governance/evidence/tasks/0.5.2/**"
+forbidden_globs:
+  - "src/ai_auto_trade/contexts/reference/**"
+  - "src/ai_auto_trade/contexts/market_data/**"
+  - "src/ai_auto_trade/contexts/strategy/**"
+  - "src/ai_auto_trade/contexts/risk/**"
+  - "src/ai_auto_trade/contexts/execution/**"
+  - "src/ai_auto_trade/contexts/portfolio_ledger/**"
+  - "src/ai_auto_trade/contexts/research/**"
+  - "src/ai_auto_trade/contexts/operations/domain/**"
+  - "src/ai_auto_trade/adapters/venues/**"
+  - "src/ai_auto_trade/adapters/notifications/**"
+  - "src/ai_auto_trade/adapters/persistence/**"
+  - "src/ai_auto_trade/apps/trading_node/**"
+  - "src/ai_auto_trade/apps/workers/**"
+  - "migrations/**"
+  - "configs/venues/**"
+  - "configs/ai/**"
+  - "configs/strategies/**"
+  - "configs/risk/**"
+  - "configs/deployments/**"
+  - "infra/**"
+  - ".github/**"
+  - ".env"
+  - "docs/backend/**"
+  - "docs/shared/**"
+  - "docs/governance/*.md"
+impact:
+  database: false
+  api: true
+  event: false
+  config: false
+  dependency: true
+  security: true
+acceptance_criteria:
+  - "FastAPI app khoi tao duoc, bind localhost, expose GET /health, GET /readiness, GET /runtime theo openapi.yaml; khong can credential, khong goi venue."
+  - "GET /health va /readiness tra ve 200 voi payload khop schema Health/Readiness; /runtime tra ve sanitized runtime identity (mode=local, no secret)."
+  - "POST /commands/* stubs tra 202 Accepted voi command_id va Location header; khong thuc thi, khong goi venue, khong doi DB."
+  - "Error envelope tu Task 0.5.1 duoc dung trong HTTP exception responses; khong tra stack trace, secret hoac vendor raw payload."
+  - "Auth la no-op/stub voi ghi chu ro rang trong code va document."
+  - "Tat ca quality commands pass: uv sync --locked, ruff format --check, ruff check, pyright, pytest, validate_contracts.py."
+  - "Khong co secret/credential/API key trong code, config, fixture, log hoac evidence."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run python scripts/validate_contracts.py"
+evidence_path: "docs/governance/evidence/tasks/0.5.2/"
+gate_impact: "Phase 0"
+rollback_or_forward_fix: "Revert branch/PR. Neu dependency (fastapi/uvicorn/httpx) khong phu hop, sua pyproject.toml va uv.lock trong cung task truoc khi merge; khong sua truc tiep tren main."
+known_risks:
+  - "fastapi, uvicorn, httpx la dependency moi can lock; phai kiem tra license va kich thuoc."
+  - "Local-only app khong duoc chay voi credential/secret that hoac bind interface cong khai."
+  - "Auth stub co the bi hieu nham la bao mat thuc neu khong ghi chu ro rang."
+  - "Route /commands/* stub chi tra 202 + command_id; can dam bao khong co duong goi venue."
+  - "Du an solo co the co cung ca nhan giua Owner/Reviewer/Operator; audit record van phai ghi role."
+waiver_id: null

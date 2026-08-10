@@ -4,19 +4,20 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.2.2 |
-| Trạng thái | Phase 0.0 — Documentation Closure (IN_REVIEW) |
+| Phiên bản | 2.2.3 |
+| Trạng thái | Phase 0 — Foundation (IN_PROGRESS) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
 | Ngôn ngữ chính | Python 3.12.x |
 | Mục tiêu | Xây một nền tảng giao dịch có thể kiểm thử, audit, phục hồi và nâng cấp từng phần |
 | Nguyên tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
-| Lần rà soát gần nhất | 2026-08-02 |
+| Lần rà soát gần nhất | 2026-08-10 |
 | Thay đổi chính v2.1 | Bổ sung thiết kế DRAFT cho AI đa provider/BYOK: user chọn provider/model đã duyệt, secret ingress write-only, provider catalog, egress/budget và zero-execution boundary |
 | Thay đổi chính v2.1.1 | Cập nhật §1.5 artifact pack tree và các tham chiếu đường dẫn docs/ theo tái cấu trúc lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001); không đổi quyết định kiến trúc/domain/risk/security nào |
 | Thay đổi chính v2.2.0 | Sửa mâu thuẫn nội bộ do audit sâu phát hiện: §8.11 deadline accounting policy thống nhất "trước Phase 1" (khớp §7.8); §7.6 bổ sung `outbox_delivery_state` vào platform inventory; §4.6 bổ sung `tests/state_machine/`; §4.7 bổ sung `apps/secret_ingress` (Phase 6) và làm rõ ai_worker binding lease; §4.8 chốt fixture format theo registry. Chỉ sửa nhất quán, không thêm capability mới |
 | Thay đổi chính v2.2.1 | Audit chéo hậu bổ sung: §1.5 cây frontend phản ánh 8 artifact FE-* (hết placeholder); §14.2 Task 0.1 output trỏ manifest ENG-REPO-001 §2b và ghi nhận README/AGENTS đã tồn tại; §16.1 bỏ "Từ Task 0.1" cho AGENTS.md; §0.3 thêm OD-009 (vị trí repo frontend + Dart gates) và OD-010 (đóng GAP OpenAPI cho mandatory ops views). Chỉ sửa nhất quán/registry, không thêm capability |
 | Thay đổi chính v2.2.2 | Audit toàn diện 2026-08-02: §14.2 đăng ký Task 0.0.6 (AI BYOK baseline) và sửa mô tả 0.0.0 thành "0.0.1–0.0.6"; đồng bộ owner/reviewer 0.0.3/0.0.4 với card YAML; gỡ deadlock nghiệm thu Phase 0.0 ↔ precondition card 0.1 (card đủ điều kiện chuyển READY khi gate ký, không yêu cầu READY trước gate); recap ADR bổ sung "0016 trước Phase 6"; §3.1 thống nhất deadline ADR Nautilus với §15.1; §1.5 bổ sung waiver-register/compliance-register/incident-record/versioning-release-policy/logging-standard vào cây; §4.6 bổ sung .gitignore, COMMIT_NOTES.md; §16.2 sửa `expiry` thành `expiry_at` khớp schema; control panel cập nhật validation record hiện hành. Chỉ sửa nhất quán/registry, không thêm capability |
+| Thay đổi chính v2.2.3 | Đồng bộ state sau khi Task 0.1–0.4 DONE (Account Owner approve 2026-08-06): control panel §0 phản ánh Phase 0 IN_PROGRESS, việc kế tiếp là Task 0.5 — Operations skeleton (chưa có task card); §4.6 gỡ COMMIT_NOTES.md (xóa khỏi repo theo quyết định Account Owner 2026-08-10, nội dung nằm trong git history); ghi nhận `.kiro/` hooks (tool-specific, không thuộc artifact pack) đã xóa. Chỉ sửa nhất quán/registry, không thêm capability |
 
 ---
 
@@ -48,14 +49,14 @@
 
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
-| Current phase | Phase 0.0 — Documentation Closure (IN_REVIEW) | Account Owner | Không viết application/DB code |
-| Việc kế tiếp | Thực thi Task 0.1: bootstrap Python repo skeleton theo ENG-REPO-001 §2b | Account Owner | §1.5 và Phase 0.0 |
+| Current phase | Phase 0 — Foundation (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card READY |
+| Việc kế tiếp | Task 0.5 — Operations skeleton (§14); **chưa có task card** trong `tasks/active/` — cần Account Owner tạo/duyệt card | Account Owner | §14 Phase 0 |
 | Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **PASSED** 2026-08-06 | Account Owner | Evidence/gate record đã được Account Owner ký |
-| Blocker code | Gate Phase 0.0 đã pass. Blocker tiếp theo: Task 0.1 bootstrap (READY) — chưa có CI, uv.lock, pyproject.toml | Account Owner | §1.5, §14 và §15 |
+| Blocker code | Task 0.1–0.4 DONE (2026-08-06). Blocker tiếp theo: Task 0.5 chưa có task card — không có card READY thì AI không sửa implementation file | Account Owner | §14 và §16 |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-06 | Account Owner | v2.2.2; Gate Phase 0.0 PASSED — task 0.1 READY |
+| Lần rà soát | 2026-08-10 | Account Owner | v2.2.3; Task 0.1–0.4 DONE — chờ card Task 0.5 |
 
 ### 0.1 Cách bắt đầu đúng
 
@@ -476,7 +477,6 @@ ai-auto-trade/
   AGENTS.md
   CONTRIBUTING.md
   CODEOWNERS
-  COMMIT_NOTES.md
   .editorconfig
   .gitignore
   pyproject.toml
