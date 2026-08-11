@@ -1,0 +1,71 @@
+task_id: "0.6"
+phase: "0"
+status: "READY"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/0.6-*"
+references:
+  requirements: ["FR-EXEC-001", "FR-REC-001", "NFR-DET-001", "NFR-SAFE-001", "NFR-SEC-001"]
+  adrs: ["ADR-0002", "ADR-0005", "ADR-0009"]
+  contracts:
+    - "contracts/config/deployment-manifest.v1.schema.json"
+    - "contracts/config/task-card.v1.schema.json"
+goal: "Tao capability matrix versioned cho internal simulator/PAPER_SIMULATOR de lam baseline an toan cho Phase 1; khong chon hoac ket noi venue ben ngoai."
+non_goals:
+  - "Khong chon venue/testnet/account/instrument ben ngoai; OD-001 van OPEN cho Phase 3."
+  - "Khong tao venue adapter, exchange SDK, network client, credential, secret hoac external I/O."
+  - "Khong viet OMS/risk/ledger/execution business logic, migration, database schema hoac runtime endpoint moi."
+  - "Khong phe duyet ADR, contract, gate, waiver hoac chuyen Phase 0 sang DONE."
+preconditions:
+  - "Task 0.5.2 DONE va card da nam trong tasks/completed/."
+  - "Phase 0.0 APPROVED / REVALIDATED tai 2026-08-10T20:07:02Z."
+  - "Account Owner xac nhan tiep tuc local simulator/no venue tai 2026-08-11T02:26:26Z."
+  - "Master §10.3 yeu cau matrix toi thieu cho market/instrument, order, recovery, rate/availability va account."
+  - "ADR-0009 van DRAFT; capability draft nay khong phai approval cho external venue."
+blockers: []
+allowed_globs:
+  - "AI_AUTO_TRADE_MASTER_SPEC.md"
+  - "AGENTS.md"
+  - "README.md"
+  - "docs/governance/DOCS_INDEX.md"
+  - "docs/governance/evidence/tasks/0.6/**"
+  - "tasks/active/0.6-capability-draft.yaml"
+forbidden_globs:
+  - "src/**"
+  - "tests/**"
+  - "migrations/**"
+  - "configs/**"
+  - "infra/**"
+  - ".github/**"
+  - ".env"
+  - "contracts/**"
+  - "docs/backend/adr/**"
+  - "docs/backend/domain/**"
+  - "docs/backend/data/**"
+  - "docs/backend/security-ops/**"
+  - "tasks/completed/**"
+impact:
+  database: false
+  api: false
+  event: false
+  config: false
+  dependency: false
+  security: false
+acceptance_criteria:
+  - "Capability matrix draft tai evidence path co version, owner, source/effective time, test evidence va status cho du 5 dimension theo Master §10.3."
+  - "Profile local simulator chi ghi PAPER_SIMULATOR/BACKTEST + INTERNAL_SIMULATOR; khong co venue credential, endpoint, account secret hoac network permission."
+  - "Moi external venue/testnet capability deu duoc danh dau DEFERRED/NOT_APPLICABLE va tro ve OD-001; khong bi dien giai la supported."
+  - "Evidence ghi ro day la design draft, khong phai venue approval, khong mo Phase 3 va khong mo live execution."
+  - "Task card schema va contract validator pass; diff khong co secret."
+required_commands:
+  - "uv run python scripts/validate_contracts.py"
+  - "git diff --check"
+evidence_path: "docs/governance/evidence/tasks/0.6/"
+gate_impact: "Phase 0"
+rollback_or_forward_fix: "Revert task commit va xoa evidence draft neu Account Owner khong chap nhan local simulator baseline; khong sua ADR-0009 hoac OD-001 am tham."
+known_risks:
+  - "Nguoi doc co the nham capability draft voi venue approval; evidence phai lap lai DEFERRED/NOT_APPLICABLE va OD-001 OPEN."
+  - "Local simulator co the bi cau hinh nham thanh external execution neu bo qua execution_target=INTERNAL_SIMULATOR; khong tao runtime config trong task nay."
+  - "Matrix khong co test evidence runtime moi; chi tham chieu fixture va contract hien co, khong claim adapter conformance."
+waiver_id: null
