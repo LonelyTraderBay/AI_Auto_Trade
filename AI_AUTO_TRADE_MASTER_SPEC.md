@@ -20,6 +20,7 @@
 | Thay đổi chính v2.2.3 | Đồng bộ state sau khi Task 0.1–0.4 DONE (Account Owner approve 2026-08-06): control panel §0 phản ánh Phase 0 IN_PROGRESS, việc kế tiếp là Task 0.5 — Operations skeleton (chưa có task card); §4.6 gỡ COMMIT_NOTES.md (xóa khỏi repo theo quyết định Account Owner 2026-08-10, nội dung nằm trong git history); ghi nhận `.kiro/` hooks (tool-specific, không thuộc artifact pack) đã xóa. Chỉ sửa nhất quán/registry, không thêm capability |
 | Thay đổi chính v2.2.4 | Đồng bộ Enterprise-Grade cho OpenAI Codex theo task 0.0.7: đăng ký task tài liệu Codex, đồng bộ trạng thái Task 0.5.1/0.5.2, làm rõ AGENTS.md là instruction source chính, bổ sung revalidation evidence sau substantive change và phân biệt local validation với CI enforcement. Không mở runtime AI/API/venue và không thêm capability giao dịch |
 | Thay đổi chính v2.2.5 | Account Owner revalidate Phase 0.0 tại 2026-08-10T20:07:02Z; Task 0.0.7 DONE; mở Task 0.5.1 READY với allowlist sample manifest rõ ràng; Task 0.5.2 vẫn BLOCKED phụ thuộc 0.5.1. Safe auto mode chỉ tự động preflight/implementation trong card, không bỏ checkpoint human |
+| Thay đổi chính v2.2.6 | Account Owner approve Task 0.5.1 tại 2026-08-11T00:30:47Z; chuyển card completed và mở Task 0.5.2 READY trên branch `task/0.5.2-*`; vẫn giữ local-only/no-auth/no-venue/no-DB scope |
 
 ---
 
@@ -52,13 +53,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 0 — Foundation (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card READY |
-| Việc kế tiếp | Task 0.5.1 — Config/audit/error envelope (`tasks/active/0.5.1-config-audit-envelope.yaml`) ở trạng thái READY; bắt đầu trên branch task/0.5.1-* | Account Owner | §14 Phase 0 / evidence 0.5.1 |
+| Việc kế tiếp | Task 0.5.2 — local-only Control API skeleton (`tasks/active/0.5.2-control-api-skeleton.yaml`) ở trạng thái READY; bắt đầu trên branch task/0.5.2-* | Account Owner | §14 Phase 0 / evidence 0.5.2 |
 | Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4 DONE; Task 0.0.7 DONE; Task 0.5.1 READY; Task 0.5.2 BLOCKED cho tới khi 0.5.1 DONE | Account Owner | §14, §16 và task cards |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1 DONE; Task 0.5.2 READY | Account Owner | §14, §16 và task cards |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-11 | Account Owner | v2.2.5; Task 0.0.7 DONE; Task 0.5.1 READY; gate Phase 0.0 revalidated |
+| Lần rà soát | 2026-08-11 | Account Owner | v2.2.6; Task 0.5.1 DONE; Task 0.5.2 READY; gate Phase 0.0 revalidated |
 
 ### 0.1 Cách bắt đầu đúng
 
@@ -2131,7 +2132,7 @@ Không có evidence thì gate là FAIL. Không dùng câu “ổn định”, �
 | 0.2 Guardrails | skeleton | Ruff, strict type, pytest, Hypothesis, import rule, `contracts validate` command và CI xanh |
 | 0.3 Persistence contract | ADR 0003/0004/0012 + ERD/data dictionary approved | PostgreSQL compose, Alembic base, outbox/inbox migration, contract registry skeleton |
 | 0.4 Architecture contract | ADR 0001/0002/0014 | empty contexts, event schema sample, dependency test |
-| 0.5 Operations skeleton | Task 0.0.7 DONE; §6/§11 + OpenAPI/config schema được Account Owner xác nhận đủ ổn định | 0.5.1 config validation + audit/error envelope (READY); sau đó 0.5.2 local-only Control API skeleton |
+| 0.5 Operations skeleton | Task 0.0.7 DONE; §6/§11 + OpenAPI/config schema được Account Owner xác nhận đủ ổn định | 0.5.1 config validation + audit/error envelope (DONE); 0.5.2 local-only Control API skeleton (READY) |
 | 0.6 Capability draft | OD-001 chưa resolve | capability matrix template; không gọi venue |
 
 ADR required before Phase 0 starts đã được đóng ở Phase 0.0: 0001–0005, 0007, 0011, 0012, 0014. ADR 0006 chỉ required trước khi NautilusTrader được đưa vào runtime (không muộn hơn khi mở Phase 5, §15.1); ADR 0013 trước Phase 2; ADR 0015 và 0009 trước Phase 3; ADR 0010 trước Phase 4; ADR 0008 và 0016 trước Phase 6.

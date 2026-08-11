@@ -5,9 +5,9 @@
 | Task | `0.5.1` |
 | Phase | `0` — Foundation |
 | Branch | `task/0.5.1-config-audit-envelope` |
-| Card status | `REVIEW` |
+| Card status | `DONE` |
 | Operator | Technical Operator |
-| Reviewer | Account Owner (pending review) |
+| Reviewer | Account Owner — approved `2026-08-11T00:30:47Z` |
 | Gate | Phase 0.0 `APPROVED / REVALIDATED` — `2026-08-10T20:07:02Z` |
 | Evidence timestamp | `2026-08-11` (Asia/Bangkok) |
 
@@ -88,10 +88,12 @@ Hashes được tính trên working tree sau khi chuyển card sang `REVIEW`:
 | `tests/unit/shared_kernel/test_audit.py` | `AEBEBB03D60208519747B80E14726246B110BB114799DBC1E92662CA7C4945AA` |
 | `tests/unit/shared_kernel/test_error.py` | `CC1CB912FFE714EAF0577EF47F15E2600866059F83499D6D612FE57084DDE3EC` |
 
-## Trạng thái đề xuất
+## Quyết định Owner và trạng thái
 
-Đề xuất giữ card ở `REVIEW`. Không tự chuyển `DONE` hoặc tự approve gate.
-Reviewer cần kiểm tra diff/evidence và quyết định merge hoặc forward-fix.
+Account Owner xác nhận tiếp tục trong phiên làm việc `2026-08-11T00:30:47Z`.
+Quyết định này được ghi nhận là approval cho evidence/implementation của Task
+0.5.1; card đã chuyển `REVIEW -> DONE` và Task 0.5.2 được mở `READY`. Không có
+waiver safety nào được tạo hoặc gia hạn.
 
 Known limitation: config fixtures dùng JSON-compatible YAML để giữ validator
 stdlib-only và tránh thêm YAML runtime dependency chưa được ADR phê duyệt.
