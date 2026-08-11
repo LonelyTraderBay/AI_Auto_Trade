@@ -11,7 +11,7 @@
 - Task đã DONE: **0.5.2 — Control API skeleton** (`tasks/completed/0.5.2-control-api-skeleton.yaml`), Account Owner xác định DONE `2026-08-11T02:14:42Z`.
 - Task đã DONE: **0.6 — Capability draft** (`tasks/completed/0.6-capability-draft.yaml`), Account Owner xác định DONE `2026-08-11T19:16:45Z`; local simulator/no venue, docs-only.
 - Task đã DONE: **1.1 — deterministic primitives** (`tasks/completed/1.1-deterministic-primitives.yaml`), Account Owner xác nhận `2026-08-11T19:41:38Z`.
-- Task hiện hành: **1.2 — OMS deterministic state machine** (`tasks/active/1.2-oms-state-machine.yaml`, `IN_PROGRESS`), branch `task/1.2-*`; local simulator/no venue, không durable DB submit/ledger runtime.
+- Task hiện hành: **1.2 — OMS deterministic state machine** (`tasks/active/1.2-oms-state-machine.yaml`, `REVIEW`), branch `task/1.2-*`; implementation/evidence đã hoàn tất, chờ Account Owner nghiệm thu; local simulator/no venue, không durable DB submit/ledger runtime.
 - DOM-OMS-001, DATA-TXN-001 và DOM-ACC-001 đã được Account Owner phê duyệt baseline `2026-08-11T19:52:15Z`; accounting annex chưa chọn vẫn chặn ledger activation.
 - OD-001 vẫn `OPEN` cho external venue/testnet; không được coi local simulator là venue approval hoặc mở Phase 3.
 - Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận.
