@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-INDEX-001 |
-| Phiên bản | 0.14.4 |
+| Phiên bản | 0.14.5 |
 | Trạng thái | IN_REVIEW (0.9.0 APPROVED 2026-08-06; 0.10.0 revalidated by Account Owner 2026-08-10T20:07:02Z; remaining artifact rows retain their own status) |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày tạo | 2026-07-31 |
 | Ngày hiệu lực | 2026-08-06 |
 | Rà soát gần nhất | 2026-08-11 |
-| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.3.4 |
-| Change summary | 0.14.4 (2026-08-12): Hoàn tất implementation/evidence Task 1.1; chuyển card IN_PROGRESS → REVIEW lúc 2026-08-11T19:24:43Z; chờ Account Owner nghiệm thu, giữ no-venue/no-LLM/no-DB scope. |
+| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.3.5 |
+| Change summary | 0.14.5 (2026-08-12): Account Owner xác nhận DONE Task 1.1 lúc 2026-08-11T19:41:38Z; chuyển card vào `tasks/completed/`; ghi nhận blocker normative docs trước OMS task kế tiếp. |
 
 ## Mục đích và trạng thái
 
@@ -130,10 +130,10 @@ Kể từ v0.3.0, cây thư mục `docs/` được tổ chức theo lớp **Back
 | ADR set (content, 0001–0016) | [docs/backend/adr/](../backend/adr/) | ADR 0001–0005, 0007, 0011, 0012, 0014 APPROVED (2026-08-06); ADR 0006, 0008–0010, 0013, 0015–0016 DRAFT (deadline later phases) |
 | Templates — TMP-ADR-001 · TMP-TASK-001 · TMP-GATE-001 | [adr](templates/adr.md) · [task-card](templates/task-card.md) · [gate-record](templates/gate-record.md) | IN_REVIEW |
 | Template — GOV-TPL-INC-001 | [incident-record](templates/incident-record.md) | DRAFT |
-| Task controls | [tasks/active/](../../tasks/active/) · [tasks/completed/](../../tasks/completed/) | 0.0.0–0.0.7 DONE; 0.5.1/0.5.2/0.6 DONE; 1.1 REVIEW (deterministic primitives, chờ Owner); OD-001 external venue OPEN |
+| Task controls | [tasks/active/](../../tasks/active/) · [tasks/completed/](../../tasks/completed/) | 0.0.0–0.0.7 DONE; 0.5.1/0.5.2/0.6/1.1 DONE; OMS task kế tiếp chưa mở vì normative docs DRAFT; OD-001 external venue OPEN |
 | Repo-root controls | [README](../../README.md) · [AGENTS.md](../../AGENTS.md) · [SECURITY.md](../../SECURITY.md) · [CONTRIBUTING.md](../../CONTRIBUTING.md) · [CODEOWNERS](../../CODEOWNERS) | IN_REVIEW — COMMIT_NOTES.md đã xóa 2026-08-10 theo quyết định Account Owner (nội dung trong git history) |
 | Gate evidence | [gate record](evidence/gates/phase-0.0/gate-record.md) · [review checklist](evidence/gates/phase-0.0/review-checklist.md) · [validation 2026-08-02](evidence/gates/phase-0.0/validation-2026-08-02.md) · [validation 2026-08-02 lần 2](evidence/gates/phase-0.0/validation-2026-08-02-02.md) | APPROVED / REVALIDATED 2026-08-10T20:07:02Z — Account Owner ký lại sau Task 0.0.7 |
-| Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — gồm evidence 0.1–0.6 và Task 1.1 deterministic primitives; Task 0.6 có matrix, validation và Owner approval `2026-08-11T19:16:45Z`; Task 1.1 đang REVIEW chờ nghiệm thu |
+| Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — gồm evidence 0.1–0.6 và Task 1.1 deterministic primitives; Task 0.6 Owner approval `2026-08-11T19:16:45Z`; Task 1.1 Owner approval `2026-08-11T19:41:38Z` |
 
 ## Approval rule
 
@@ -143,6 +143,7 @@ Update this register and `docs/governance/document-control.md` in the same revie
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.14.5 | 2026-08-12 | Account Owner xác nhận DONE Task 1.1; chuyển card completed; đồng bộ control references và ghi nhận blocker normative docs trước OMS task tiếp theo. | Technical Operator | Account Owner 2026-08-11T19:41:38Z |
 | 0.14.4 | 2026-08-12 | Hoàn tất implementation/evidence Task 1.1; chuyển card IN_PROGRESS → REVIEW; đồng bộ control references và chờ Account Owner nghiệm thu. | Technical Operator | Pending Account Owner review |
 | 0.14.3 | 2026-08-12 | Bắt đầu thực thi Task 1.1; chuyển card READY → IN_PROGRESS; đồng bộ control references. | Technical Operator | Account Owner 2026-08-11T19:16:45Z |
 | 0.14.2 | 2026-08-12 | Mở Phase 1 local simulator/no venue; tạo Task 1.1 deterministic primitives READY; đồng bộ control references. | Technical Operator | Account Owner 2026-08-11T19:16:45Z |

@@ -10,7 +10,8 @@
 - Task đã DONE: **0.5.1 — Config/audit/error envelope** (`tasks/completed/0.5.1-config-audit-envelope.yaml`), Account Owner approve `2026-08-11T00:30:47Z`.
 - Task đã DONE: **0.5.2 — Control API skeleton** (`tasks/completed/0.5.2-control-api-skeleton.yaml`), Account Owner xác định DONE `2026-08-11T02:14:42Z`.
 - Task đã DONE: **0.6 — Capability draft** (`tasks/completed/0.6-capability-draft.yaml`), Account Owner xác định DONE `2026-08-11T19:16:45Z`; local simulator/no venue, docs-only.
-- Task hiện hành: **1.1 — deterministic primitives** (`tasks/active/1.1-deterministic-primitives.yaml`, `REVIEW`), branch `task/1.1-*`; implementation/evidence đã hoàn tất, chờ Account Owner nghiệm thu; local simulator/no venue, chưa OMS/risk/ledger/venue.
+- Task đã DONE: **1.1 — deterministic primitives** (`tasks/completed/1.1-deterministic-primitives.yaml`), Account Owner xác nhận `2026-08-11T19:41:38Z`.
+- Task kế tiếp: **1.2 — OMS state-transition/durable submit** chưa mở; đang BLOCKED vì DOM-OMS-001, DATA-TXN-001 và DOM-ACC-001 còn DRAFT/chờ phê duyệt. Không code OMS/risk/ledger bằng best guess.
 - OD-001 vẫn `OPEN` cho external venue/testnet; không được coi local simulator là venue approval hoặc mở Phase 3.
 - Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận.
 - Với mọi card READY: làm đúng và chỉ đúng `allowed_globs` của card đó; `forbidden_globs` thắng khi xung đột.

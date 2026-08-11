@@ -4,12 +4,13 @@
 |---|---|
 | Task | `1.1` |
 | Phase | `1` — Core safety |
-| Card status | `REVIEW` |
+| Card status | `DONE` |
 | Branch | `task/1.1-deterministic-primitives` |
 | Owner / reviewer | Technical Operator / Account Owner |
 | Scope decision | Local simulator/no venue; Account Owner `2026-08-11T19:16:45Z` |
 | Execution started | `2026-08-11T19:20:37Z` |
 | Evidence timestamp | `2026-08-11T19:26:49Z` |
+| Owner decision | Account Owner xác nhận `DONE` lúc `2026-08-11T19:41:38Z` |
 | Gate impact | Phase 1; không tự approve gate |
 
 ## Đã thực hiện
@@ -54,6 +55,5 @@
 
 ## Operator handoff
 
-Operator đã chuyển card `IN_PROGRESS -> REVIEW` sau khi toàn bộ acceptance commands
-PASS. Account Owner nghiệm thu task code/evidence trước khi chuyển `DONE`; không tự
-mở OMS/risk/ledger/venue.
+Account Owner đã nghiệm thu và xác nhận card `DONE` lúc `2026-08-11T19:41:38Z` sau
+khi toàn bộ acceptance commands PASS. Task không mở OMS/risk/ledger/venue.
