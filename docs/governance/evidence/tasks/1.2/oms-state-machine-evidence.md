@@ -4,12 +4,13 @@
 |---|---|
 | Task | `1.2` |
 | Phase | `1` — Core safety |
-| Card status | `REVIEW` |
+| Card status | `DONE` |
 | Branch | `task/1.2-oms-state-machine` |
 | Owner / reviewer | Technical Operator / Account Owner |
 | Normative baseline | DOM-OMS-001 v0.3.1, DATA-TXN-001 v0.2.1, DOM-ACC-001 v0.2.1; Account Owner `2026-08-11T19:52:15Z` |
 | Execution started | `2026-08-11T19:55:00Z` |
 | Evidence timestamp | `2026-08-11T19:57:56Z` |
+| Owner decision | Account Owner xác nhận `DONE` lúc `2026-08-11T20:06:59Z` |
 | Gate impact | Phase 1; không tự approve gate hoặc chuyển DONE |
 
 ## Đã thực hiện
@@ -46,6 +47,6 @@
 
 ## Operator handoff
 
-Implementation và evidence đã đủ acceptance commands. Operator đã chuyển card
-`IN_PROGRESS -> REVIEW`; Account Owner nghiệm thu code/evidence trước khi chuyển
-`DONE`. Task tiếp theo mới được mở cho durable submit/fake venue sau review riêng.
+Implementation và evidence đã đủ acceptance commands. Account Owner đã nghiệm thu
+code/evidence và xác nhận card `DONE` lúc `2026-08-11T20:06:59Z`. Task tiếp theo
+mới được mở cho durable submit/fake venue sau task card riêng.
