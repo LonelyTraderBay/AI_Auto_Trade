@@ -2,7 +2,10 @@
 name = "ai-auto-trade"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+  "fastapi==0.139.2",
+  "uvicorn==0.51.0",
+]
 
 [project.scripts]
 ai-auto-trade = "ai_auto_trade.apps.cli.entrypoint:main"
@@ -19,6 +22,7 @@ dev = [
   "hypothesis==6.165.2",
   "import-linter==2.13",
   "jsonschema==4.26.0",
+  "httpx==0.28.1",
   "sqlalchemy==2.0.41",
   "alembic==1.16.2",
   "asyncpg==0.30.0",
