@@ -3,12 +3,12 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | DATA-TXN-001 (registry DOCS_INDEX; title giữ alias ngắn) |
-| Phiên bản | 0.2.0 |
-| Trạng thái | DRAFT — chờ Account Owner phê duyệt |
+| Phiên bản | 0.2.1 |
+| Trạng thái | APPROVED — Account Owner phê duyệt `2026-08-11T19:52:15Z` cho local simulator/Phase 1 |
 | Owner | Technical Operator |
-| Approver | Account Owner (pending) |
+| Approver | Account Owner |
 | Ngày soạn | 2026-07-31 |
-| Ngày hiệu lực | Chưa hiệu lực |
+| Ngày hiệu lực | 2026-08-11 (local simulator/Phase 1 baseline) |
 | Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-LED-001, FR-REC-001, FR-RSK-001, NFR-SAFE-001, NFR-AUD-001; ADR-0004, ADR-0005, ADR-0007, ADR-0011, ADR-0012 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §6.3, §7.2–§7.8, §8.4–§8.9 |
@@ -27,12 +27,12 @@ Only the following application workflows may atomically coordinate owner reposit
 | Unit of Work | Atomic owner tables | Isolation / purpose |
 |---|---|---|
 | `TradingSubmissionUnitOfWork` | risk decisions/reservations, execution order/submission attempt, platform outbox | `SERIALIZABLE`; approve, reserve, queue exactly once before external submit |
-| `FillLedgerUnitOfWork` | execution fill/order event, ledger journal/postings/projections, platform outbox | đề xuất DRAFT: `READ COMMITTED` + constraint dedupe + CAS (xem ghi chú isolation dưới bảng); dedupe and book verified fill once |
-| `ReconciliationResolutionUnitOfWork` | execution case/evidence, risk reservation, ledger adjustment through owner command, platform outbox | đề xuất DRAFT: `READ COMMITTED` + constraint dedupe + CAS (xem ghi chú isolation dưới bảng); evidence-led resolution; no history overwrite |
+| `FillLedgerUnitOfWork` | execution fill/order event, ledger journal/postings/projections, platform outbox | Approved baseline: `READ COMMITTED` + constraint dedupe + CAS (xem ghi chú isolation dưới bảng); dedupe and book verified fill once |
+| `ReconciliationResolutionUnitOfWork` | execution case/evidence, risk reservation, ledger adjustment through owner command, platform outbox | Approved baseline: `READ COMMITTED` + constraint dedupe + CAS (xem ghi chú isolation dưới bảng); evidence-led resolution; no history overwrite |
 | `OutboxPublishUnitOfWork` | platform delivery-state/attempt/DLQ only | short transaction/lease claim; not business transaction |
 | `InboxConsumeUnitOfWork` | consumer-owned local state/outbox plus platform inbox marker | atomic idempotent local effect + receipt |
 
-Ghi chú isolation cho `FillLedgerUnitOfWork` và `ReconciliationResolutionUnitOfWork` (DRAFT — cần phê duyệt): `READ COMMITTED` + unique-constraint dedupe (fills theo `(order_id, sequence)`/`venue_trade_id`; journal theo `source_event_id`) + compare-and-swap trên aggregate version — đủ vì mọi insert là append-only immutable và dedupe được enforce bằng constraint, không cần `SERIALIZABLE`; `TradingSubmissionUnitOfWork` giữ `SERIALIZABLE` như đã chốt. DRAFT — giá trị này trở thành authority khi ADR-0012 được APPROVED.
+Ghi chú isolation cho `FillLedgerUnitOfWork` và `ReconciliationResolutionUnitOfWork` (approved baseline): `READ COMMITTED` + unique-constraint dedupe (fills theo `(order_id, sequence)`/`venue_trade_id`; journal theo `source_event_id`) + compare-and-swap trên aggregate version — đủ vì mọi insert là append-only immutable và dedupe được enforce bằng constraint, không cần `SERIALIZABLE`; `TradingSubmissionUnitOfWork` giữ `SERIALIZABLE` như đã chốt. Baseline này được áp dụng cho design/test của Phase 1; ledger runtime vẫn bị chặn bởi accounting annex chưa hoàn tất.
 
 `OutboxPublishUnitOfWork` và `InboxConsumeUnitOfWork` là elaboration của master §7.2 bước 2–4 (platform-internal delivery mechanics), không phải whitelist entry cross-context mới ngoài master §7.7.
 
@@ -134,5 +134,6 @@ Before Phase 1, tests/evidence must prove: competing reservation contention, ver
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.2.1 | 2026-08-11 | Account Owner phê duyệt transaction/concurrency baseline cho local simulator/Phase 1; xác nhận lock order, CAS, lease/fencing và isolation baseline; ledger activation vẫn chờ accounting annex. | Technical Operator | Account Owner `2026-08-11T19:52:15Z` |
 | 0.2.0 | 2026-07-31 | Thay deferral vòng tròn bằng đề xuất isolation cụ thể (DRAFT — cần phê duyệt) cho `FillLedgerUnitOfWork`/`ReconciliationResolutionUnitOfWork`: `READ COMMITTED` + unique-constraint dedupe + CAS trên aggregate version, `TradingSubmissionUnitOfWork` giữ `SERIALIZABLE`; làm rõ `OutboxPublishUnitOfWork`/`InboxConsumeUnitOfWork` là elaboration của master §7.2 bước 2–4, không phải whitelist entry cross-context mới. | Technical Operator | Pending |
 

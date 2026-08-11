@@ -3,12 +3,12 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | DOM-OMS-001 (registry DOCS_INDEX; title giữ alias ngắn) |
-| Phiên bản | 0.3.0 |
-| Trạng thái | DRAFT — chờ Account Owner phê duyệt |
+| Phiên bản | 0.3.1 |
+| Trạng thái | APPROVED — Account Owner phê duyệt `2026-08-11T19:52:15Z` cho local simulator/Phase 1 |
 | Owner | Technical Operator |
-| Approver | Account Owner (pending) |
+| Approver | Account Owner |
 | Ngày soạn | 2026-07-31 |
-| Ngày hiệu lực | Chưa hiệu lực |
+| Ngày hiệu lực | 2026-08-11 (local simulator/Phase 1 baseline) |
 | Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-REC-001, NFR-AUD-001, NFR-SAFE-001; ADR-0004, ADR-0005, ADR-0007, ADR-0012 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.4–§5.8, §7.2–§7.7, §8.6–§8.9 |
@@ -16,7 +16,7 @@
 
 ## 1. Authority và phạm vi
 
-Đây là state contract canonical cho một `execution.Order`. Nó chỉ áp dụng cho MVP spot/order lifecycle; venue adapter phải map evidence venue vào contract này, không được dùng state vendor thay thế. Direct venue replace không thuộc MVP. DRAFT này không cho phép implementation/gate cho đến khi ADR-0005 và ADR-0012 được phê duyệt.
+Đây là state contract canonical cho một `execution.Order`. Nó chỉ áp dụng cho MVP spot/order lifecycle; venue adapter phải map evidence venue vào contract này, không được dùng state vendor thay thế. Direct venue replace không thuộc MVP. Bản contract được Account Owner phê duyệt cho implementation deterministic/local simulator; external venue vẫn bị chi phối bởi OD-001 và ADR-0009.
 
 `EXTERNAL` là classification reconciliation của evidence/order chỉ tồn tại ở venue, không phải một state trong bảng dưới.
 
@@ -65,9 +65,9 @@
 | `LOST` | late proven terminal result | proven terminal state | approved terminal correction; retain LOST incident history |
 | `LOST` | late evidence says open/partial | `LOST` | open EXTERNAL case; block exposure; never reopen aggregate |
 
-Any event not shown is invalid and must be rejected/audited rather than guessed. Ngoại lệ duy nhất: các transition PROPOSED tại §5a — chúng cũng **chưa hợp lệ** cho tới khi master §5.5/ADR-0005 ratify (RAID I-010); trước đó mọi event thuộc nhóm này phải bị reject/audit như event không hợp lệ.
+Any event not shown is invalid and must be rejected/audited rather than guessed. Các transition PROPOSED tại §5a vẫn **chưa hợp lệ** cho tới khi master §5.5/ADR-0005 ratify (RAID I-010); implementation phải reject/audit chúng như event không hợp lệ.
 
-### 3a. Transition PROPOSED do ma trận expiry §5 hàm ý (chưa hợp lệ — chờ ratify, RAID I-010)
+### 3a. Transition PROPOSED do ma trận expiry §5 hàm ý (EXPLICITLY INVALID — chờ ratify, RAID I-010)
 
 Audit 2026-08-02 phát hiện §5 tạo terminal outcome từ các state chưa có transition tương ứng trong §3/master §5.5. Danh sách đề xuất được liệt kê tường minh để Account Owner ratify qua amendment master §5.5 + ADR-0005, thay vì để implementation tự chế:
 
@@ -86,7 +86,7 @@ Audit 2026-08-02 phát hiện §5 tạo terminal outcome từ các state chưa c
 5. Recovery queries client order ID, history, open orders and recent fills under the venue capability contract. It records evidence, never fabricates an acknowledgement.
 6. Cancellation is a distinct operation. Replace is modelled as terminal cancellation followed by a new OrderIntent/new ClientOrderId only after evidence/policy permit it.
 
-## 5. Time-in-force và ma trận expiry (DRAFT — cần owner approval cùng ADR-0005/0009; transition hàm ý xem §3a, RAID I-010)
+## 5. Time-in-force và ma trận expiry (APPROVED baseline cho local simulator; transition §3a vẫn invalid)
 
 TIF values được hỗ trợ theo capability profile: `GTC` (default), `IOC`, `FOK`, `GTD`. Mỗi venue capability profile phải khai báo rõ TIF nào được hỗ trợ; TIF không được hỗ trợ bị reject trước submission theo master §5.4 (no-silent-fallback), không được thay thế ngầm.
 
@@ -149,6 +149,7 @@ Changing a state, transition, terminal meaning, submission retry or cancel/repla
 
 | Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 2026-08-11 | 0.3.1 | Technical Operator | Account Owner `2026-08-11T19:52:15Z` | Phê duyệt canonical OMS state contract cho local simulator/Phase 1; giữ §3a explicitly invalid cho tới khi master/ADR ratify và giữ external venue deferred bởi OD-001/ADR-0009. |
 | 2026-08-02 | 0.3.0 | Technical Operator | Pending | Audit toàn diện: thêm §3a liệt kê tường minh 3 nhóm transition PROPOSED do ma trận expiry §5 hàm ý (INTENT_EXPIRED/DECISION_EXPIRED trước submission, IOC remainder venue tự cancel) — trước đây mâu thuẫn với tuyên bố "any event not shown is invalid" của §3; gắn RAID I-010 chờ ratify master §5.5/ADR-0005 |
 | 2026-07-31 | 0.2.0 | Technical Operator | Pending | Thêm §5 Time-in-force và ma trận expiry (DRAFT, cần ADR-0005/0009); bổ sung side effect "block conflicting intent" cho `UNKNOWN -> RECONCILING` và liệt kê rõ sáu target state của `RECONCILING` tại §3; đánh số lại §5–§9 cũ thành §6–§10 |
 | 2026-07-31 | 0.1.0 | Technical Operator | Pending | Khởi tạo state machine 16 state (xem git history — row này được bổ sung lại cho đủ lineage) |

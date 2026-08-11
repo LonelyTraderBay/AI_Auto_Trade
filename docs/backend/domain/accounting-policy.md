@@ -3,12 +3,12 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | DOM-ACC-001 (registry DOCS_INDEX; title giữ alias ngắn) |
-| Phiên bản | 0.2.0 |
-| Trạng thái | DRAFT — chờ Account Owner phê duyệt |
+| Phiên bản | 0.2.1 |
+| Trạng thái | APPROVED baseline — Account Owner phê duyệt `2026-08-11T19:52:15Z`; ledger activation vẫn gated |
 | Owner | Technical Operator |
-| Approver | Account Owner (pending) |
+| Approver | Account Owner |
 | Ngày soạn | 2026-07-31 |
-| Ngày hiệu lực | Chưa hiệu lực |
+| Ngày hiệu lực | 2026-08-11 (framework baseline; ledger annex gated) |
 | Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-LED-001, FR-EXEC-001, FR-REC-001, NFR-AUD-001, NFR-SAFE-001; ADR-0003, ADR-0011, ADR-0012 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §3.3, §5.1, §7.8, §8.11 |
@@ -18,7 +18,7 @@
 
 Đây là framework quyết định accounting cho MVP, không phải báo cáo thuế hay tư vấn kế toán. Ledger là internal accounting truth append-only; venue là external truth của state tức thời. Hai bên phải reconciliation nhưng không ghi đè lẫn nhau. Mâu thuẫn deadline giữa §7.8 (trước Phase 1) và §8.11 (Phase 3) của master đã được resolve thành "trước Phase 1" tại master v2.2.0.
 
-Tài liệu đang DRAFT. Chưa có asset/currency, cost-basis, valuation source, rounding, fee/rebate, transfer/adjustment hoặc chart-of-accounts cụ thể được Account Owner phê duyệt; vì vậy không có journal posting runtime nào được xem là approved chỉ dựa trên tài liệu này.
+Account Owner phê duyệt framework baseline cho Phase 1/local simulator. Các giá trị asset/currency, cost-basis, valuation source, rounding, fee/rebate, transfer/adjustment và chart-of-accounts cụ thể vẫn chưa được chọn; vì vậy không có journal posting runtime nào được xem là approved chỉ dựa trên tài liệu này.
 
 ## 2. Mô hình canonical
 
@@ -43,7 +43,7 @@ verified source event
 
 ## 4. Logical chart of accounts
 
-Chart cụ thể vẫn chờ owner, nhưng mỗi account definition phải có: internal account ID, code, name, classification (`ASSET`, `LIABILITY`, `EQUITY`, `INCOME`, `EXPENSE`, hoặc classification được ADR-0011 thay thế), commodity/asset applicability, normal direction hoặc commodity convention, active/effective range, policy version và parent account khi dùng hierarchy.
+Chart cụ thể chưa được chọn trong baseline này, nhưng mỗi account definition phải có: internal account ID, code, name, classification (`ASSET`, `LIABILITY`, `EQUITY`, `INCOME`, `EXPENSE`, hoặc classification được ADR-0011 thay thế), commodity/asset applicability, normal direction hoặc commodity convention, active/effective range, policy version và parent account khi dùng hierarchy.
 
 Không hard-code account code/name theo venue/asset trong domain. Mapping giữa venue balance terminology và canonical account cần versioned reference/policy record.
 
@@ -103,7 +103,7 @@ ADR-0011 must specify the approved database enforcement mechanism for entry bala
 
 Until every applicable item is approved, Phase 1 ledger implementation is BLOCKED.
 
-## 11. Verification (DRAFT — mapping invariant sang test dự kiến)
+## 11. Verification mapping (approved test obligations; runtime ledger activation vẫn gated)
 
 | Invariant (§3) | Loại test dự kiến |
 |---|---|
@@ -116,5 +116,6 @@ Until every applicable item is approved, Phase 1 ledger implementation is BLOCKE
 
 | Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
 |---|---|---|---|---|
+| 2026-08-11 | 0.2.1 | Technical Operator | Account Owner `2026-08-11T19:52:15Z` | Phê duyệt accounting framework baseline và verification obligations; giữ các annex chưa chọn để chặn ledger runtime cho tới khi có quyết định cụ thể. |
 | 2026-07-31 | 0.2.0 | Technical Operator | Pending | Ghi nhận resolution deadline §7.8/§8.11 thành "trước Phase 1" theo master v2.2.0 tại §1; thêm open decision position/inventory model (net vs lot-based FIFO/LIFO/HIFO) tại §7; thêm §11 Verification mapping invariant sang test dự kiến (DRAFT) |
 

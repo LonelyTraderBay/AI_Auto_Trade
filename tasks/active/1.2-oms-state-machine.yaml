@@ -1,0 +1,84 @@
+task_id: "1.2"
+phase: "1"
+status: "READY"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/1.2-*"
+references:
+  requirements: ["FR-EXEC-001", "FR-REC-001", "NFR-AUD-001", "NFR-SAFE-001"]
+  adrs: ["ADR-0002", "ADR-0004", "ADR-0005", "ADR-0007", "ADR-0012", "ADR-0014"]
+  contracts:
+    - "contracts/events/execution/order-event.v1.schema.json"
+    - "contracts/commands/execution/submit-order.v1.schema.json"
+    - "contracts/config/task-card.v1.schema.json"
+goal: "Implement pure deterministic OMS order-state transition validation from the approved DOM-OMS-001 baseline; no durable submit, venue I/O, risk engine or ledger runtime."
+non_goals:
+  - "Khong implement durable database state, outbox/inbox persistence, migration, transaction UoW hoac execution-leader lease."
+  - "Khong ket noi venue, exchange SDK, network, credential, fake venue adapter hoac external I/O."
+  - "Khong implement risk evaluation/reservation/kill switch, ledger posting, reconciliation workflow hoac fill booking."
+  - "Khong cho phep bat ky transition PROPOSED tai DOM-OMS-001 §3a; cac transition nay phai bi reject/audit cho toi khi master/ADR ratify."
+  - "Khong thay doi public event/command schema, migration, dependency, config hoac deployment manifest."
+preconditions:
+  - "Task 1.1 DONE va card da nam trong tasks/completed/."
+  - "Phase 0.0 gate APPROVED / REVALIDATED tai 2026-08-10T20:07:02Z."
+  - "Account Owner phê duyệt DOM-OMS-001, DATA-TXN-001 va DOM-ACC-001 baseline cho local simulator/Phase 1 tai 2026-08-11T19:52:15Z."
+  - "ADR-0002, ADR-0004, ADR-0005, ADR-0007, ADR-0012 va ADR-0014 dang APPROVED."
+  - "Working tree sach va branch khop task/1.2-* truoc khi code."
+blockers: []
+allowed_globs:
+  - "AI_AUTO_TRADE_MASTER_SPEC.md"
+  - "AGENTS.md"
+  - "README.md"
+  - "docs/governance/DOCS_INDEX.md"
+  - "src/ai_auto_trade/contexts/execution/domain/order_lifecycle.py"
+  - "tests/unit/contexts/execution/test_order_lifecycle.py"
+  - "docs/governance/evidence/tasks/1.2/**"
+  - "tasks/active/1.2-oms-state-machine.yaml"
+forbidden_globs:
+  - "src/ai_auto_trade/contexts/risk/**"
+  - "src/ai_auto_trade/contexts/portfolio_ledger/**"
+  - "src/ai_auto_trade/adapters/**"
+  - "src/ai_auto_trade/apps/**"
+  - "migrations/**"
+  - "configs/**"
+  - "infra/**"
+  - ".github/**"
+  - ".env"
+  - "contracts/**"
+  - "pyproject.toml"
+  - "uv.lock"
+  - "docs/backend/**"
+  - "docs/shared/**"
+  - "tasks/completed/**"
+impact:
+  database: false
+  api: false
+  event: false
+  config: false
+  dependency: false
+  security: false
+acceptance_criteria:
+  - "order_lifecycle.py co typed canonical state/event va transition map khop DOM-OMS-001 §2–§3; moi event khong duoc liet ke deu bi reject."
+  - "Tat ca transition terminal -> non-terminal, state/event mismatch, target sai, duplicate lifecycle event va out-of-order event deu bi reject deterministic; khong silent fallback."
+  - "Moi transition PROPOSED tai DOM-OMS-001 §3a deu bi reject; khong tu suy dien expiry/TIF transition moi."
+  - "Pure domain code khong doc wall clock/global random, khong network/database/framework/provider import va khong co side effect."
+  - "Unit tests bao phu allowed/forbidden transitions, state/event mismatch, terminal guard, proposed transition rejection va determinism."
+  - "Tat ca quality commands pass: uv sync --locked, ruff format --check, ruff check, pyright, pytest, validate_contracts.py, git diff --check."
+  - "Khong co secret/credential/API key va khong sua public contract/dependency/migration."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run python scripts/validate_contracts.py"
+  - "git diff --check"
+evidence_path: "docs/governance/evidence/tasks/1.2/"
+gate_impact: "Phase 1"
+rollback_or_forward_fix: "Revert task commit neu transition invariant/test fail; khong sua schema/migration. Forward-fix chi trong allowlist va cung task truoc khi REVIEW."
+known_risks:
+  - "Schema order-event v1 co the bao event type nhung transition contract moi la authority; code phai reject event/state mismatch."
+  - "§3a expiry/TIF transitions van invalid; khong de test fixture vo tinh cap quyen cho transition nay."
+  - "Task nay khong tao persistence boundary; durable submit va fake venue phai co task card rieng sau state-machine review."
+waiver_id: null
