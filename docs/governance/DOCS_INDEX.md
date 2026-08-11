@@ -3,15 +3,15 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-INDEX-001 |
-| Phiên bản | 0.11.0 |
+| Phiên bản | 0.12.0 |
 | Trạng thái | IN_REVIEW (0.9.0 APPROVED 2026-08-06; 0.10.0 revalidated by Account Owner 2026-08-10T20:07:02Z; remaining artifact rows retain their own status) |
 | Owner | Technical Operator |
 | Approver | Account Owner |
 | Ngày tạo | 2026-07-31 |
 | Ngày hiệu lực | 2026-08-06 |
 | Rà soát gần nhất | 2026-08-11 |
-| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.2.5 |
-| Change summary | 0.11.0 (2026-08-11): Account Owner approve Task 0.5.1 lúc 2026-08-11T00:30:47Z; chuyển card sang completed, mở Task 0.5.2 READY và đồng bộ control references. |
+| Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.2.7 |
+| Change summary | 0.12.0 (2026-08-11): Account Owner xác định DONE Task 0.5.2 lúc 2026-08-11T02:14:42Z; chuyển card sang completed, cập nhật evidence và control references; Task 0.6 BLOCKED vì OD-001 OPEN và chưa có card READY. |
 
 ## Mục đích và trạng thái
 
@@ -130,10 +130,10 @@ Kể từ v0.3.0, cây thư mục `docs/` được tổ chức theo lớp **Back
 | ADR set (content, 0001–0016) | [docs/backend/adr/](../backend/adr/) | ADR 0001–0005, 0007, 0011, 0012, 0014 APPROVED (2026-08-06); ADR 0006, 0008–0010, 0013, 0015–0016 DRAFT (deadline later phases) |
 | Templates — TMP-ADR-001 · TMP-TASK-001 · TMP-GATE-001 | [adr](templates/adr.md) · [task-card](templates/task-card.md) · [gate-record](templates/gate-record.md) | IN_REVIEW |
 | Template — GOV-TPL-INC-001 | [incident-record](templates/incident-record.md) | DRAFT |
-| Task controls | [tasks/active/](../../tasks/active/) · [tasks/completed/](../../tasks/completed/) | 0.0.0–0.0.7 DONE; 0.5.1 DONE; 0.5.2 READY |
+| Task controls | [tasks/active/](../../tasks/active/) · [tasks/completed/](../../tasks/completed/) | 0.0.0–0.0.7 DONE; 0.5.1/0.5.2 DONE; 0.6 BLOCKED (OD-001 OPEN, chưa có card READY) |
 | Repo-root controls | [README](../../README.md) · [AGENTS.md](../../AGENTS.md) · [SECURITY.md](../../SECURITY.md) · [CONTRIBUTING.md](../../CONTRIBUTING.md) · [CODEOWNERS](../../CODEOWNERS) | IN_REVIEW — COMMIT_NOTES.md đã xóa 2026-08-10 theo quyết định Account Owner (nội dung trong git history) |
 | Gate evidence | [gate record](evidence/gates/phase-0.0/gate-record.md) · [review checklist](evidence/gates/phase-0.0/review-checklist.md) · [validation 2026-08-02](evidence/gates/phase-0.0/validation-2026-08-02.md) · [validation 2026-08-02 lần 2](evidence/gates/phase-0.0/validation-2026-08-02-02.md) | APPROVED / REVALIDATED 2026-08-10T20:07:02Z — Account Owner ký lại sau Task 0.0.7 |
-| Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — gồm evidence 0.1–0.5.1; Task 0.5.1 đã có quality commands, hashes và Owner approval; Task 0.5.2 sẽ ghi evidence riêng |
+| Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — gồm evidence 0.1–0.5.2; Task 0.5.2 có quality commands, hashes và Owner approval `2026-08-11T02:14:42Z` |
 
 ## Approval rule
 
@@ -143,6 +143,7 @@ Update this register and `docs/governance/document-control.md` in the same revie
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.12.0 | 2026-08-11 | Account Owner xác định DONE Task 0.5.2; chuyển card completed; cập nhật evidence, control panel và trạng thái Task 0.6 BLOCKED do OD-001 OPEN. | Technical Operator | Account Owner 2026-08-11T02:14:42Z |
 | 0.11.0 | 2026-08-11 | Account Owner approve Task 0.5.1; chuyển card completed; mở Task 0.5.2 READY. | Technical Operator | Account Owner 2026-08-11T00:30:47Z |
 | 0.10.0 | 2026-08-11 | Tạo Task 0.0.7 Codex Enterprise documentation; đồng bộ master/AGENTS/README/task controls; đánh dấu gate Phase 0.0 cần revalidation sau substantive change; thêm evidence pointer cho task mới. | Technical Operator | Account Owner revalidated 2026-08-10T20:07:02Z |
 | 0.9.1 | 2026-08-10 | Đồng bộ state sau Task 0.1–0.4 DONE: row Task controls (tasks/active/ trống, chờ card Task 0.5), Gate evidence (PASSED 2026-08-06), Task evidence (bổ sung 0.1–0.4); gỡ COMMIT_NOTES.md khỏi repo-root controls (file đã xóa theo quyết định Account Owner, nội dung trong git history); ghi nhận xóa `.kiro/` hooks (tool-specific, không thuộc artifact pack); master authority v2.2.3. | Technical Operator | Pending |

@@ -4,7 +4,7 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7 và 0.5.1 DONE; task hiện hành: 0.5.2 local-only Control API skeleton. |
+| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7, 0.5.1 và 0.5.2 DONE; Task 0.6 BLOCKED vì OD-001 OPEN và chưa có card READY. |
 | Hiến pháp kỹ thuật | [AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md) |
 | Gate gần nhất | Phase 0.0 — PASSED 2026-08-06 ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
 | Quy tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
@@ -44,14 +44,15 @@ contracts/                     # OpenAPI 3.1, JSON Schema (command/event/config)
 tasks/                         # task card YAML — authority phạm vi thực thi (validate bằng task-card schema)
 ```
 
-`src/`, `tests/`, `migrations/`, `.github/` đã được tạo bởi Task 0.1–0.4. `configs/` và `infra/` **chưa tồn tại theo chủ đích** — chúng chỉ được tạo bởi task card tương ứng ở phase sau, khi ADR bắt buộc được APPROVED.
+`src/`, `tests/`, `migrations/`, `.github/` đã được tạo bởi Task 0.1–0.4. `configs/services/control-api.yaml` được tạo trong phạm vi Task 0.5.2; `infra/` chưa tồn tại theo chủ đích và chỉ được tạo bởi task card tương ứng ở phase sau, khi ADR bắt buộc được APPROVED.
 
 ## Trạng thái Phase 0
 
 - Task 0.1–0.4: **DONE** (Account Owner approve 2026-08-06) — card trong [tasks/completed/](tasks/completed/), evidence trong [docs/governance/evidence/tasks/](docs/governance/evidence/tasks/).
 - Task 0.0.7 — Codex Enterprise documentation: **DONE**, docs-only; evidence tại `docs/governance/evidence/tasks/0.0.7/`.
 - Task 0.5.1 — Config/audit/error envelope: **DONE**, card trong `tasks/completed/`, Account Owner approve `2026-08-11T00:30:47Z`.
-- Task 0.5.2 — Control API skeleton: **READY**, branch `task/0.5.2-*`; local-only, không auth/venue/DB thật.
+- Task 0.5.2 — Control API skeleton: **DONE** (Account Owner xác định `2026-08-11T02:14:42Z`); local-only, không auth/venue/DB thật.
+- Task 0.6 — Capability draft: **BLOCKED** vì OD-001 OPEN và chưa có card `READY`.
 - Không có card `READY` phù hợp thì AI không sửa implementation file (master §16).
 
 ## Đóng góp và bảo mật

@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.2.5 |
+| Phiên bản | 2.2.7 |
 | Trạng thái | Phase 0 — Foundation (IN_PROGRESS) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
@@ -21,6 +21,7 @@
 | Thay đổi chính v2.2.4 | Đồng bộ Enterprise-Grade cho OpenAI Codex theo task 0.0.7: đăng ký task tài liệu Codex, đồng bộ trạng thái Task 0.5.1/0.5.2, làm rõ AGENTS.md là instruction source chính, bổ sung revalidation evidence sau substantive change và phân biệt local validation với CI enforcement. Không mở runtime AI/API/venue và không thêm capability giao dịch |
 | Thay đổi chính v2.2.5 | Account Owner revalidate Phase 0.0 tại 2026-08-10T20:07:02Z; Task 0.0.7 DONE; mở Task 0.5.1 READY với allowlist sample manifest rõ ràng; Task 0.5.2 vẫn BLOCKED phụ thuộc 0.5.1. Safe auto mode chỉ tự động preflight/implementation trong card, không bỏ checkpoint human |
 | Thay đổi chính v2.2.6 | Account Owner approve Task 0.5.1 tại 2026-08-11T00:30:47Z; chuyển card completed và mở Task 0.5.2 READY trên branch `task/0.5.2-*`; vẫn giữ local-only/no-auth/no-venue/no-DB scope |
+| Thay đổi chính v2.2.7 | Account Owner xác định DONE Task 0.5.2 tại 2026-08-11T02:14:42Z; chuyển card vào `tasks/completed/`, đồng bộ evidence/control references; Task 0.6 vẫn BLOCKED vì OD-001 OPEN và chưa có card READY |
 
 ---
 
@@ -53,13 +54,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 0 — Foundation (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card READY |
-| Việc kế tiếp | Task 0.5.2 — local-only Control API skeleton (`tasks/active/0.5.2-control-api-skeleton.yaml`) ở trạng thái READY; bắt đầu trên branch task/0.5.2-* | Account Owner | §14 Phase 0 / evidence 0.5.2 |
+| Việc kế tiếp | Task 0.6 — Capability draft; **BLOCKED** vì OD-001 còn OPEN và chưa có task card READY | Account Owner | §14 Phase 0; không được sửa implementation file khi chưa có card |
 | Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1 DONE; Task 0.5.2 READY | Account Owner | §14, §16 và task cards |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2 DONE; Task 0.6 BLOCKED (OD-001 OPEN, chưa có card READY) | Account Owner | §14, §16 và task cards |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-11 | Account Owner | v2.2.6; Task 0.5.1 DONE; Task 0.5.2 READY; gate Phase 0.0 revalidated |
+| Lần rà soát | 2026-08-11 | Account Owner | v2.2.7; Task 0.5.2 DONE lúc 2026-08-11T02:14:42Z; Task 0.6 BLOCKED; gate Phase 0.0 revalidated |
 
 ### 0.1 Cách bắt đầu đúng
 
@@ -2132,8 +2133,8 @@ Không có evidence thì gate là FAIL. Không dùng câu “ổn định”, �
 | 0.2 Guardrails | skeleton | Ruff, strict type, pytest, Hypothesis, import rule, `contracts validate` command và CI xanh |
 | 0.3 Persistence contract | ADR 0003/0004/0012 + ERD/data dictionary approved | PostgreSQL compose, Alembic base, outbox/inbox migration, contract registry skeleton |
 | 0.4 Architecture contract | ADR 0001/0002/0014 | empty contexts, event schema sample, dependency test |
-| 0.5 Operations skeleton | Task 0.0.7 DONE; §6/§11 + OpenAPI/config schema được Account Owner xác nhận đủ ổn định | 0.5.1 config validation + audit/error envelope (DONE); 0.5.2 local-only Control API skeleton (READY) |
-| 0.6 Capability draft | OD-001 chưa resolve | capability matrix template; không gọi venue |
+| 0.5 Operations skeleton | Task 0.0.7 DONE; §6/§11 + OpenAPI/config schema được Account Owner xác nhận đủ ổn định | 0.5.1 config validation + audit/error envelope (DONE); 0.5.2 local-only Control API skeleton (DONE 2026-08-11T02:14:42Z) |
+| 0.6 Capability draft | OD-001 chưa resolve; chưa có task card READY | **BLOCKED** — chỉ chuẩn bị capability matrix sau khi Account Owner chốt OD-001 và mở card; không gọi venue |
 
 ADR required before Phase 0 starts đã được đóng ở Phase 0.0: 0001–0005, 0007, 0011, 0012, 0014. ADR 0006 chỉ required trước khi NautilusTrader được đưa vào runtime (không muộn hơn khi mở Phase 5, §15.1); ADR 0013 trước Phase 2; ADR 0015 và 0009 trước Phase 3; ADR 0010 trước Phase 4; ADR 0008 và 0016 trước Phase 6.
 

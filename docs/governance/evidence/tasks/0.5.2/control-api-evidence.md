@@ -5,10 +5,11 @@
 | Task | `0.5.2` |
 | Phase | `0` — Foundation |
 | Branch | `task/0.5.2-control-api` |
-| Card status | `REVIEW` |
+| Card status | `DONE` |
 | Operator | Technical Operator |
 | Reviewer | Account Owner |
 | Owner opening decision | `2026-08-11T00:30:47Z` |
+| Owner completion decision | `2026-08-11T02:14:42Z` — Account Owner xác định DONE |
 | Gate | Phase 0.0 `APPROVED / REVALIDATED` — `2026-08-10T20:07:02Z` |
 | Evidence timestamp | `2026-08-11` (Asia/Bangkok) |
 
@@ -74,7 +75,7 @@ và audit/error primitives được tái sử dụng từ commit `f56f2c7`.
 |---|---|
 | `pyproject.toml` | `8885445DA75308AEDBD3F243DB8EFB278A111D6EF6FD89BBEA5041DC5DB784FD` |
 | `uv.lock` | `D85506AB591775C6C7B7FA42DAFDD6035580A8AE3547C1EF4D036F5842844EE7` |
-| `tasks/active/0.5.2-control-api-skeleton.yaml` | `A2BDCF83E9D2079392F0274E89B38C826C79D6D7B67A20A7260B84C3E0A15157` |
+| `tasks/completed/0.5.2-control-api-skeleton.yaml` | `D5CB669FC2BAC3D10025FEA28264364CBCF10F2D8B74B651E4F785437BF5BB47` |
 | `configs/services/control-api.yaml` | `05264C79502525FAAD22FF6D52F667F1BD71A94BBA87E9745CAE36DABF68B034` |
 | `src/ai_auto_trade/apps/control_api/app.py` | `463D311C84922EDFA00C48C5FF4F6BE3461BAEACB7E2C6867AB759144A72B56B` |
 | `tests/unit/apps/test_control_api.py` | `5AF39B3CAD36E529F0A45941C2C564BC72D52D6825A8B332D533332E58D453C2` |
@@ -88,7 +89,9 @@ và audit/error primitives được tái sử dụng từ commit `f56f2c7`.
   HTTPX ASGI transport trực tiếp và không tạo production client.
 - Task 0.5.2 không mở endpoint order/venue/AI và không thay đổi safety gate.
 
-## Trạng thái đề xuất
+## Quyết định nghiệm thu
 
-Đề xuất chuyển card `IN_PROGRESS -> REVIEW`. Account Owner quyết định `DONE`,
-forward-fix hoặc mở ADR nếu muốn thay đổi dependency/auth/runtime scope.
+Account Owner xác định Task 0.5.2 **DONE** tại `2026-08-11T02:14:42Z`.
+Card được chuyển `REVIEW -> DONE` và đã được lưu tại `tasks/completed/`.
+Không có waiver; các giới hạn local-only/no-auth/no-venue/no-DB và forward fix
+được chấp nhận trong phạm vi Phase 0 skeleton.
