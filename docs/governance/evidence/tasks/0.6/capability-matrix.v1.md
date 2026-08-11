@@ -3,7 +3,9 @@
 | Trường | Giá trị |
 |---|---|
 | Task | `0.6` |
-| Task card status | `REVIEW` |
+| Task card status | `DONE` |
+| Task card path | `tasks/completed/0.6-capability-draft.yaml` |
+| Task card SHA-256 | `D9BA8196A26D204A7C2BA2F58E55A2893A0F8347727844C76C94C8FB94744738` |
 | Matrix ID | `internal-simulator.v1-draft` |
 | Profile scope | Local `PAPER_SIMULATOR` / `BACKTEST` only |
 | Execution target | `INTERNAL_SIMULATOR` |
@@ -44,6 +46,12 @@
 
 ## Operator handoff
 
-Operator đề xuất chuyển card `IN_PROGRESS -> REVIEW`. Account Owner cần nghiệm thu
-capability matrix này trước khi task được chuyển `DONE`; việc nghiệm thu không mở
-external venue, Phase 1 gate hoặc application/runtime code.
+Operator đã chuyển card `IN_PROGRESS -> REVIEW`; Account Owner đã nghiệm thu và
+chuyển task sang `DONE`. Việc nghiệm thu không mở external venue, Phase 1 gate
+hoặc application/runtime code.
+
+## Owner completion decision
+
+Account Owner xác định Task 0.6 **DONE** tại `2026-08-11T19:16:45Z`.
+Capability matrix local simulator/no venue được nghiệm thu trong phạm vi docs-only;
+OD-001 vẫn OPEN và không có external venue, testnet hoặc live execution nào được mở.

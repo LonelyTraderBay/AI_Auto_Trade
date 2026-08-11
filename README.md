@@ -4,7 +4,7 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7, 0.5.1 và 0.5.2 DONE; Task 0.6 REVIEW cho capability draft local simulator/no venue, chờ Owner nghiệm thu. OD-001 vẫn OPEN cho external venue. |
+| Trạng thái | **Phase 0 — Foundation (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2 và 0.6 DONE; Phase 1 code task chưa mở. OD-001 vẫn OPEN cho external venue. |
 | Hiến pháp kỹ thuật | [AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md) |
 | Gate gần nhất | Phase 0.0 — PASSED 2026-08-06 ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
 | Quy tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
@@ -52,7 +52,8 @@ tasks/                         # task card YAML — authority phạm vi thực t
 - Task 0.0.7 — Codex Enterprise documentation: **DONE**, docs-only; evidence tại `docs/governance/evidence/tasks/0.0.7/`.
 - Task 0.5.1 — Config/audit/error envelope: **DONE**, card trong `tasks/completed/`, Account Owner approve `2026-08-11T00:30:47Z`.
 - Task 0.5.2 — Control API skeleton: **DONE** (Account Owner xác định `2026-08-11T02:14:42Z`); local-only, không auth/venue/DB thật.
-- Task 0.6 — Capability draft: **REVIEW**, branch `task/0.6-*`; matrix local simulator/no venue đã tạo, không viết runtime/application code.
+- Task 0.6 — Capability draft: **DONE**, card trong `tasks/completed/`; matrix local simulator/no venue đã tạo.
+- Phase 1 — deterministic primitives: chưa có card `READY`, chưa được viết code.
 - OD-001 — external venue/testnet: **OPEN**; local simulator không thay thế quyết định venue.
 - Không có card `READY` phù hợp thì AI không sửa implementation file (master §16).
 
