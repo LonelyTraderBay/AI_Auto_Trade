@@ -3,6 +3,7 @@
 | Trường | Giá trị |
 |---|---|
 | Task | `0.6` |
+| Task card status | `IN_PROGRESS` |
 | Matrix ID | `internal-simulator.v1-draft` |
 | Profile scope | Local `PAPER_SIMULATOR` / `BACKTEST` only |
 | Execution target | `INTERNAL_SIMULATOR` |
