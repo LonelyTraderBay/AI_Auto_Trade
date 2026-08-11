@@ -3,7 +3,7 @@
 | Trường | Giá trị |
 |---|---|
 | Task | `0.6` |
-| Task card status | `IN_PROGRESS` |
+| Task card status | `REVIEW` |
 | Matrix ID | `internal-simulator.v1-draft` |
 | Profile scope | Local `PAPER_SIMULATOR` / `BACKTEST` only |
 | Execution target | `INTERNAL_SIMULATOR` |
@@ -38,6 +38,12 @@
 
 ## Validation evidence
 
-- `uv run python scripts/validate_contracts.py` — **PASS**, 14 JSON Schemas hợp lệ (`2026-08-11T02:26:26Z`).
+- `uv run python scripts/validate_contracts.py` — **PASS**, 14 JSON Schemas hợp lệ (`2026-08-11T02:32:26Z`).
 - `git diff --check` — **PASS**, không có whitespace error; cảnh báo LF/CRLF của Git chỉ là cảnh báo chuyển dòng.
 - Task-card instance được kiểm tra thủ công theo `contracts/config/task-card.v1.schema.json`; môi trường lock không có YAML parser nên chưa claim automated instance validation.
+
+## Operator handoff
+
+Operator đề xuất chuyển card `IN_PROGRESS -> REVIEW`. Account Owner cần nghiệm thu
+capability matrix này trước khi task được chuyển `DONE`; việc nghiệm thu không mở
+external venue, Phase 1 gate hoặc application/runtime code.

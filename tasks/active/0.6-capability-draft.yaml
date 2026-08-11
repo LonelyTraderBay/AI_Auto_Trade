@@ -1,6 +1,6 @@
 task_id: "0.6"
 phase: "0"
-status: "IN_PROGRESS"
+status: "REVIEW"
 owner: "Technical Operator"
 reviewer: "Account Owner"
 expiry_at: "2026-09-30T00:00:00Z"
