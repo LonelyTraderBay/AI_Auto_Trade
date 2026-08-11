@@ -4,13 +4,13 @@
 
 ## 0. Trạng thái hiện tại — đọc trước tiên
 
-- Phase hiện tại: **Phase 0 — Foundation (IN_PROGRESS)**. Gate Phase 0.0: **PASSED 2026-08-06**.
+- Phase hiện tại: **Phase 1 — Core safety (IN_PROGRESS)**. Gate Phase 0.0: **PASSED / REVALIDATED 2026-08-10T20:07:02Z**.
 - Task đã DONE (Account Owner approve 2026-08-06, card trong `tasks/completed/`): **0.1 Bootstrap, 0.2 Guardrails, 0.3 Persistence contract, 0.4 Architecture contract**.
 - Task đã hoàn tất: **0.0.7 — Codex Enterprise documentation** (`tasks/active/0.0.7-codex-enterprise-docs.yaml`, `DONE`, docs-only), Account Owner revalidate gate 2026-08-10T20:07:02Z.
 - Task đã DONE: **0.5.1 — Config/audit/error envelope** (`tasks/completed/0.5.1-config-audit-envelope.yaml`), Account Owner approve `2026-08-11T00:30:47Z`.
 - Task đã DONE: **0.5.2 — Control API skeleton** (`tasks/completed/0.5.2-control-api-skeleton.yaml`), Account Owner xác định DONE `2026-08-11T02:14:42Z`.
 - Task đã DONE: **0.6 — Capability draft** (`tasks/completed/0.6-capability-draft.yaml`), Account Owner xác định DONE `2026-08-11T19:16:45Z`; local simulator/no venue, docs-only.
-- Task Phase 1 code tiếp theo chưa có card `READY`; AI chỉ được đọc/phân tích cho tới khi card deterministic primitives được mở đúng allowlist.
+- Task hiện hành: **1.1 — deterministic primitives** (`tasks/active/1.1-deterministic-primitives.yaml`, `READY`), branch `task/1.1-*`; local simulator/no venue, chưa OMS/risk/ledger/venue.
 - OD-001 vẫn `OPEN` cho external venue/testnet; không được coi local simulator là venue approval hoặc mở Phase 3.
 - Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận.
 - Với mọi card READY: làm đúng và chỉ đúng `allowed_globs` của card đó; `forbidden_globs` thắng khi xung đột.

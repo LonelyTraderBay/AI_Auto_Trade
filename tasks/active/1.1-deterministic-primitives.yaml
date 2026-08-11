@@ -1,0 +1,88 @@
+task_id: "1.1"
+phase: "1"
+status: "READY"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/1.1-*"
+references:
+  requirements: ["FR-EXEC-001", "FR-REC-001", "NFR-DET-001", "NFR-SAFE-001"]
+  adrs: ["ADR-0002", "ADR-0005", "ADR-0007", "ADR-0012", "ADR-0014"]
+  contracts:
+    - "contracts/config/task-card.v1.schema.json"
+goal: "Implement shared-kernel deterministic primitives for Phase 1: UUIDv7 identity, finite Decimal validation, UTC Clock injection and seeded RandomSource; no OMS/risk/ledger behavior yet."
+non_goals:
+  - "Khong implement OMS, risk, ledger, reconciliation, order submission, fake venue adapter hoac execution lifecycle."
+  - "Khong ket noi database, network, exchange SDK, LLM provider, external I/O, credential hoac runtime endpoint."
+  - "Khong thay doi public OpenAPI/event/config contract, migration, dependency, lockfile hoac deployment manifest."
+  - "Khong dung float cho financial value, current wall clock/global random trong domain, hoac UUID version khac UUIDv7 cho internal ID."
+  - "Khong tu phe duyet Phase 1 gate; chi de xuat REVIEW sau khi evidence day du."
+preconditions:
+  - "Task 0.6 DONE va card da nam trong tasks/completed/."
+  - "Phase 0.0 gate APPROVED / REVALIDATED tai 2026-08-10T20:07:02Z."
+  - "ADR-0005, ADR-0007, ADR-0011 va ADR-0012 dang APPROVED theo Phase 1 entry condition."
+  - "Account Owner xac nhan tiep tuc local simulator/no venue va bat dau Phase 1 tai 2026-08-11T19:16:45Z."
+  - "Working tree sach va branch khop task/1.1-* truoc khi code."
+blockers: []
+allowed_globs:
+  - "AI_AUTO_TRADE_MASTER_SPEC.md"
+  - "AGENTS.md"
+  - "README.md"
+  - "docs/governance/DOCS_INDEX.md"
+  - "src/ai_auto_trade/shared_kernel/identity.py"
+  - "src/ai_auto_trade/shared_kernel/decimal_value.py"
+  - "src/ai_auto_trade/shared_kernel/clock.py"
+  - "src/ai_auto_trade/shared_kernel/random_source.py"
+  - "tests/unit/shared_kernel/test_identity.py"
+  - "tests/unit/shared_kernel/test_decimal_value.py"
+  - "tests/unit/shared_kernel/test_clock.py"
+  - "tests/unit/shared_kernel/test_random_source.py"
+  - "docs/governance/evidence/tasks/1.1/**"
+  - "tasks/active/1.1-deterministic-primitives.yaml"
+forbidden_globs:
+  - "src/ai_auto_trade/contexts/**"
+  - "src/ai_auto_trade/adapters/**"
+  - "src/ai_auto_trade/apps/**"
+  - "migrations/**"
+  - "configs/**"
+  - "infra/**"
+  - ".github/**"
+  - ".env"
+  - "contracts/**"
+  - "pyproject.toml"
+  - "uv.lock"
+  - "docs/backend/adr/**"
+  - "docs/backend/domain/**"
+  - "docs/backend/data/**"
+  - "tasks/completed/**"
+impact:
+  database: false
+  api: false
+  event: false
+  config: false
+  dependency: false
+  security: false
+acceptance_criteria:
+  - "identity.py tao va validate canonical lowercase UUIDv7; timestamp bits hop le, variant/version dung, input sai bi reject."
+  - "decimal_value.py chi nhan chuoi Decimal, reject float/NaN/Infinity/empty/scale vuot 18 va serialize canonical string khong doi so."
+  - "clock.py cung cap Clock Protocol va implementation UTC; FixedClock cho test khong doc current wall clock trong domain."
+  - "random_source.py cung cap seeded RandomSource deterministic, khong dung module-global random; cung seed cho cung sequence."
+  - "Unit tests bao phu valid/invalid UUIDv7, Decimal boundary, UTC/fixed clock va deterministic random; khong network/database."
+  - "Tat ca quality commands pass: uv sync --locked, ruff format --check, ruff check, pyright, pytest, validate_contracts.py, git diff --check."
+  - "Khong co secret/credential/API key va khong co duong goi venue/LLM trong diff."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run python scripts/validate_contracts.py"
+  - "git diff --check"
+evidence_path: "docs/governance/evidence/tasks/1.1/"
+gate_impact: "Phase 1"
+rollback_or_forward_fix: "Revert task commit neu invariant/test fail; khong sua migration/public contract. Forward-fix chi trong allowlist va cung task truoc khi REVIEW."
+known_risks:
+  - "UUIDv7 generation phai giu timestamp/variant/version bits dung va khong nham voi UUID4."
+  - "Decimal validation phai reject binary float va non-finite value truoc khi vao domain."
+  - "Seeded random chi phuc vu deterministic simulator/test; khong duoc dung lam security entropy hoac credential generator."
+waiver_id: null
