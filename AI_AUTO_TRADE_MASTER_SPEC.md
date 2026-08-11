@@ -4,8 +4,8 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.3.2 |
-| Trạng thái | Phase 0 — Foundation (IN_PROGRESS) |
+| Phiên bản | 2.3.4 |
+| Trạng thái | Phase 1 — Core safety (IN_PROGRESS) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
 | Ngôn ngữ chính | Python 3.12.x |
@@ -27,6 +27,8 @@
 | Thay đổi chính v2.3.0 | Hoàn tất phần operator của Task 0.6 lúc 2026-08-11T02:32:26Z; chuyển card IN_PROGRESS → REVIEW, giữ OD-001 OPEN và không mở application/runtime code |
 | Thay đổi chính v2.3.1 | Account Owner xác định DONE Task 0.6 tại 2026-08-11T19:16:45Z; chuyển card vào `tasks/completed/`; Phase 1 tiếp theo chỉ được mở bằng task card code riêng, vẫn không venue bên ngoài |
 | Thay đổi chính v2.3.2 | Account Owner cho phép bắt đầu Phase 1 local simulator/no venue; mở Task 1.1 deterministic primitives ở trạng thái READY trên branch `task/1.1-*`; chưa mở OMS/risk/ledger/venue code |
+| Thay đổi chính v2.3.3 | Bắt đầu thực thi Task 1.1 lúc 2026-08-11T19:20:37Z; card chuyển READY → IN_PROGRESS trước khi sửa shared kernel, giữ no-venue/no-LLM/no-DB scope |
+| Thay đổi chính v2.3.4 | Hoàn tất implementation/evidence Task 1.1 deterministic primitives; chuyển card IN_PROGRESS → REVIEW lúc 2026-08-11T19:24:43Z; chờ Account Owner nghiệm thu, không tự chuyển DONE |
 
 ---
 
@@ -58,14 +60,14 @@
 
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
-| Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card READY |
-| Việc kế tiếp | Task 1.1 — deterministic primitives (`tasks/active/1.1-deterministic-primitives.yaml`) **READY** trên branch `task/1.1-*` | Account Owner | §14 Phase 1; local simulator/no venue |
+| Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
+| Việc kế tiếp | Task 1.1 — deterministic primitives (`tasks/active/1.1-deterministic-primitives.yaml`) **REVIEW** trên branch `task/1.1-*`; chờ Account Owner nghiệm thu | Account Owner | §14 Phase 1; local simulator/no venue |
 | Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6 DONE; Task 1.1 READY; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16 và task cards |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6 DONE; Task 1.1 REVIEW chờ Owner; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16 và task cards |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-12 | Account Owner | v2.3.2; Task 1.1 READY; Phase 1 local simulator/no venue; OD-001 vẫn OPEN |
+| Lần rà soát | 2026-08-12 | Account Owner | v2.3.4; Task 1.1 REVIEW từ 2026-08-11T19:24:43Z; Phase 1 local simulator/no venue; OD-001 vẫn OPEN |
 
 ### 0.1 Cách bắt đầu đúng
 
