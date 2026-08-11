@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.3.6 |
+| Phiên bản | 2.3.7 |
 | Trạng thái | Phase 1 — Core safety (IN_PROGRESS) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
@@ -31,6 +31,7 @@
 | Thay đổi chính v2.3.4 | Hoàn tất implementation/evidence Task 1.1 deterministic primitives; chuyển card IN_PROGRESS → REVIEW lúc 2026-08-11T19:24:43Z; chờ Account Owner nghiệm thu, không tự chuyển DONE |
 | Thay đổi chính v2.3.5 | Account Owner xác nhận DONE Task 1.1 lúc 2026-08-11T19:41:38Z; chuyển card vào `tasks/completed/`; bước OMS tiếp theo chưa mở vì DOM-OMS-001, DATA-TXN-001 và DOM-ACC-001 còn DRAFT/chờ phê duyệt |
 | Thay đổi chính v2.3.6 | Account Owner phê duyệt baseline DOM-OMS-001, DATA-TXN-001 và DOM-ACC-001 lúc 2026-08-11T19:52:15Z cho local simulator/Phase 1; mở Task 1.2 OMS state machine ở trạng thái READY, giữ ledger annex và external venue deferred |
+| Thay đổi chính v2.3.7 | Bắt đầu thực thi Task 1.2 lúc 2026-08-11T19:55:00Z; card chuyển READY → IN_PROGRESS trước khi sửa execution domain, giữ pure deterministic/no-DB/no-venue/no-ledger scope |
 
 ---
 
@@ -63,13 +64,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
-| Việc kế tiếp | Task 1.2 — OMS deterministic state machine (`tasks/active/1.2-oms-state-machine.yaml`) **READY** trên branch `task/1.2-*` | Account Owner | §14 Phase 1; local simulator/no venue; chưa durable DB submit/ledger runtime |
+| Việc kế tiếp | Task 1.2 — OMS deterministic state machine (`tasks/active/1.2-oms-state-machine.yaml`) **IN_PROGRESS** trên branch `task/1.2-*` | Account Owner | §14 Phase 1; local simulator/no venue; chưa durable DB submit/ledger runtime |
 | Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6 và 1.1 DONE; Task 1.2 READY; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16 và task cards |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6 và 1.1 DONE; Task 1.2 IN_PROGRESS; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16 và task cards |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-12 | Account Owner | v2.3.6; Task 1.2 READY sau Owner approval baseline `2026-08-11T19:52:15Z`; local simulator/no venue; OD-001 vẫn OPEN |
+| Lần rà soát | 2026-08-12 | Account Owner | v2.3.7; Task 1.2 IN_PROGRESS từ `2026-08-11T19:55:00Z`; local simulator/no venue; OD-001 vẫn OPEN |
 
 ### 0.1 Cách bắt đầu đúng
 
