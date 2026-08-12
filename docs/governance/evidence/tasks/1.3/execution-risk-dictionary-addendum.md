@@ -3,16 +3,16 @@
 | Trường | Giá trị |
 |---|---|
 | Document ID | DATA-DICT-T1.3-ADDENDUM-001 |
-| Phiên bản | 0.1.0 |
+| Phiên bản | 0.2.0 |
 | Trạng thái | APPROVED FOR TASK 1.3 DESIGN — không phải DDL authority |
 | Parent | [One-time approval packet](ONE-TIME-APPROVAL-PACKET.md) |
 | Related | DATA-DICT-001, DATA-ERD-001, DATA-TXN-001, ADR-0003, ADR-0012 |
 
-> Approval record `2026-08-12T09:19:16Z` chấp thuận các row ở mức thiết kế. Chưa được tạo migration và không được coi là physical schema cho đến khi dictionary/ERD sync và task card `READY`.
+> Approval record `2026-08-12T09:19:16Z` chấp thuận các row ở mức thiết kế. PostgreSQL 17.x amendment được Account Owner xác nhận `2026-08-12T11:15:53Z`; chưa được tạo migration và không được coi là physical schema cho đến khi dictionary/ERD sync và task card `READY`.
 
 ## 1. Common physical rules
 
-- PostgreSQL 16.x policy baseline; UTC `TIMESTAMPTZ`.
+- PostgreSQL 17.x policy baseline; UTC `TIMESTAMPTZ`.
 - Internal identifiers là UUIDv7 lưu `UUID`.
 - Financial/quantity values là `NUMERIC(38,18)`; API representation là string.
 - Runtime role không được `DELETE`/`UPDATE` append-only facts hoặc chạy DDL.

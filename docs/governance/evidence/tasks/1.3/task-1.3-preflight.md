@@ -17,7 +17,7 @@
 
 ## 1. Kết luận preflight
 
-Task 1.3 hiện **BLOCKED, chưa READY**. Approval đã được ghi nhận, nhưng AI chưa được triển khai durable submit, fake venue adapter, persistence, risk reservation, reconciliation hoặc ledger runtime cho đến khi authority sync, PostgreSQL no-skip và branch precondition đạt.
+Task 1.3 hiện **BLOCKED, chưa READY**. Approval đã được ghi nhận và PostgreSQL 17/Supabase Local no-skip evidence đã pass, nhưng AI chưa được triển khai durable submit, fake venue adapter, persistence, risk reservation, reconciliation hoặc ledger runtime cho đến khi Account Owner chuyển canonical card sang `READY` và các authority gate còn lại đạt.
 
 Nền tảng đã hoàn thành:
 
@@ -68,7 +68,7 @@ Gói B phải có task card code riêng, `status: READY`, branch riêng, allowli
 
 | Blocker | Bằng chứng | Điều kiện gỡ |
 |---|---|---|
-| Task card chưa `READY` | Canonical `tasks/active/1.3-durable-submit-fake-venue.yaml` đang `BLOCKED` | Cấp PostgreSQL no-skip, hoàn tất authority sync, đổi branch và human review chuyển `READY` |
+| Task card chưa `READY` | Canonical `tasks/active/1.3-durable-submit-fake-venue.yaml` đang `BLOCKED` | PostgreSQL no-skip và authority sync đã có evidence; Account Owner review và chuyển card sang `READY` |
 | Task-directory hygiene | Card `0.0.7` đã chuyển sang `tasks/completed/` | Đã xử lý; duy trì không duplicate active authority |
 | Risk policy còn `DRAFT` | `docs/backend/domain/risk-policy.md` | Risk Approver + Account Owner phê duyệt annex và fixture |
 | Canonical model/Fill còn `DRAFT` | `docs/backend/domain/canonical-domain-model.md` | Phê duyệt field semantics và terminal mapping |
@@ -76,7 +76,7 @@ Gói B phải có task card code riêng, `status: READY`, branch riêng, allowli
 | Chưa có fake venue contract/harness | `docs/backend/engineering/test-strategy.md` § venue conformance | Phê duyệt protocol deterministic và fault matrix |
 | Contract registry `IN_REVIEW` | `docs/backend/contracts/contract-registry.md` | Registry review cho command/event dùng trong Task 1.3 |
 | ADR-0012 còn nội dung mâu thuẫn | `docs/backend/adr/0012-transaction-concurrency.md` | Amendment/clarification có reviewer và timestamp |
-| Chưa có Postgres integration evidence | `tests/integration/test_platform_migrations.py` bị skip khi thiếu `DATABASE_URL` | Cấp database test và lưu migration/concurrency evidence |
+| PostgreSQL integration evidence | Supabase Local PostgreSQL 17.6; migration + test no-skip tại [installation evidence](supabase-local-install-evidence-2026-08-12.md) | Giữ DB isolated; chạy task-specific evidence sau `READY` |
 
 ## 5. Các quyết định Account Owner cần xác nhận
 
@@ -136,7 +136,7 @@ Task implementation chỉ được mở khi task card riêng ghi rõ và reviewe
 - [x] Task card code có `allowed_globs`, `forbidden_globs`, expiry, reviewer, commands và evidence path.
 - [x] Không còn card `DONE` trong `tasks/active/`; card cũ đã reconcile sang `tasks/completed/`.
 - [x] Branch pattern đúng (`task/1.3-durable-submit-fake-venue`) và working tree đã clean sau docs commit.
-- [ ] Có PostgreSQL test environment để không bỏ qua migration/concurrency tests.
+- [x] Có PostgreSQL 17 test environment; migration/concurrency baseline chạy không skip và evidence đã lưu.
 - [x] Ledger runtime vẫn bị khóa nếu accounting annex chưa được phê duyệt.
 
 ## 9. Evidence dự kiến

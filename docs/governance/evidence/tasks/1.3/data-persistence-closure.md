@@ -88,5 +88,5 @@ Evidence tối thiểu cần thu thập sau khi có test environment:
 
 - Data dictionary/ERD: task-scoped design approved; normative files vẫn cần đồng bộ status/nội dung.
 - Execution/risk migrations: chưa tồn tại.
-- PostgreSQL integration evidence: chưa có; test hiện skip khi thiếu `DATABASE_URL`.
+- PostgreSQL integration evidence: PASS — Supabase Local PostgreSQL 17.6, Alembic baseline và no-skip integration output tại [Supabase Local evidence](supabase-local-install-evidence-2026-08-12.md).
 - Task 1.3 implementation: `BLOCKED`, chưa được tạo migration.

@@ -92,4 +92,4 @@ Baseline hiện có yêu cầu:
 | Risk policy annex | APPROVED FOR LOCAL SIMULATOR | Sync task-scoped authority; no live policy |
 | Fill contract | APPROVED FOR TASK 1.3 DESIGN | Sync canonical model before implementation |
 | ADR-0012 amendment | APPLIED | ADR-0012 v0.3.0 is authority |
-| Task 1.3 implementation | BLOCKED | PostgreSQL no-skip, branch and authority sync remain |
+| Task 1.3 implementation | BLOCKED | PostgreSQL 17 no-skip, branch and authority sync are evidenced; canonical card still requires Account Owner `READY` transition |

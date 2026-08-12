@@ -3,8 +3,8 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-TECH-001 |
-| Phiên bản | 0.3.2 |
-| Change summary | 0.3.2: xem Nhật ký thay đổi; row này được bổ sung 2026-08-02 theo GOV-DOC-001 §3 (audit toàn diện — không đổi technology matrix). |
+| Phiên bản | 0.4.0 |
+| Change summary | 0.4.0: đồng bộ PostgreSQL 17.x theo ADR-0003 amendment được Account Owner phê duyệt 2026-08-12T11:15:53Z; các công nghệ và ranh giới khác không đổi. |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -20,7 +20,7 @@
 
 - MVP là modular monolith, hexagonal và event-driven có chọn lọc; không khởi tạo microservice hay distributed infrastructure.
 - Python 3.12.x là ngôn ngữ runtime duy nhất cho domain, application, adapter, worker, CLI, test và migration helper.
-- PostgreSQL 16.x là OLTP system of record; Parquet partitioned catalog + DuckDB reader dùng cho historical/research.
+- PostgreSQL 17.x là OLTP system of record; Parquet partitioned catalog + DuckDB reader dùng cho historical/research.
 - Contract-first: OpenAPI/JSON Schema/config schema versioned là authority của wire detail sau khi được phê duyệt.
 - Domain giữ Python thuần; framework/vendor/IO chỉ ở adapter/composition root.
 - Target testnet/canary là Linux container image pin digest; Windows chỉ hỗ trợ local development tooling.
@@ -33,7 +33,7 @@
 | Python standard library | Required in domain/shared kernel. | Value object, policy, deterministic logic. | Vendor IO/framework bypass. |
 | Pydantic v2 | API, adapter và config boundary. | Validation/serialization boundary. | Domain entity/policy ownership. |
 | FastAPI + OpenAPI | Control API from Phase 0 skeleton. | Control/read contract. | Trading hot path, direct venue call or secret response. |
-| PostgreSQL 16.x | Persistence/system of record from Phase 0. | Transaction, audit, concurrency, recovery. | Research data lake or arbitrary cross-context table write. |
+| PostgreSQL 17.x | Persistence/system of record from Phase 0. | Transaction, audit, concurrency, recovery. | Research data lake or arbitrary cross-context table write. |
 | SQLAlchemy 2 + Alembic | Persistence adapter/migration. | Reviewed persistence and immutable migration. | Domain/risk policy hidden in SQL. |
 | Parquet | data/catalog historical partition. | Immutable-ish dataset/research storage. | OLTP execution/ledger state. |
 | DuckDB reader | research/backtest reader. | Analytical read of catalog. | Runtime system of record. |
@@ -161,6 +161,7 @@ Create or amend ADR before:
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.4.0 | 2026-08-12 | Đồng bộ PostgreSQL 17.x theo ADR-0003 amendment; giữ nguyên technology matrix và safety boundaries. | Technical Operator | Account Owner decision `2026-08-12T11:15:53Z` |
 | 0.1.0 | 2026-07-31 | Tạo technology/language/repository baseline bám master v2.0. | Technical Operator | Pending |
 | 0.2.0 | 2026-07-31 | Làm rõ provider-neutral BYOK: OpenAI SDK chỉ là adapter tùy chọn ở Phase 6. | Technical Operator | Pending |
 | 0.3.0 | 2026-07-31 | Thêm §8 Runtime và tooling decisions bổ sung (DRAFT — cần Account Owner phê duyệt trước Task 0.1/0.2); thêm Import Linter vào technology matrix §2 (master §13.1). | Technical Operator | Pending |

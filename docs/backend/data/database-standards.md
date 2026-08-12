@@ -16,7 +16,7 @@
 
 ## 1. Scope and authority
 
-These are mandatory physical-database conventions for PostgreSQL 16.x. They do not authorize DDL. An applied immutable Alembic migration plus schema snapshot is physical authority; this policy, the [dictionary](data-dictionary.md), task card and ADRs are prerequisites for that migration.
+These are mandatory physical-database conventions for PostgreSQL 17.x. They do not authorize DDL. An applied immutable Alembic migration plus schema snapshot is physical authority; this policy, the [dictionary](data-dictionary.md), task card and ADRs are prerequisites for that migration.
 
 ## 2. Database and schema boundaries
 

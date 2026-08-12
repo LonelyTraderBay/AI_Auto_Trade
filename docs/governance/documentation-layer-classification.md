@@ -86,7 +86,7 @@
 | data-architecture.md | Backend | Ranh giới system-of-record PostgreSQL/Parquet, ownership schema, chính sách role đọc/ghi; nêu rõ "Dashboard has no production DB role". |
 | erd.md | Backend | ERD khái niệm mô tả quan hệ/cardinality/key giữa các bounded context backend (risk, execution, ledger, AI connections) — không liên quan UI. |
 | data-dictionary.md | Backend | Đặc tả cột vật lý cho bảng PostgreSQL (outbox/inbox/dead_letters); nêu rõ dashboard/API client không truy cập DB trực tiếp. |
-| database-standards.md | Backend | Chuẩn đặt tên/kiểu dữ liệu/index/role bắt buộc cho PostgreSQL 16.x; "Dashboard/UI has no direct production database role". |
+| database-standards.md | Backend | Chuẩn đặt tên/kiểu dữ liệu/index/role bắt buộc cho PostgreSQL 17.x; "Dashboard/UI has no direct production database role". |
 | transaction-and-concurrency.md | Backend | Ranh giới transaction, lock ordering, optimistic concurrency, retry/idempotency, leader/lease cho order submission và ledger — logic backend. |
 | db-operations.md | Backend | Cách ly môi trường DB, giám sát vận hành, backup/restore/PITR, xử lý sự cố migration — hạ tầng backend thuần túy. |
 | migration-backfill-playbook.md | Backend | Phương pháp expand-migrate-contract, hợp đồng backfill, evidence bắt buộc cho thay đổi schema Alembic — quy trình DDL backend. |

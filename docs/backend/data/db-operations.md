@@ -70,7 +70,7 @@ For DB unavailable/corruption/suspected drift: contain (stop new exposure), pres
 
 ### 5.1 Engine version và upgrade (DRAFT — cần phê duyệt)
 
-PostgreSQL pin 16.x. Minor patch theo cadence có restore-point + validation. Major upgrade cần ADR + rehearsed restore + full reconciliation trước khi enable trading.
+PostgreSQL pin 17.x. Minor patch theo cadence có restore-point + validation. Major upgrade cần ADR + rehearsed restore + full reconciliation trước khi enable trading.
 
 ## 6. Logs, data protection and review cadence
 
@@ -88,5 +88,6 @@ Logs/traces must redact credentials and sensitive payload; diagnostic queries/ex
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.3.0 | 2026-08-12 | Đồng bộ engine pin PostgreSQL 17.x theo ADR-0003 amendment; minor patch cadence, restore-point, full reconciliation và major-upgrade gate không đổi. | Technical Operator | Account Owner decision `2026-08-12T11:15:53Z` |
 | 0.2.0 | 2026-07-31 | Bổ sung ba subsection DRAFT: connection/pool policy (per-identity pool, connection budget theo role, timeout policy field, pgbouncer DEFERRED cần ADR); autovacuum/bloat/index review (reviewed autovacuum cho `outbox_delivery_state`, observation dead-tuple/wraparound, monthly index review); engine version/upgrade (pin PostgreSQL 16.x, minor patch cadence, major upgrade cần ADR + rehearsed restore + full reconciliation). Thêm pointer tới RB-006 (database-unavailable) và RB-007 (credential-rotation cho DB role credentials). | Technical Operator | Pending |
 

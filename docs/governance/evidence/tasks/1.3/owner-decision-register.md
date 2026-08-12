@@ -125,4 +125,4 @@ Các decision P-49 đến P-68 được thêm vào packet sau approval record c�
 | Threat/rollback/deferred boundary | P-60, P-61, P-62 | APPROVED; later-phase items explicitly deferred |
 | Fixture/dictionary/traceability/drill/hygiene | P-63, P-64, P-65, P-66, P-67, P-68 | APPROVED — role record `2026-08-12T09:19:16Z` |
 
-**Current final state:** packet v0.3.0 và P-01..P-68 đã được approval record ghi nhận; task-scoped authority references đã đồng bộ, còn PostgreSQL no-skip evidence và branch/card readiness là điều kiện kỹ thuật chưa hoàn tất.
+**Current final state:** packet v0.3.0 và P-01..P-68 đã được approval record ghi nhận; ADR-0003 PostgreSQL 17 amendment đã được Account Owner phê duyệt `2026-08-12T11:15:53Z`; Supabase Local/PostgreSQL no-skip evidence đã pass. Task-scoped authority references và branch đã đồng bộ; card readiness vẫn cần Account Owner chuyển canonical card sang `READY`.

@@ -1,10 +1,10 @@
 # AI Auto Trade
 
-Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 16 / FastAPI) — modular monolith, hexagonal, event-driven có chọn lọc, ưu tiên an toàn/audit/recovery hơn tốc độ ra tính năng.
+Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 17 / FastAPI) — modular monolith, hexagonal, event-driven có chọn lọc, ưu tiên an toàn/audit/recovery hơn tốc độ ra tính năng.
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Trạng thái | **Phase 1 — Core safety (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 durable submit/fake venue chưa mở card. OD-001 vẫn OPEN cho external venue; ledger activation còn gated bởi accounting annex. |
+| Trạng thái | **Phase 1 — Core safety (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 durable submit/fake venue card còn BLOCKED chờ `READY` transition sau khi Supabase Local/PostgreSQL 17 evidence đã pass. OD-001 vẫn OPEN cho external venue; ledger activation còn gated bởi accounting annex. |
 | Hiến pháp kỹ thuật | [AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md) |
 | Gate gần nhất | Phase 0.0 — PASSED 2026-08-06 ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
 | Quy tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |

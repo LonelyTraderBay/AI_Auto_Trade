@@ -1,0 +1,2 @@
+-- No local seed data is authorized for the AI Auto Trade foundation yet.
+-- Application schema remains owned by Alembic migrations under migrations/.

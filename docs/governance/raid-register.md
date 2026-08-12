@@ -50,7 +50,7 @@ Không được chuyển mục sang RESOLVED chỉ vì có kế hoạch. Cần e
 |---|---|---|---|---|---|
 | A-001 | MVP chỉ hỗ trợ một venue crypto spot, một account và instrument đã được owner phê duyệt. | Giảm scope và phù hợp modular monolith. | Trước Phase 3; OD-001/003 | Account Owner | OPEN |
 | A-002 | Không có live trade credential, database schema, application code hoặc endpoint trong Phase 0.0. | Documentation closure phải hoàn tất trước code. | Phase 0.0 gate | Technical Operator | OPEN |
-| A-003 | Python 3.12.x là ngôn ngữ runtime duy nhất cho MVP; PostgreSQL 16.x là OLTP system of record. | Quyết định chuẩn nhưng cần ADR-0014/0003 APPROVED. | Phase 0.0 gate | Account Owner | OPEN |
+| A-003 | Python 3.12.x là ngôn ngữ runtime duy nhất cho MVP; PostgreSQL 17.x là OLTP system of record. | Đã được ADR-0003 amendment và Account Owner approval `2026-08-12T11:15:53Z` chốt; cần evidence Supabase Local/DATABASE_URL no-skip để đóng assumption. | Task 1.3 database gate | Account Owner | MITIGATING |
 | A-004 | Risk, OMS, ledger và canonical domain vẫn thuộc hệ thống này; NautilusTrader không là dependency Phase 0–4. | Tránh framework chiếm domain ownership. | Phase 0.0 gate / ADR-0006 later | Technical Operator | OPEN |
 | A-005 | Paper/testnet/shadow phải chứng minh safety trước canary; PnL không là success criterion đầu tiên. | Ưu tiên determinism, audit và recovery. | Mọi gate trước canary | Risk Approver | OPEN |
 | A-006 | AI worker, nếu có ở Phase 6, proposal-only và không có execution/trade credential. | Safety invariant. | Trước Phase 6 | Security/Backup Owner | OPEN |

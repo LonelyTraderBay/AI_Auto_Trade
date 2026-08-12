@@ -11,19 +11,20 @@
 
 ## 1. Executive conclusion
 
-Repository đã đủ nền tảng deterministic primitives và OMS state machine, nhưng **chưa đủ điều kiện Enterprise-Grade để bắt đầu Task 1.3 implementation**. Gói [one-time approval packet](ONE-TIME-APPROVAL-PACKET.md) và [enterprise control closure matrix](enterprise-control-closure-matrix.md) đã bổ sung toàn bộ control còn thiếu ở mức thiết kế/evidence plan.
+Repository đã đủ nền tảng deterministic primitives và OMS state machine, nhưng **chưa đủ điều kiện Enterprise-Grade để bắt đầu Task 1.3 implementation**. Gói [one-time approval packet](ONE-TIME-APPROVAL-PACKET.md), [enterprise control closure matrix](enterprise-control-closure-matrix.md) và PostgreSQL 17/Supabase Local evidence đã bổ sung control thiết kế và database precondition; runtime implementation vẫn chưa được mở.
 
 Trạng thái hiện tại:
 
 - Account Owner/Risk Approver/Security/Backup Owner role actions đã được ghi nhận trong approval record v0.3.0 tại `2026-08-12T09:19:16Z` cho P-01..P-68.
 - Task 1.3 canonical card đã tồn tại trong `tasks/active/` nhưng đang `BLOCKED`; proposal vẫn chỉ là non-authoritative.
-- Không có code/migration mới trong lần audit này.
+- Supabase Local `AI_Auto_Trade` đang chạy PostgreSQL 17.6; Alembic baseline và integration test chạy no-skip đã được ghi tại [Supabase Local evidence](supabase-local-install-evidence-2026-08-12.md).
+- Không có Task 1.3 runtime code hoặc migration mới trong lần audit này.
 
 ## 2. Readiness matrix
 
 | Area | Evidence hiện tại | Status | Việc còn thiếu |
 |---|---|---|---|
-| Governance/task authority | Master §0; AGENTS; DOCS_INDEX; canonical card; approval record | AMBER | Giữ `BLOCKED` đến khi authority sync, branch và DB precondition đạt |
+| Governance/task authority | Master §0; AGENTS; DOCS_INDEX; canonical card; approval record | AMBER | Giữ `BLOCKED` đến khi Account Owner chuyển card sang `READY`; authority/branch đã đồng bộ |
 | Phase/gate | Phase 0 gate APPROVED/REVALIDATED; Phase 1 IN_PROGRESS | GREEN for preflight | Không tự mở Phase 3/ledger gate |
 | Deterministic kernel | Task 1.1 evidence; quality suite | GREEN | Không cần mở rộng ngoài card |
 | OMS state machine | DOM-OMS-001 approved; Task 1.2 DONE | GREEN | Preserve invalid §3a transitions |
@@ -38,7 +39,7 @@ Trạng thái hiện tại:
 | Logging/observability | ENG-LOG-001 DRAFT; OPS-001 DRAFT | AMBER | Required fields/signals now; numeric SLO deferred |
 | Database operations | DATA-OPS-001 DRAFT | AMBER | Role/grant/restore design; no canary claim |
 | Test strategy | ENG-TEST-001 IN_REVIEW; fake venue harness DRAFT | AMBER | Approve harness owner and evidence requirements |
-| PostgreSQL integration | Test skips without `DATABASE_URL` | RED | Run isolated PostgreSQL and remove skip for gate |
+| PostgreSQL integration | Supabase Local PostgreSQL 17.6; Alembic baseline; no-skip test evidence | GREEN for database precondition | Giữ DB local isolated; Task 1.3 runtime evidence vẫn phải chạy sau `READY` |
 | Rollback/recovery | Playbooks and closure docs exist | AMBER | Execute fault/restart/forward-fix evidence |
 | Ledger | DOM-ACC-001 baseline approved; annex incomplete | DEFERRED | Keep ledger runtime closed |
 | External venue | OD-001 OPEN; ADR-0009 DRAFT | DEFERRED | Phase 3 only; forbidden now |
@@ -77,11 +78,10 @@ The following cannot be waived by a generic approval message:
 - No physical DDL-ready dictionary/ERD authority for runtime tables; the task addendum is approved for design only.
 - Fake venue design is approved, but the runtime conformance harness is not implemented.
 - ADR-0012 contradiction is closed in v0.3.0; runtime evidence is still absent.
-- PostgreSQL integration skipped because `DATABASE_URL` is absent.
+- PostgreSQL 17/Supabase Local database precondition is closed; no-skip evidence exists, but it does not self-transition the task card.
 - No evidence for migration/grants/constraints/lease/CAS/crash recovery.
 - Runtime conformance/evidence is still absent for the approved risk fixture, scenario schema, dictionary addendum, traceability matrix and runbook drill plan.
-- PostgreSQL integration still skips because `DATABASE_URL` is absent; no-skip evidence is mandatory.
-- Current branch is correct (`task/1.3-durable-submit-fake-venue`) and the working tree is clean; PostgreSQL no-skip remains.
+- Current branch is correct (`task/1.3-durable-submit-fake-venue`); the canonical card remains `BLOCKED` until an authorized human transitions it to `READY`.
 
 ## 5. Evidence required for final Task 1.3 review
 
@@ -98,4 +98,4 @@ The following cannot be waived by a generic approval message:
 
 ## 6. Final recommendation
 
-Keep implementation `BLOCKED` until DDL/runtime authority promotion, PostgreSQL no-skip evidence, clean `task/1.3-*` tree and the remaining non-negotiable blockers are closed. Then an authorized human may change the canonical card to `READY`, after which code may begin only in the approved allowlist.
+Keep implementation `BLOCKED` until DDL/runtime authority promotion, clean `task/1.3-*` tree and the remaining non-negotiable blockers are closed. PostgreSQL no-skip is now evidenced. Then an authorized human may change the canonical card to `READY`, after which code may begin only in the approved allowlist.

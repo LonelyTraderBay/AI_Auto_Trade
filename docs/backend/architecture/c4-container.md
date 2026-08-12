@@ -3,13 +3,13 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | ARC-C4-002 |
-| Phiên bản | 0.3.0 |
-| Change summary | 0.3.0: xem Nhật ký thay đổi; row này được bổ sung 2026-08-02 theo GOV-DOC-001 §3 (audit toàn diện — không đổi nội dung container/ownership). |
+| Phiên bản | 0.4.0 |
+| Change summary | 0.4.0: đồng bộ PostgreSQL 17 theo ADR-0003 amendment được Account Owner phê duyệt 2026-08-12T11:15:53Z; không đổi container ownership/boundary. |
 | Trạng thái | IN_REVIEW |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
 | Ngày hiệu lực | Chưa hiệu lực |
-| Rà soát gần nhất | 2026-07-31 |
+| Rà soát gần nhất | 2026-08-12 |
 | Tham chiếu chuẩn | AI_AUTO_TRADE_MASTER_SPEC.md §3, §4.6–§4.7, §6, §7, §11–§13 |
 | Related requirements | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-OPS-001, FR-AI-001; NFR-SEC-001, NFR-OPS-001, NFR-AI-001 |
 | Related ADR | ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0012, ADR-0014, ADR-0015, ADR-0016 |
@@ -39,7 +39,7 @@ flowchart TB
     end
 
     subgraph STATE[State and data stores]
-        PG[(PostgreSQL 16<br/>OLTP, outbox/inbox, audit)]
+        PG[(PostgreSQL 17<br/>OLTP, outbox/inbox, audit)]
         PQ[(Parquet catalog<br/>historical/research)]
     end
 
@@ -84,7 +84,7 @@ Control command từ API tới trading node đi qua durable command record trong
 
 | Store | Purpose | Writers | Readers | Invariants |
 |---|---|---|---|---|
-| PostgreSQL 16 | OLTP system of record for control, domain state, outbox/inbox, audit and ledger. | Context owner repository; whitelisted UoW only across contexts. | Process DB role with least privilege. | Context ownership, append-only audit/ledger/event controls, UUIDv7/TIMESTAMPTZ/NUMERIC rules. |
+| PostgreSQL 17 | OLTP system of record for control, domain state, outbox/inbox, audit and ledger. | Context owner repository; whitelisted UoW only across contexts. | Process DB role with least privilege. | Context ownership, append-only audit/ledger/event controls, UUIDv7/TIMESTAMPTZ/NUMERIC rules. |
 | Parquet catalog | Partitioned historical market data/research datasets. | Data worker/catalog pipeline; research output where allowed. | Research worker and approved readers. | Dataset manifest/checksum/atomicity/retention policy; not OLTP business state. |
 | Generated/evidence storage | CI artifacts, reports, signed gate/task evidence. | CI/authorized operator. | Reviewers/approvers per access policy. | Hash/source link, redaction and retention policy. |
 

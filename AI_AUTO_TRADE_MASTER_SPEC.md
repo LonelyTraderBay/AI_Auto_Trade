@@ -4,14 +4,14 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.3.9 |
+| Phiên bản | 2.4.0 |
 | Trạng thái | Phase 1 — Core safety (IN_PROGRESS) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
 | Ngôn ngữ chính | Python 3.12.x |
 | Mục tiêu | Xây một nền tảng giao dịch có thể kiểm thử, audit, phục hồi và nâng cấp từng phần |
 | Nguyên tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
-| Lần rà soát gần nhất | 2026-08-11 |
+| Lần rà soát gần nhất | 2026-08-12 |
 | Thay đổi chính v2.1 | Bổ sung thiết kế DRAFT cho AI đa provider/BYOK: user chọn provider/model đã duyệt, secret ingress write-only, provider catalog, egress/budget và zero-execution boundary |
 | Thay đổi chính v2.1.1 | Cập nhật §1.5 artifact pack tree và các tham chiếu đường dẫn docs/ theo tái cấu trúc lớp Backend/Frontend/Shared/Governance (GOV-CLASS-001); không đổi quyết định kiến trúc/domain/risk/security nào |
 | Thay đổi chính v2.2.0 | Sửa mâu thuẫn nội bộ do audit sâu phát hiện: §8.11 deadline accounting policy thống nhất "trước Phase 1" (khớp §7.8); §7.6 bổ sung `outbox_delivery_state` vào platform inventory; §4.6 bổ sung `tests/state_machine/`; §4.7 bổ sung `apps/secret_ingress` (Phase 6) và làm rõ ai_worker binding lease; §4.8 chốt fixture format theo registry. Chỉ sửa nhất quán, không thêm capability mới |
@@ -34,6 +34,7 @@
 | Thay đổi chính v2.3.7 | Bắt đầu thực thi Task 1.2 lúc 2026-08-11T19:55:00Z; card chuyển READY → IN_PROGRESS trước khi sửa execution domain, giữ pure deterministic/no-DB/no-venue/no-ledger scope |
 | Thay đổi chính v2.3.8 | Hoàn tất implementation/evidence Task 1.2 lúc 2026-08-11T19:57:56Z; card chuyển IN_PROGRESS → REVIEW, chờ Account Owner nghiệm thu, chưa mở durable submit/fake venue |
 | Thay đổi chính v2.3.9 | Account Owner xác nhận DONE Task 1.2 lúc 2026-08-11T20:06:59Z; chuyển card vào `tasks/completed/`; durable submit/fake venue tiếp theo chỉ mở bằng task card riêng |
+| Thay đổi chính v2.4.0 | Account Owner phê duyệt amendment ADR-0003 lúc 2026-08-12T11:15:53Z, chuyển PostgreSQL system of record từ 16.x sang 17.x để tương thích Supabase Local CLI; giữ nguyên transaction, audit, recovery, type và safety invariants; Task 1.3 chỉ mở sau khi Supabase Local tạo được `DATABASE_URL` và migration/concurrency test chạy no-skip |
 
 ---
 
@@ -66,13 +67,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
-| Việc kế tiếp | Task 1.3 — durable submit/fake venue card đã tạo nhưng **BLOCKED** | Account Owner | Approval record GOV-TASK-1.3-APPROVAL-20260812-091916; chờ PostgreSQL `DATABASE_URL` no-skip |
-| Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
+| Việc kế tiếp | Task 1.3 — durable submit/fake venue card đã tạo nhưng **BLOCKED** | Account Owner | PostgreSQL 17.6/Supabase Local no-skip evidence đã có; chờ Account Owner chuyển card sang `READY` |
+| Môi trường đang chạy | Supabase Local `AI_Auto_Trade` trên Docker, PostgreSQL 17.6 | Technical Operator | Local-only; không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 card BLOCKED bởi thiếu PostgreSQL no-skip; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, task card 1.3 và approval evidence |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 card BLOCKED chờ explicit `READY` transition; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, Task 1.3 approval/version/install evidence |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-12 | Account Owner | v2.3.9; Task 1.2 DONE lúc `2026-08-11T20:06:59Z`; Task 1.3 approval recorded nhưng card còn BLOCKED; local simulator/no venue; OD-001 vẫn OPEN |
+| Lần rà soát | 2026-08-12 | Account Owner | v2.4.0; ADR-0003 PostgreSQL 17 amendment approved `2026-08-12T11:15:53Z`; Supabase Local/DB no-skip evidence recorded; Task 1.3 card còn BLOCKED; local simulator/no venue; OD-001 vẫn OPEN |
 
 ### 0.1 Cách bắt đầu đúng
 
@@ -332,7 +333,7 @@ Mỗi capability mới phải được thêm qua:
 | Domain | Python thuần + shared kernel | Tránh framework/vendor xâm nhập logic giao dịch |
 | DTO/config | Pydantic v2 ở API, adapter và config boundary | Validation/serialization tốt, không làm bẩn domain |
 | API | FastAPI + OpenAPI | Control plane rõ contract |
-| Persistence | PostgreSQL 16.x là system of record từ Phase 0 | Transaction, concurrency, audit và recovery đáng tin cậy |
+| Persistence | PostgreSQL 17.x là system of record từ Phase 0 | Transaction, concurrency, audit và recovery đáng tin cậy |
 | Historical data | Parquet phân vùng + DuckDB/research reader | Không làm phình OLTP database |
 | TimescaleDB | DEFERRED; chỉ đánh giá sau khi đo nhu cầu time-series và có ADR | Không bắt buộc domain phụ thuộc extension |
 | pgvector | Chỉ từ Phase AI/memory | Không mang độ phức tạp vào MVP |
@@ -997,7 +998,7 @@ Hệ thống dùng at-least-once delivery, không hứa exactly-once.
 
 ### 7.4 Database ownership và physical conventions
 
-- PostgreSQL 16.x là system of record cho control state, execution state, ledger, audit và outbox/inbox.
+- PostgreSQL 17.x là system of record cho control state, execution state, ledger, audit và outbox/inbox.
 - Mỗi environment có PostgreSQL database/credential riêng. Environment không được biểu diễn bằng cột để trộn local, testnet và canary trong cùng database.
 - MVP là single tenant/single account scope; mọi record execution, risk, ledger và reconciliation phải mang account_id và venue_id khi áp dụng.
 - Mỗi context sở hữu schema/table của nó. Không có ORM relationship, foreign key hoặc direct SQL xuyên context; cross-context dùng immutable ID, contract event hoặc read projection.

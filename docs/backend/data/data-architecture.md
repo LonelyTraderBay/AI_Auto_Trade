@@ -12,11 +12,11 @@
 | Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-AI-001, NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0011, ADR-0012, ADR-0013, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §3, §5, §7, §8, §9, §10.6, §12 |
-| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
+| Change summary | 2026-08-12: đồng bộ PostgreSQL 17.x theo ADR-0003 amendment được Account Owner phê duyệt 2026-08-12T11:15:53Z; ownership/boundary không đổi. |
 
 ## 1. Mục tiêu
 
-Kiến trúc dữ liệu phải cho phép replay, audit, recovery và reconciliation mà không biến MVP thành nhiều database hoặc microservice. PostgreSQL 16.x là system of record cho control/execution/ledger/audit/delivery metadata. Parquet catalog là store append-only cho market historical data/dataset; nó không thay PostgreSQL trong giao dịch hoặc accounting.
+Kiến trúc dữ liệu phải cho phép replay, audit, recovery và reconciliation mà không biến MVP thành nhiều database hoặc microservice. PostgreSQL 17.x là system of record cho control/execution/ledger/audit/delivery metadata. Parquet catalog là store append-only cho market historical data/dataset; nó không thay PostgreSQL trong giao dịch hoặc accounting.
 
 Tài liệu này là logical/physical design baseline, không phải migration. Chỉ [data dictionary](data-dictionary.md) đã được phê duyệt cùng task card mới có thể mở đường cho DDL.
 
@@ -24,7 +24,7 @@ Tài liệu này là logical/physical design baseline, không phải migration. 
 
 | Data class | Source of truth | Owner | Cách đọc/ghi | Không được dùng làm |
 |---|---|---|---|---|
-| Control, OMS, risk, ledger, audit, outbox/inbox | PostgreSQL 16.x | bounded context tương ứng | owner repository/port, transaction có policy | file cache hoặc JSONB state tự do |
+| Control, OMS, risk, ledger, audit, outbox/inbox | PostgreSQL 17.x | bounded context tương ứng | owner repository/port, transaction có policy | file cache hoặc JSONB state tự do |
 | Market raw bronze / normalized historical | Parquet catalog + manifest/checksum | `market_data` | atomic publish qua catalog metadata | OLTP order/risk store |
 | Silver/gold dataset, research result | Parquet + dataset/backtest manifest | `market_data` / `research` | snapshot/reproducible reader | live execution write model |
 | Effective runtime config/deployment | validated immutable manifest + config hash | `operations` | control/operations contract | env override business policy |
