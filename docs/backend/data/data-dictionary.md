@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | DATA-DICT-001 (registry DOCS_INDEX; title giữ alias ngắn) |
-| Phiên bản | 0.3.0 |
+| Phiên bản | 0.4.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt; không phải DDL |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -12,7 +12,7 @@
 | Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-EXEC-001, FR-OPS-001, FR-AI-001, NFR-AUD-001, NFR-SAFE-001, NFR-OPS-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0012, ADR-0013, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.1, §7.4–§7.13, §13; [Data architecture](data-architecture.md); [ERD](erd.md) |
-| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
+| Change summary | 2026-08-12: thêm task-scoped execution/risk dictionary addendum approval pointer; physical schema vẫn gated bởi migration/task evidence. |
 
 ## 1. Authority and scope
 
@@ -195,7 +195,11 @@ Constraints/indexes proposed:
 
 No “placeholder” table, generic entity-value table, unowned JSONB store or early migration is allowed to bypass a deferred entry.
 
-### 7.1 Phase 6 AI/BYOK deferred-table policy
+### 7.1 Task 1.3 approved execution/risk design addendum
+
+Approval record `GOV-TASK-1.3-APPROVAL-20260812-091916` approves the column-level design in [execution-risk-dictionary-addendum.md](../../governance/evidence/tasks/1.3/execution-risk-dictionary-addendum.md) for the local simulator scope. The addendum governs orders, submission attempts, order events, fills, reconciliation cases and risk policy/decision/reservation/limit-state rows for task review. It does not authorize DDL, migration, runtime roles or production retention until the canonical task card is `READY`, PostgreSQL evidence is available and an approved migration is reviewed.
+
+### 7.2 Phase 6 AI/BYOK deferred-table policy
 
 The following are logical targets only. They are **not** DDL authorization and must not be created before a Phase 6 task has an approved dictionary entry, contract, migration plan and gate evidence.
 

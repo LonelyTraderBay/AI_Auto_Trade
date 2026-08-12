@@ -6,16 +6,16 @@
 
 - Phase hiện tại: **Phase 1 — Core safety (IN_PROGRESS)**. Gate Phase 0.0: **PASSED / REVALIDATED 2026-08-10T20:07:02Z**.
 - Task đã DONE (Account Owner approve 2026-08-06, card trong `tasks/completed/`): **0.1 Bootstrap, 0.2 Guardrails, 0.3 Persistence contract, 0.4 Architecture contract**.
-- Task đã hoàn tất: **0.0.7 — Codex Enterprise documentation** (`tasks/active/0.0.7-codex-enterprise-docs.yaml`, `DONE`, docs-only), Account Owner revalidate gate 2026-08-10T20:07:02Z.
+- Task đã hoàn tất: **0.0.7 — Codex Enterprise documentation** (`tasks/completed/0.0.7-codex-enterprise-docs.yaml`, `DONE`, docs-only), Account Owner revalidate gate 2026-08-10T20:07:02Z.
 - Task đã DONE: **0.5.1 — Config/audit/error envelope** (`tasks/completed/0.5.1-config-audit-envelope.yaml`), Account Owner approve `2026-08-11T00:30:47Z`.
 - Task đã DONE: **0.5.2 — Control API skeleton** (`tasks/completed/0.5.2-control-api-skeleton.yaml`), Account Owner xác định DONE `2026-08-11T02:14:42Z`.
 - Task đã DONE: **0.6 — Capability draft** (`tasks/completed/0.6-capability-draft.yaml`), Account Owner xác định DONE `2026-08-11T19:16:45Z`; local simulator/no venue, docs-only.
 - Task đã DONE: **1.1 — deterministic primitives** (`tasks/completed/1.1-deterministic-primitives.yaml`), Account Owner xác nhận `2026-08-11T19:41:38Z`.
 - Task đã DONE: **1.2 — OMS deterministic state machine** (`tasks/completed/1.2-oms-state-machine.yaml`), Account Owner xác nhận `2026-08-11T20:06:59Z`.
-- Task kế tiếp: **1.3 — durable submit/fake venue** chưa mở card; phải preflight riêng, không tự mở DB/venue/ledger scope.
+- Task hiện hành kế tiếp: **1.3 — durable submit/fake venue** (`tasks/active/1.3-durable-submit-fake-venue.yaml`, `BLOCKED`); approval record đã có nhưng phải hoàn tất authority sync, PostgreSQL no-skip và branch precondition trước khi chuyển `READY`.
 - DOM-OMS-001, DATA-TXN-001 và DOM-ACC-001 đã được Account Owner phê duyệt baseline `2026-08-11T19:52:15Z`; accounting annex chưa chọn vẫn chặn ledger activation.
 - OD-001 vẫn `OPEN` cho external venue/testnet; không được coi local simulator là venue approval hoặc mở Phase 3.
-- Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận.
+- Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận. Hiện Task 1.3 vẫn `BLOCKED`.
 - Với mọi card READY: làm đúng và chỉ đúng `allowed_globs` của card đó; `forbidden_globs` thắng khi xung đột.
 - Trạng thái sống luôn ở master §0 control panel — kiểm tra lại mỗi phiên làm việc, đừng tin file này nếu hai bên lệch nhau.
 

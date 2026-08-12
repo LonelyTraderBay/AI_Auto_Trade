@@ -1,0 +1,111 @@
+# NON-AUTHORITATIVE PROPOSAL — chỉ để review trong Task 1.3 approval packet.
+# Không đặt file này vào tasks/active/ và không dùng để authorize code.
+task_id: "1.3"
+phase: "1"
+status: "BLOCKED"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/1.3-*"
+references:
+  requirements:
+    - "FR-EXEC-001"
+    - "FR-RSK-001"
+    - "FR-REC-001"
+    - "NFR-AUD-001"
+    - "NFR-SAFE-001"
+  adrs:
+    - "ADR-0002"
+    - "ADR-0004"
+    - "ADR-0005"
+    - "ADR-0007"
+    - "ADR-0012"
+    - "ADR-0014"
+  contracts:
+    - "contracts/commands/execution/submit-order.v1.schema.json"
+    - "contracts/events/execution/order-event.v1.schema.json"
+    - "contracts/config/task-card.v1.schema.json"
+goal: "Implement a deterministic local-only durable-submit boundary and scriptable fake venue after all Task 1.3 approval prerequisites are closed."
+non_goals:
+  - "No external venue, exchange SDK, network, credential, testnet or live trading."
+  - "No LLM/AI execution path, strategy write, risk bypass or direct venue write from AI."
+  - "No portfolio ledger runtime, valuation, journal/posting or accounting annex activation."
+  - "No withdrawal, transfer, leverage, derivatives, multi-account or multi-venue scope."
+  - "No migration until approved data dictionary, ERD, ADR, role/grant and forward-fix plan exist."
+  - "No blind retry after UNKNOWN external-looking outcome."
+preconditions:
+  - "Account Owner approves the one-time Task 1.3 packet and all non-risk decisions."
+  - "Risk Approver approves the local simulator risk profile and fixtures."
+  - "DOM-RISK-001, canonical Fill contract, DATA-DICT-001 and DATA-ERD-001 are approved or explicitly scoped/deferred."
+  - "ADR-0012 amendment is approved and no If-approved/DRAFT contradiction remains."
+  - "C-CMD-002 and C-EVT-002 registry permission is approved; FVENUE-1 contract/harness is reviewed."
+  - "PostgreSQL test environment is available and migration/concurrency tests do not skip."
+  - "Working tree is clean and branch matches task/1.3-*."
+  - "Task-directory hygiene is reconciled: no DONE card remains in tasks/active/ and no duplicate active authority exists."
+blockers:
+  - "This proposal is not an active task card. A canonical tasks/active/1.3-*.yaml must be created only after prerequisites are approved."
+  - "Approval packet and Risk Approver evidence are pending."
+  - "PostgreSQL DATABASE_URL/integration evidence is pending."
+allowed_globs:
+  - "src/ai_auto_trade/contexts/execution/**"
+  - "src/ai_auto_trade/contexts/risk/**"
+  - "src/ai_auto_trade/adapters/persistence/**"
+  - "src/ai_auto_trade/adapters/venues/fake/**"
+  - "tests/unit/contexts/execution/**"
+  - "tests/unit/contexts/risk/**"
+  - "tests/integration/contexts/execution/**"
+  - "tests/integration/contexts/risk/**"
+  - "tests/integration/test_task_1_3_postgres.py"
+  - "migrations/versions/0003_task_1_3_execution_risk.py"
+  - "contracts/fixtures/submit-order.v1.valid.json"
+  - "contracts/fixtures/order-event.v1.valid.json"
+  - "docs/governance/evidence/tasks/1.3/**"
+forbidden_globs:
+  - "src/ai_auto_trade/apps/**"
+  - "src/ai_auto_trade/adapters/venues/real/**"
+  - "src/ai_auto_trade/adapters/venues/**/ccxt/**"
+  - "configs/**"
+  - "infra/**"
+  - ".github/**"
+  - ".env"
+  - "uv.lock"
+  - "pyproject.toml"
+  - "contracts/api/**"
+  - "contracts/commands/ai/**"
+  - "contracts/events/ai/**"
+impact:
+  database: true
+  api: false
+  event: true
+  config: false
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "Submit is idempotent by approved client identity/request hash and replay does not duplicate side effects."
+  - "UNKNOWN is persisted and enters reconciliation; no external submit blind retry occurs."
+  - "Fake venue scenarios are deterministic under pinned clock/seed/revision and have no network/credential access."
+  - "Partial fill, duplicate, out-of-order, timeout, crash-after-apply and lease-loss invariants are tested."
+  - "Domain code remains framework/vendor independent and uses Decimal/UTC/UUIDv7 boundaries."
+  - "Approved migration objects match dictionary/ERD, constraints, indexes, roles, retention and forward-fix plan."
+  - "Audit/correlation, structured logging/redaction, access denial, safe-state metrics/alerts, runbook and rollback evidence satisfy enterprise-control-closure-matrix.md."
+  - "Threat mappings T-003/T-004/T-006/T-007/T-011/T-018 have negative or fault evidence; no AI/external venue path exists."
+  - "PostgreSQL integration/concurrency tests run without skip and evidence records command/exit/artifact."
+  - "All required quality commands pass and diff stays within allowlist."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run pytest tests/integration/test_task_1_3_postgres.py -q"
+  - "uv run python scripts/validate_contracts.py"
+  - "git diff --check"
+evidence_path: "docs/governance/evidence/tasks/1.3/"
+gate_impact: "Phase 1 Core safety; implementation does not open Phase 3 or ledger gate."
+rollback_or_forward_fix: "Revert task commit if review rejects it; never edit applied financial/audit history; schema corrections use approved expand/forward-fix migration and reconciliation evidence."
+known_risks:
+  - "External-looking UNKNOWN outcome cannot be proven absent by internal fencing; recovery/reconciliation remains mandatory."
+  - "Risk/Fill/data artifacts may still be draft; no code before approval evidence."
+  - "Database integration cannot be claimed while DATABASE_URL test is skipped."
+  - "Fake venue must not become an implicit approval for an external venue."
+waiver_id: null

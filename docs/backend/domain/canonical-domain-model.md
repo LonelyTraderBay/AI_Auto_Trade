@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | DOM-MODEL-001 (registry DOCS_INDEX; title giữ alias ngắn) |
-| Phiên bản | 0.4.0 |
+| Phiên bản | 0.5.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -11,7 +11,7 @@
 | Ngày hiệu lực | Chưa hiệu lực |
 | Rà soát gần nhất | 2026-08-02 |
 | Rà soát tiếp theo | Trước khi Task 0.4 bắt đầu |
-| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
+| Change summary | 2026-08-12: ghi nhận Task 1.3 approval cho canonical Fill semantics; general domain model vẫn DRAFT cho scope ngoài local simulator. |
 | Liên quan | FR-MKT-001, FR-STR-001, FR-EXEC-001, FR-RSK-001, FR-LED-001, FR-REC-001, FR-AI-001, NFR-DET-001, NFR-AUD-001, NFR-SAFE-001, NFR-AI-001; ADR-0002, ADR-0003, ADR-0005, ADR-0007, ADR-0011, ADR-0012, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §4, §5, §7, §8, §10.6 |
 
@@ -136,6 +136,10 @@ Mọi integration event có `id`, `type`, `schema_version`, `source`, `occurred_
 Fill phải có `fill_id` (UUIDv7), `order_id`, `client_order_id`, `venue_fill_id` (tên field theo master §7.6; nullable khi venue không cung cấp — khi đó dedupe dùng source fingerprint bên dưới), `price` (Decimal), `quantity` (Decimal), `fee_amount` (Decimal), `fee_asset`, `liquidity_flag` (`MAKER` | `TAKER` | `UNKNOWN`; `UNKNOWN` khi venue không báo), bốn timestamp `occurred_at`/`received_at`/`processed_at`/`recorded_at`, `sequence` (monotonic theo order, `UNIQUE(order_id, sequence)` — khóa ordering nội bộ) và `correlation_id`.
 
 Fill là immutable. Khóa phát hiện duplicate là `venue_fill_id` trong phạm vi venue/account khi có; nếu venue không cung cấp thì dùng **source event fingerprint** — `UNIQUE (venue_id, account_id, source_event_id/fingerprint)` theo master §7.6, khớp DOM-002 §6 và §5 của chính tài liệu này. `(order_id, sequence)` chỉ là khóa ordering, không phải khóa dedupe (sửa theo audit 2026-08-02 — bản trước mâu thuẫn master §7.6). Fee fields là bắt buộc cho ledger booking theo [accounting policy](accounting-policy.md) (DOM-004): fill thiếu thông tin fee phải được book với `fee = 0` tường minh kèm quality flag, không bao giờ được đoán ngầm.
+
+### 7.5.1 Task 1.3 approval boundary
+
+Approval record `GOV-TASK-1.3-APPROVAL-20260812-091916` approves the §7.5 field, Decimal/string, UTC timestamp, immutable-history, sequence-ordering and venue-fill/source-fingerprint dedupe semantics for the synthetic local simulator. It does not activate ledger booking, external venue semantics or live fee/rebate policy. The document remains `DRAFT` for broader domain scope until its phase-specific approval is recorded.
 
 ## 8. Invariant domain không được waiver
 

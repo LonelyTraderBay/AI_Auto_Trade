@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | DOM-RISK-001 (registry DOCS_INDEX; title giữ alias ngắn) |
-| Phiên bản | 0.2.0 |
+| Phiên bản | 0.3.0 |
 | Trạng thái | DRAFT — chờ Risk Approver và Account Owner phê duyệt |
 | Owner | Risk Approver |
 | Approver | Account Owner (pending) |
@@ -12,7 +12,7 @@
 | Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-RSK-001, FR-EXEC-001, FR-REC-001, NFR-SAFE-001, NFR-AUD-001; ADR-0005, ADR-0007, ADR-0012 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §5.4–§5.6, §6.3, §7.7, §8.4–§8.10 |
-| Change summary | 2026-08-02: chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện); nội dung không đổi. |
+| Change summary | 2026-08-12: bổ sung Task 1.3 local-simulator profile pointer; general/live risk policy vẫn DRAFT và không được suy diễn từ profile test. |
 
 ## 1. Mục đích, authority và giới hạn
 
@@ -113,6 +113,14 @@ Mỗi decision/reservation/approval/kill-switch action phải trace được t�
 
 Các mục sau cố ý chưa có giá trị: policy currency/asset scale, valuation/price source, fee/slippage buffer, exposure/notional/rate/loss/drawdown caps, reset timezone, freshness threshold, approval roles/expiry, reduce-only exception và canary caps. Chúng cần policy artifact đã ký, Open Decision Register và gate phù hợp; không AI nào được điền “giá trị hợp lý”.
 
+### 10.1 Task 1.3 approved local-simulator profile
+
+For the Phase 1 local simulator only, the approval record `GOV-TASK-1.3-APPROVAL-20260812-091916` approves the immutable fixture [risk-profile.local-simulator.v1.approved.json](../../governance/evidence/tasks/1.3/risk-profile.local-simulator.v1.approved.json) with SHA-256 `9b7cf6ecabbf7a6687ae008a52497290685a08b99f9f1fe281224f8f986d3c16`, effective `2026-08-12T09:19:16Z`, expiry `2026-09-30T00:00:00Z`.
+
+The profile is synthetic-only (`FAKE-LOCAL-001` / `SIM-ACCOUNT-001` / `SIM-INSTRUMENT-001`), caps quantity and notional at `1000.000000000000000000`, allows `10` submit intents per `60` seconds, requires market-data freshness within `5` seconds, expires reservations after `30` seconds, treats loss/drawdown as not applicable by scope and rejects valuation-dependent flows, and uses `GLOBAL → VENUE → ACCOUNT → STRATEGY → INSTRUMENT` kill-switch hierarchy with default `FREEZE`. It does not authorize external venue, testnet, live, ledger or AI execution.
+
+This subsection is task-scoped authority only. The general risk-policy header remains `DRAFT` for later environments and canary/live parameters.
+
 ## 11. Acceptance trước Phase 1
 
 - [ ] ADR-0007 và ADR-0012 APPROVED.
@@ -125,4 +133,5 @@ Các mục sau cố ý chưa có giá trị: policy currency/asset scale, valuat
 | Ngày | Phiên bản | Người thực hiện | Phê duyệt | Nội dung |
 |---|---|---|---|---|
 | 2026-07-31 | 0.2.0 | Technical Operator | Pending | Align danh sách field `RiskDecision` với master §5.6 (đánh dấu snapshot hashes là additive) tại §3; ghi chú escape hatch "reservation pre-approval" INACTIVE vì không có trong master §5.4 tại §5; thêm template công thức reservation tham số hóa (DRAFT) tại §6 |
+| 2026-08-12 | 0.3.0 | Technical Operator | Approval record `2026-08-12T09:19:16Z` | Add Task 1.3 synthetic-only profile pointer with pinned hash/effective/expiry; no live policy activation. |
 

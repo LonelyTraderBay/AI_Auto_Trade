@@ -1,0 +1,31 @@
+{
+  "scenario_id": "ACCEPT_PARTIAL_UNKNOWN_001",
+  "scenario_revision": 1,
+  "seed": 0,
+  "clock_start": "2026-08-12T00:00:00Z",
+  "outcomes": [
+    {
+      "sequence": 1,
+      "delay_ms": 0,
+      "outcome": "PARTIAL_FILL",
+      "fault_code": null,
+      "venue_order_id": "SIM-VENUE-ORDER-001",
+      "fills": [
+        {
+          "price": "1.000000000000000000",
+          "quantity": "10.000000000000000000",
+          "fee_amount": "0.010000000000000000",
+          "fee_asset": "SIM-QUOTE"
+        }
+      ]
+    },
+    {
+      "sequence": 2,
+      "delay_ms": 5000,
+      "outcome": "UNKNOWN",
+      "fault_code": "AMBIGUOUS_RESPONSE",
+      "venue_order_id": null,
+      "fills": []
+    }
+  ]
+}

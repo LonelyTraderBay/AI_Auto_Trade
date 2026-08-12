@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | GOV-INDEX-001 |
-| Phiên bản | 0.14.9 |
+| Phiên bản | 0.14.18 |
 | Trạng thái | IN_REVIEW (0.9.0 APPROVED 2026-08-06; 0.10.0 revalidated by Account Owner 2026-08-10T20:07:02Z; remaining artifact rows retain their own status) |
 | Owner | Technical Operator |
 | Approver | Account Owner |
@@ -11,7 +11,7 @@
 | Ngày hiệu lực | 2026-08-06 |
 | Rà soát gần nhất | 2026-08-11 |
 | Master authority | [AI_AUTO_TRADE_MASTER_SPEC.md](../../AI_AUTO_TRADE_MASTER_SPEC.md) v2.3.9 |
-| Change summary | 0.14.9 (2026-08-12): Account Owner xác nhận DONE Task 1.2 lúc 2026-08-11T20:06:59Z; chuyển card completed; Task 1.3 durable submit/fake venue chưa mở card. |
+| Change summary | 0.14.18 (2026-08-12): ghi nhận one-time approval record, reconcile card 0.0.7 sang `tasks/completed/`, tạo canonical Task 1.3 card ở `BLOCKED` và đồng bộ control panel; branch đã tạo, chưa mở code vì thiếu PostgreSQL no-skip/clean reviewed tree. 0.14.17: bổ sung P-68 và Security/Backup Owner sign-off. |
 
 ## Mục đích và trạng thái
 
@@ -130,10 +130,10 @@ Kể từ v0.3.0, cây thư mục `docs/` được tổ chức theo lớp **Back
 | ADR set (content, 0001–0016) | [docs/backend/adr/](../backend/adr/) | ADR 0001–0005, 0007, 0011, 0012, 0014 APPROVED (2026-08-06); ADR 0006, 0008–0010, 0013, 0015–0016 DRAFT (deadline later phases) |
 | Templates — TMP-ADR-001 · TMP-TASK-001 · TMP-GATE-001 | [adr](templates/adr.md) · [task-card](templates/task-card.md) · [gate-record](templates/gate-record.md) | IN_REVIEW |
 | Template — GOV-TPL-INC-001 | [incident-record](templates/incident-record.md) | DRAFT |
-| Task controls | [tasks/active/](../../tasks/active/) · [tasks/completed/](../../tasks/completed/) | 0.0.0–0.0.7 DONE; 0.5.1/0.5.2/0.6/1.1/1.2 DONE; Task 1.3 chưa mở card; OD-001 external venue OPEN |
+| Task controls | [tasks/active/](../../tasks/active/) · [tasks/completed/](../../tasks/completed/) | 0.0.0–0.0.7 DONE; 0.5.1/0.5.2/0.6/1.1/1.2 DONE; [Task 1.3 card](../../tasks/active/1.3-durable-submit-fake-venue.yaml) BLOCKED; OD-001 external venue OPEN |
 | Repo-root controls | [README](../../README.md) · [AGENTS.md](../../AGENTS.md) · [SECURITY.md](../../SECURITY.md) · [CONTRIBUTING.md](../../CONTRIBUTING.md) · [CODEOWNERS](../../CODEOWNERS) | IN_REVIEW — COMMIT_NOTES.md đã xóa 2026-08-10 theo quyết định Account Owner (nội dung trong git history) |
 | Gate evidence | [gate record](evidence/gates/phase-0.0/gate-record.md) · [review checklist](evidence/gates/phase-0.0/review-checklist.md) · [validation 2026-08-02](evidence/gates/phase-0.0/validation-2026-08-02.md) · [validation 2026-08-02 lần 2](evidence/gates/phase-0.0/validation-2026-08-02-02.md) | APPROVED / REVALIDATED 2026-08-10T20:07:02Z — Account Owner ký lại sau Task 0.0.7 |
-| Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — gồm evidence 0.1–0.6, Task 1.1 deterministic primitives và Task 1.2 OMS state machine; Task 0.6 Owner approval `2026-08-11T19:16:45Z`; Task 1.1 Owner approval `2026-08-11T19:41:38Z`; Task 1.2 Owner approval `2026-08-11T20:06:59Z` |
+| Task evidence | [docs/governance/evidence/tasks/](evidence/tasks/) | IN_REVIEW — gồm evidence 0.1–0.6, Task 1.1 deterministic primitives, Task 1.2 OMS state machine và [Task 1.3 one-time approval packet v0.3.0](evidence/tasks/1.3/ONE-TIME-APPROVAL-PACKET.md), [one-time approval record](evidence/tasks/1.3/approval-record-2026-08-12.md), [Enterprise-Grade readiness audit](evidence/tasks/1.3/enterprise-readiness-audit.md), [control closure matrix](evidence/tasks/1.3/enterprise-control-closure-matrix.md), [approved risk fixture](evidence/tasks/1.3/risk-profile.local-simulator.v1.approved.json), [fake venue scenario schema](evidence/tasks/1.3/fake-venue-scenario.v1.schema.json), [dictionary addendum](evidence/tasks/1.3/execution-risk-dictionary-addendum.md), [traceability matrix](evidence/tasks/1.3/task-1.3-traceability-matrix.md) và [runbook drill plan](evidence/tasks/1.3/task-1.3-runbook-drill-plan.md) cùng các phụ lục [Account Owner approval record](evidence/tasks/1.3/account-owner-approval-2026-08-12.md), [decision register](evidence/tasks/1.3/owner-decision-register.md), [risk/Fill/concurrency closure](evidence/tasks/1.3/risk-fill-concurrency-closure.md), [data/persistence closure](evidence/tasks/1.3/data-persistence-closure.md), [fake venue closure](evidence/tasks/1.3/fake-venue-closure.md), [ADR amendment proposal](evidence/tasks/1.3/adr-0012-amendment-proposal.md), [implementation card proposal](evidence/tasks/1.3/implementation-task-card-proposal.yaml) và [validation evidence](evidence/tasks/1.3/preflight-validation-2026-08-12.md); approval record `2026-08-12T09:19:16Z`; Task 1.3 card BLOCKED chờ PostgreSQL no-skip và clean reviewed tree |
 
 ## Approval rule
 
@@ -143,6 +143,15 @@ Update this register and `docs/governance/document-control.md` in the same revie
 
 | Version | Date | Thay đổi | Owner | Approval |
 |---|---|---|---|---|
+| 0.14.18 | 2026-08-12 | Ghi nhận one-time approval record; chuyển card 0.0.7 về `tasks/completed/`; tạo canonical Task 1.3 card ở `BLOCKED`, tạo branch `task/1.3-durable-submit-fake-venue` và đồng bộ control panel; chưa mở code vì thiếu PostgreSQL no-skip/clean reviewed tree. | Technical Operator | Account Owner approval `2026-08-12T09:19:16Z`; execution blockers remain |
+| 0.14.17 | 2026-08-12 | Bổ sung P-68 về task-directory hygiene; đồng bộ audit/preflight/register để ghi rõ card `DONE` còn nằm trong `tasks/active/`, và thêm Security/Backup Owner review cho control security/backup; giữ packet v0.2.1 pending approval và implementation BLOCKED. | Technical Operator | Pending Account Owner/Risk Approver/Security/Backup Owner review |
+| 0.14.16 | 2026-08-12 | Bổ sung risk fixture, fake-venue scenario schema/fixture, column-level dictionary addendum, traceability matrix và runbook drill plan; giữ packet v0.2.0 pending approval và implementation BLOCKED. | Technical Operator | Pending Account Owner/Risk Approver review |
+| 0.14.15 | 2026-08-12 | Bổ sung Enterprise-Grade readiness audit/control closure matrix và mở rộng one-time packet với cross-cutting controls; implementation vẫn BLOCKED. | Technical Operator | Pending Account Owner/Risk Approver review |
+| 0.14.14 | 2026-08-12 | Ghi nhận Account Owner approval baseline packet v0.1.0; risk-sensitive items vẫn cần Risk Approver và implementation vẫn BLOCKED. | Technical Operator | Account Owner `2026-08-12T08:56:11Z`; Risk Approver pending |
+| 0.14.13 | 2026-08-12 | Tạo gói phê duyệt một lần và phụ lục ADR/task-card proposal cho Task 1.3; giữ toàn bộ artifact ở DRAFT/BLOCKED. | Technical Operator | Pending Account Owner/Risk Approver review |
+| 0.14.12 | 2026-08-12 | Ghi nhận Account Owner acknowledgement cho candidate baseline Task 1.3; 12 decision vẫn OPEN và implementation vẫn BLOCKED. | Technical Operator | Account Owner acknowledgement `2026-08-12T08:33:58Z`; final approval pending |
+| 0.14.11 | 2026-08-12 | Bổ sung decision register, các closure draft và validation evidence cho Task 1.3; giữ implementation BLOCKED và không thay đổi task authority. | Technical Operator | Pending Account Owner/Risk Approver review |
+| 0.14.10 | 2026-08-12 | Thêm gói preflight Task 1.3 cho durable submit/local fake venue ở trạng thái DRAFT/BLOCKED; không mở task implementation hoặc thay đổi gate. | Technical Operator | Pending Account Owner review |
 | 0.14.9 | 2026-08-12 | Account Owner xác nhận DONE Task 1.2; chuyển card completed; đồng bộ control references và giữ Task 1.3 chưa mở card. | Technical Operator | Account Owner `2026-08-11T20:06:59Z` |
 | 0.14.8 | 2026-08-12 | Hoàn tất implementation/evidence Task 1.2; chuyển card IN_PROGRESS → REVIEW; đồng bộ control references và chờ Account Owner nghiệm thu. | Technical Operator | Pending Account Owner review |
 | 0.14.7 | 2026-08-12 | Bắt đầu thực thi Task 1.2; chuyển card READY → IN_PROGRESS; đồng bộ control references. | Technical Operator | Account Owner baseline approval `2026-08-11T19:52:15Z` |

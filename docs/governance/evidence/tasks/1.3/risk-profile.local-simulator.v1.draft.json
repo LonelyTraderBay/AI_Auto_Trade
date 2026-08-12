@@ -1,0 +1,41 @@
+{
+  "document_id": "GOV-TASK-1.3-RISK-FIXTURE-001",
+  "status": "DRAFT",
+  "profile_id": "LOCAL_SIMULATOR_TEST",
+  "profile_version": "1.0.0-draft",
+  "scope": {
+    "environment": "local-simulator",
+    "venue_id": "FAKE-LOCAL-001",
+    "account_id": "SIM-ACCOUNT-001",
+    "instrument_id": "SIM-INSTRUMENT-001",
+    "synthetic_only": true
+  },
+  "limits": {
+    "max_order_quantity": "1000.000000000000000000",
+    "max_order_notional": "1000.000000000000000000",
+    "submit_rate_max_count": 10,
+    "submit_rate_window_seconds": 60,
+    "market_data_freshness_seconds": 5,
+    "reservation_expiry_seconds": 30
+  },
+  "valuation": {
+    "loss_drawdown_mode": "NOT_APPLICABLE_BY_SCOPE",
+    "missing_valuation_behavior": "REJECT_IF_VALUATION_REQUIRED"
+  },
+  "kill_switch": {
+    "hierarchy": ["GLOBAL", "VENUE", "ACCOUNT", "STRATEGY", "INSTRUMENT"],
+    "default_action": "FREEZE",
+    "automatic_flatten": false
+  },
+  "numeric_policy": {
+    "representation": "DECIMAL_STRING",
+    "database_type": "NUMERIC(38,18)",
+    "rounding_mode": "ROUND_HALF_EVEN"
+  },
+  "approval": {
+    "required_roles": ["Risk Approver", "Account Owner"],
+    "policy_hash": "PENDING_APPROVAL",
+    "effective_at": null,
+    "expires_at": null
+  }
+}

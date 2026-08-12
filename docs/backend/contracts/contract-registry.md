@@ -2,11 +2,11 @@
 
 | Trường | Giá trị |
 |---|---|
-| Version / Status | 1.1.3 / IN_REVIEW |
+| Version / Status | 1.2.0 / IN_REVIEW (Task 1.3 scoped approval recorded) |
 | Owner / Approver | Technical Operator / Account Owner (pending) |
 | Effective date / Last review | Chưa hiệu lực / 2026-08-11 |
 | Related | FR-OPS-001, FR-EXEC-001, FR-AI-001, NFR-SEC-001, NFR-AI-001; ADR-0004, ADR-0005, ADR-0007, ADR-0010, ADR-0012, ADR-0014, ADR-0015, ADR-0016 |
-| Change summary | 1.1.3 (2026-08-11, Technical Operator, Pending): làm rõ task-card/AGENTS/Codex provenance là governance control, phân biệt validator local với CI enforcement và ghi nhận gate revalidation bắt buộc sau substantive artifact change; không đổi public contract. 1.1.2: đồng bộ Related và giới hạn OpenAPI skeleton. |
+| Change summary | 1.2.0 (2026-08-12): ghi nhận Task 1.3 scoped approval cho C-CMD-002/C-EVT-002 và fake-venue design; global registry vẫn IN_REVIEW cho các contract khác. |
 
 ## 1. Registry rule
 
@@ -15,6 +15,10 @@ OpenAPI is canonical for HTTP; versioned JSON Schema is canonical for command/ev
 Task-card YAML is the canonical execution scope, not a prose document. The card must pass `contracts/config/task-card.v1.schema.json`, bind to the branch/PR pattern, have an unexpired `expiry_at`, and be `READY` before implementation. A card may reference a DRAFT/IN_REVIEW contract only when its non-goal and gate explicitly prohibit implementation; otherwise the task is `BLOCKED`. Local validation output is evidence, not contract approval. Any substantive change to a gate-approved contract, master or control artifact invalidates the previous gate hash until revalidation and human sign-off.
 
 HTTP command request body is deliberately not the durable `C-CMD-001` record: server authentication derives actor/role, route derives command type/scope, header supplies idempotency key, server calculates canonical request hash and creates the `ACCEPTED` command record. Task 0.2 must add parity tests for every route mapping (body `reason`/`payload` -> C-CMD-001) and fail on drift; a client must never claim actor, status or request hash in HTTP JSON.
+
+### Task 1.3 scoped contract approval
+
+Approval record `GOV-TASK-1.3-APPROVAL-20260812-091916` approves use of `C-CMD-002` (`submit-order.v1`) and `C-EVT-002` (`order-event.v1`) for the synthetic local simulator, plus the versioned FVENUE-1 scenario design. This scoped approval does not make the global registry `APPROVED`, does not authorize HTTP/API changes or external venue integration, and still requires the canonical Task 1.3 card to reach `READY` before implementation.
 
 | Contract ID | Kind / version / status | Canonical path | Owner; producer -> consumer | Auth / sensitive classification / key | Fixture / validator / evidence | Related |
 |---|---|---|---|---|---|---|

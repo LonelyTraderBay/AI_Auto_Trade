@@ -3,7 +3,7 @@
 | Thuộc tính | Giá trị |
 |---|---|
 | Document ID | DATA-ERD-001 (registry DOCS_INDEX; title giữ alias ngắn) |
-| Phiên bản | 0.4.0 |
+| Phiên bản | 0.5.0 |
 | Trạng thái | DRAFT — chờ Account Owner phê duyệt |
 | Owner | Technical Operator |
 | Approver | Account Owner (pending) |
@@ -12,7 +12,7 @@
 | Rà soát gần nhất | 2026-08-02 |
 | Liên quan | FR-MKT-001, FR-EXEC-001, FR-LED-001, FR-REC-001, FR-AI-001, NFR-AUD-001, NFR-AI-001; ADR-0003, ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0016 |
 | Nguồn policy | [Master specification](../../../AI_AUTO_TRADE_MASTER_SPEC.md), §4.2, §7.4–§7.8, §8, §10.6 |
-| Change summary | 0.4.0 (2026-08-02): §2 bổ sung `data_quality_issues` vào context map (khớp §4.1/master §7.6); chuẩn hóa header theo GOV-DOC-001 §3 (audit toàn diện). |
+| Change summary | 0.5.0 (2026-08-12): ghi nhận Task 1.3 execution/risk ERD boundary approval; physical relationships vẫn gated bởi dictionary/migration/task evidence. |
 
 ## 1. Reading rules
 
@@ -148,6 +148,10 @@ The secret provider is intentionally absent from this ERD. Internal active/candi
 An entity may be shown in §2 but remains deferred until all conditions are true: (1) phase/task authorizes it, (2) dictionary row contains full columns/constraints/access/retention, (3) relevant ADR is APPROVED, (4) contract/fixture and migration/forward-fix plan are reviewed, and (5) no existing owner table can meet the requirement without violating boundaries.
 
 Examples explicitly deferred now: all AI/BYOK entities until ADR-0008 + ADR-0016 and Phase 6 task/gate; venue-specific private data; authentication/session tables; all research/Parquet metadata until Phase 2; trading/risk/ledger tables until Phase 1. An implementation must not turn this ERD into speculative DDL.
+
+### 6.1 Task 1.3 approved design boundary
+
+Approval record `GOV-TASK-1.3-APPROVAL-20260812-091916` approves the execution/risk relationships in this ERD together with [execution-risk-dictionary-addendum.md](../../governance/evidence/tasks/1.3/execution-risk-dictionary-addendum.md) for local-simulator design review. Cross-context references remain logical IDs; same-schema foreign keys, grants, indexes and migrations require the `READY` task card and PostgreSQL evidence.
 
 ## 7. Review checklist
 
