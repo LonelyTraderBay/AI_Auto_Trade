@@ -75,4 +75,4 @@ Kết quả validation kỹ thuật của repo hiện tại là xanh, nhưng Def
 - ADR-0012 cần amendment/clarification.
 - PostgreSQL integration chưa chạy do thiếu `DATABASE_URL`.
 
-Đề xuất trạng thái: `BLOCKED` cho implementation; `IN_REVIEW` cho bộ preflight docs; approval, task-scoped authority references và branch `task/1.3-*` đã có nhưng chưa có PostgreSQL no-skip evidence và clean reviewed tree. Không tự chuyển card sang `READY`.
+Đề xuất trạng thái: `BLOCKED` cho implementation; `IN_REVIEW` cho bộ preflight docs; approval, task-scoped authority references, branch `task/1.3-*` và clean reviewed tree đã có nhưng chưa có PostgreSQL no-skip evidence. Không tự chuyển card sang `READY`.

@@ -36,7 +36,7 @@ Role actions are recorded separately as required by Master §1.6. The same human
 1. Reconcile `tasks/active/0.0.7-codex-enterprise-docs.yaml` into `tasks/completed/` — **DONE**.
 2. Synchronize ADR/registry/dictionary/ERD and task-scoped control references — **DONE for task-scoped design; global documents remain DRAFT/IN_REVIEW where stated**.
 3. Keep the canonical Task 1.3 card `BLOCKED` until PostgreSQL `DATABASE_URL` is available and integration/concurrency tests can run without skip.
-4. Create/use a separate implementation branch matching `task/1.3-*` — **DONE** (`task/1.3-durable-submit-fake-venue`); the card still cannot be `READY` until the tree is clean and PostgreSQL evidence exists.
+4. Create/use a separate implementation branch matching `task/1.3-*` — **DONE** (`task/1.3-durable-submit-fake-venue`); the tree is clean, but the card still cannot be `READY` until PostgreSQL evidence exists.
 
 ## 4. Evidence and audit note
 

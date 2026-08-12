@@ -81,7 +81,7 @@ The following cannot be waived by a generic approval message:
 - No evidence for migration/grants/constraints/lease/CAS/crash recovery.
 - Runtime conformance/evidence is still absent for the approved risk fixture, scenario schema, dictionary addendum, traceability matrix and runbook drill plan.
 - PostgreSQL integration still skips because `DATABASE_URL` is absent; no-skip evidence is mandatory.
-- Current branch is correct (`task/1.3-durable-submit-fake-venue`); the working tree must be clean before implementation.
+- Current branch is correct (`task/1.3-durable-submit-fake-venue`) and the working tree is clean; PostgreSQL no-skip remains.
 
 ## 5. Evidence required for final Task 1.3 review
 

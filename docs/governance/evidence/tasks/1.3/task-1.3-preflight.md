@@ -135,7 +135,7 @@ Task implementation chỉ được mở khi task card riêng ghi rõ và reviewe
 - [x] Contract registry ghi rõ task-scoped artifacts được phép implement sau `READY`.
 - [x] Task card code có `allowed_globs`, `forbidden_globs`, expiry, reviewer, commands và evidence path.
 - [x] Không còn card `DONE` trong `tasks/active/`; card cũ đã reconcile sang `tasks/completed/`.
-- [ ] Branch pattern đã đúng; working tree còn thay đổi tài liệu và phải clean trước khi chuyển `IN_PROGRESS`.
+- [x] Branch pattern đúng (`task/1.3-durable-submit-fake-venue`) và working tree đã clean sau docs commit.
 - [ ] Có PostgreSQL test environment để không bỏ qua migration/concurrency tests.
 - [x] Ledger runtime vẫn bị khóa nếu accounting annex chưa được phê duyệt.
 

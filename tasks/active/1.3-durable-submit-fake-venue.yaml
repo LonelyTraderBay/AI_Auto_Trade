@@ -41,7 +41,6 @@ preconditions:
   - "Phase 0.0 gate remains APPROVED/REVALIDATED and Task 1.2 remains DONE."
 blockers:
   - "DATABASE_URL is not available; PostgreSQL migration/concurrency integration currently skips."
-  - "Working tree contains the approved documentation changes; implementation requires a clean reviewed tree before IN_PROGRESS."
 allowed_globs:
   - "AI_AUTO_TRADE_MASTER_SPEC.md"
   - "AGENTS.md"

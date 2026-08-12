@@ -66,11 +66,11 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
-| Việc kế tiếp | Task 1.3 — durable submit/fake venue card đã tạo nhưng **BLOCKED** | Account Owner | Approval record GOV-TASK-1.3-APPROVAL-20260812-091916; chờ PostgreSQL `DATABASE_URL` no-skip và clean reviewed tree |
+| Việc kế tiếp | Task 1.3 — durable submit/fake venue card đã tạo nhưng **BLOCKED** | Account Owner | Approval record GOV-TASK-1.3-APPROVAL-20260812-091916; chờ PostgreSQL `DATABASE_URL` no-skip |
 | Môi trường đang chạy | Chưa có | Technical Operator | Không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 card BLOCKED bởi thiếu PostgreSQL no-skip và clean reviewed tree; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, task card 1.3 và approval evidence |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 card BLOCKED bởi thiếu PostgreSQL no-skip; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, task card 1.3 và approval evidence |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
 | Lần rà soát | 2026-08-12 | Account Owner | v2.3.9; Task 1.2 DONE lúc `2026-08-11T20:06:59Z`; Task 1.3 approval recorded nhưng card còn BLOCKED; local simulator/no venue; OD-001 vẫn OPEN |
 
