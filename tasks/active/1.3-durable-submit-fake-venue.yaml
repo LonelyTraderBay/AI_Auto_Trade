@@ -41,6 +41,7 @@ preconditions:
   - "Phase 0.0 gate remains APPROVED/REVALIDATED and Task 1.2 remains DONE."
 blockers:
   - "DATABASE_URL is not available; PostgreSQL migration/concurrency integration currently skips."
+  - "Supabase CLI 2.113.0 and tested older CLI versions reject the approved PostgreSQL 16.x local configuration; an approved PostgreSQL 16 environment or ADR/master amendment to PostgreSQL 17 is required."
 allowed_globs:
   - "AI_AUTO_TRADE_MASTER_SPEC.md"
   - "AGENTS.md"
