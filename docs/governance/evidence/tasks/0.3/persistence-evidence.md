@@ -65,7 +65,7 @@ Transitive deps added: greenlet==3.5.4, mako==1.4.1, markupsafe==3.0.3
 
 ## Blocker / Known Risk
 
-- Integration test `test_platform_tables_exist` is skipped when `DATABASE_URL` is not set. To run it: start docker-compose, run `alembic upgrade head`, set `DATABASE_URL=postgresql+psycopg2://aat_dev:...@localhost:5432/ai_auto_trade_dev`, then `uv run pytest tests/integration/`.
+- Integration test `test_platform_tables_exist` is skipped when `DATABASE_URL` is not set. To run it: start docker-compose, run `alembic upgrade head`, provide `DATABASE_URL` through the process environment without printing or persisting its value, then `uv run pytest tests/integration/`.
 
 ## Proposed Status
 

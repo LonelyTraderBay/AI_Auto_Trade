@@ -38,6 +38,8 @@ Run UTC: `2026-08-13T13:43:00Z`
 
 ## Blocking decision
 
-The target remains unchanged because the separate Security/Backup Owner role
-action required by the canonical card has not been recorded. This artifact is
-preflight evidence only; it is not approval and does not transition the card.
+At the time of this preflight, the target remained unchanged because the
+separate Security/Backup Owner role action had not yet been recorded. The role
+action was subsequently recorded at `2026-08-13T14:01:57Z`; this historical
+preflight artifact remains evidence of the before state and does not itself
+authorize the edit.
