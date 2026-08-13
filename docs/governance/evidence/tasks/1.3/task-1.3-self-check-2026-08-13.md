@@ -4,10 +4,10 @@
 |---|---|
 | Document ID | GOV-TASK-1.3-SELF-CHECK-20260813 |
 | Version | 0.2.0 |
-| Run UTC | 2026-08-13T14:16:33Z |
+| Run UTC | 2026-08-13T14:19:42Z |
 | Branch | \`task/1.3-durable-submit-fake-venue-after-redaction\` |
 | Script | [\`task-1.3-self-check.ps1\`](task-1.3-self-check.ps1) |
-| Card status at run | **IN_PROGRESS** |
+| Card status at run | **IN_PROGRESS** (transitioned to **REVIEW** after this run) |
 | Result | **PASS — no BLOCKED/FAIL checks** |
 
 ## Scope
@@ -27,8 +27,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\docs\governance\evidence\t
 
 | Result | Count |
 |---|---:|
-| PASS | 22 |
-| INFO | 3 |
+| PASS | 23 |
+| INFO | 2 |
 | BLOCKED | 0 |
 | FAIL | 0 |
 
@@ -36,7 +36,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\docs\governance\evidence\t
 
 - Branch matches \`task/1.3-*\`; changed files remain within the canonical
   Task 1.3 allowlist and pass \`git diff --check\`.
-- Task card has all 22 required structural fields and is \`IN_PROGRESS\`.
+- Task card had all 22 required structural fields and was \`IN_PROGRESS\` during
+  the run; it is now recorded as \`REVIEW\`.
 - Fake-venue scenario fixture validates against its Draft 2020-12 schema.
 - All 14 repository JSON Schemas validate.
 - Approved risk fixture metadata is valid; file SHA-256:
@@ -73,7 +74,6 @@ Evidence hashes:
 
 ## Remaining review item
 
-The task is at \`IN_PROGRESS\` because this run was performed before the
-implementation checkpoint. After commit, the Technical Operator should move it
-to \`REVIEW\`; the Account Owner decides whether it is \`DONE\`. No runtime
-blocker remains in this local-only scope.
+The implementation checkpoint is committed as \`f72c895\`. The Technical
+Operator has recorded the card as \`REVIEW\`; the Account Owner decides whether
+it is \`DONE\`. No runtime blocker remains in this local-only scope.
