@@ -1,6 +1,6 @@
 task_id: "1.3"
 phase: "1"
-status: "BLOCKED"
+status: "IN_PROGRESS"
 owner: "Technical Operator"
 reviewer: "Account Owner"
 expiry_at: "2026-09-30T00:00:00Z"
@@ -39,8 +39,7 @@ preconditions:
   - "PostgreSQL test environment is available through DATABASE_URL and required integration/concurrency tests do not skip."
   - "Working tree is clean and branch matches task/1.3-* before implementation."
   - "Phase 0.0 gate remains APPROVED/REVALIDATED and Task 1.2 remains DONE."
-blockers:
-  - "Supabase Local PostgreSQL 17.6 and no-skip integration evidence are available; the canonical card remains BLOCKED until the Account Owner explicitly transitions it to READY before implementation."
+blockers: []
 allowed_globs:
   - "AI_AUTO_TRADE_MASTER_SPEC.md"
   - "AGENTS.md"

@@ -67,13 +67,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
-| Việc kế tiếp | Task 1.3 — durable submit/fake venue card và Task 1.3.1 — evidence redaction cleanup đều **BLOCKED** | Account Owner | Task 1.3 chờ explicit `READY`; Task 1.3.1 đã được Account Owner duyệt phạm vi nhưng còn chờ Security/Backup Owner role action và branch sạch riêng |
+| Việc kế tiếp | Task 1.3 — durable submit/fake venue card **IN_PROGRESS** trên branch riêng | Account Owner | Account Owner chuyển card `BLOCKED → READY` lúc `2026-08-13T14:06:43Z`; Technical Operator bắt đầu implementation sau preflight; Task 1.3.1 evidence redaction cleanup ở `REVIEW`; implementation vẫn local-only/no venue |
 | Môi trường đang chạy | Supabase Local `AI_Auto_Trade` trên Docker, PostgreSQL 17.6 | Technical Operator | Local-only; không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 card BLOCKED chờ explicit `READY` transition; Task 1.3.1 redaction cleanup BLOCKED chờ Security/Backup Owner role action và branch sạch; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, Task 1.3 approval/version/install evidence và [Task 1.3.1 approval](docs/governance/evidence/tasks/1.3/evidence-secret-redaction-cleanup-approval.md) |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 implementation IN_PROGRESS local-only; Task 1.3.1 redaction cleanup REVIEW chờ Account Owner nghiệm thu; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, Task 1.3 approval/version/install evidence và [Task 1.3 READY transition](docs/governance/evidence/tasks/1.3/task-1.3-ready-transition-2026-08-13.md) |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-13 | Account Owner | v2.4.0; ADR-0003 PostgreSQL 17 amendment approved `2026-08-12T11:15:53Z`; Supabase Local/DB no-skip evidence recorded; Account Owner approved scoped Task 1.3.1 cleanup at `2026-08-13T13:27:48Z`; both Task 1.3 and 1.3.1 remain BLOCKED; local simulator/no venue; OD-001 vẫn OPEN |
+| Lần rà soát | 2026-08-13 | Account Owner | v2.4.0; ADR-0003 PostgreSQL 17 amendment approved `2026-08-12T11:15:53Z`; Supabase Local/DB no-skip evidence recorded; Task 1.3 READY transition `2026-08-13T14:06:43Z`; Task 1.3.1 cleanup REVIEW; local simulator/no venue; OD-001 vẫn OPEN |
 
 ### 0.1 Cách bắt đầu đúng
 

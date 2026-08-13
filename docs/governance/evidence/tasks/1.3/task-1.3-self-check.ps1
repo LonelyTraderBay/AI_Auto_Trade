@@ -142,8 +142,8 @@ try {
 
     $statusLine = Select-String -LiteralPath $cardPath -Pattern '^status:\s*"([^"]+)"$'
     $cardStatus = $statusLine.Matches[0].Groups[1].Value
-    if ($cardStatus -eq "READY") {
-        Add-Check "task-card-status" "PASS" "READY"
+    if ($cardStatus -in @("READY", "IN_PROGRESS", "REVIEW")) {
+        Add-Check "task-card-status" "PASS" $cardStatus
     }
     else {
         Add-Check "task-card-status" "BLOCKED" ("canonical card is {0}; Account Owner transition required" -f $cardStatus)
