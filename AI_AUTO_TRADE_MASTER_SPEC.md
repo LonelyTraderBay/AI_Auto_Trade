@@ -36,6 +36,7 @@
 | Thay đổi chính v2.3.9 | Account Owner xác nhận DONE Task 1.2 lúc 2026-08-11T20:06:59Z; chuyển card vào `tasks/completed/`; durable submit/fake venue tiếp theo chỉ mở bằng task card riêng |
 | Thay đổi chính v2.4.0 | Account Owner phê duyệt amendment ADR-0003 lúc 2026-08-12T11:15:53Z, chuyển PostgreSQL system of record từ 16.x sang 17.x để tương thích Supabase Local CLI; giữ nguyên transaction, audit, recovery, type và safety invariants; Task 1.3 chỉ mở sau khi Supabase Local tạo được `DATABASE_URL` và migration/concurrency test chạy no-skip |
 | Thay đổi chính v2.4.1 | Hoàn tất implementation/evidence Task 1.3 durable submit/fake venue trên branch `task/1.3-durable-submit-fake-venue-after-redaction`; self-check Docker/Supabase/PostgreSQL no-skip đạt PASS=23, INFO=2, BLOCKED=0, FAIL=0 lúc 2026-08-13T14:19:42Z; chuyển card sang `REVIEW`, chờ Account Owner nghiệm thu, giữ local-only/no venue/no ledger/no AI execution |
+| Thay đổi chính v2.4.2 | Account Owner xác nhận Task 1.3 `DONE` lúc 2026-08-13T14:40:01Z sau khi review implementation/evidence; chuyển card vào `tasks/completed/`; giữ local-only/no venue/no ledger/no AI execution và không mở OD-001 |
 
 ---
 
@@ -68,13 +69,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
-| Việc kế tiếp | Task 1.3 — durable submit/fake venue card **REVIEW** trên branch riêng | Account Owner | Account Owner chuyển card `BLOCKED → READY` lúc `2026-08-13T14:06:43Z`; Technical Operator hoàn tất implementation và verification lúc `2026-08-13T14:19:42Z`; chờ Account Owner nghiệm thu `REVIEW → DONE`; Task 1.3.1 evidence redaction cleanup ở `REVIEW`; implementation vẫn local-only/no venue |
+| Việc kế tiếp | Task 1.3.1 — evidence redaction cleanup card **REVIEW** trên branch riêng | Account Owner | Task 1.3 đã được Account Owner xác nhận `DONE` lúc `2026-08-13T14:40:01Z`; Task 1.3.1 còn chờ nghiệm thu riêng; không có card `BLOCKED` trong `tasks/active/`; implementation Task 1.3 vẫn local-only/no venue |
 | Môi trường đang chạy | Supabase Local `AI_Auto_Trade` trên Docker, PostgreSQL 17.6 | Technical Operator | Local-only; không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1 và 1.2 DONE; Task 1.3 và Task 1.3.1 ở REVIEW chờ Account Owner nghiệm thu; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, [Task 1.3 READY transition](docs/governance/evidence/tasks/1.3/task-1.3-ready-transition-2026-08-13.md) và [Task 1.3 implementation review](docs/governance/evidence/tasks/1.3/task-1.3-implementation-review-2026-08-13.md) |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2 và 1.3 DONE; Task 1.3.1 còn REVIEW chờ Account Owner nghiệm thu; không có card `BLOCKED` trong `tasks/active/`; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, [Task 1.3 DONE decision](docs/governance/evidence/tasks/1.3/account-owner-done-2026-08-13.md), [Task 1.3 implementation review](docs/governance/evidence/tasks/1.3/task-1.3-implementation-review-2026-08-13.md) |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-13 | Account Owner | v2.4.1; Task 1.3 implementation review `2026-08-13T14:19:42Z`: PASS=23, INFO=2, BLOCKED=0, FAIL=0; Task 1.3 và Task 1.3.1 REVIEW; local simulator/no venue; ledger annex và OD-001 vẫn gated |
+| Lần rà soát | 2026-08-13 | Account Owner | v2.4.2; Account Owner xác nhận Task 1.3 DONE `2026-08-13T14:40:01Z`; Task 1.3.1 REVIEW; local simulator/no venue; ledger annex và OD-001 vẫn gated |
 
 ### 0.1 Cách bắt đầu đúng
 

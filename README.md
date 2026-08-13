@@ -55,7 +55,7 @@ tasks/                         # task card YAML — authority phạm vi thực t
 - Task 0.6 — Capability draft: **DONE**, card trong `tasks/completed/`; matrix local simulator/no venue đã tạo.
 - Phase 1 — Task 1.1 deterministic primitives: **DONE**, card trong `tasks/completed/`; chưa OMS/risk/ledger/venue.
 - Phase 1 — Task 1.2 OMS deterministic state machine: **DONE**, card trong `tasks/completed/`; chưa durable DB submit/ledger runtime.
-- Phase 1 — Task 1.3 durable submit/fake venue: **chưa mở card**, phải có task scope riêng.
+- Phase 1 — Task 1.3 durable submit/fake venue: **DONE** (Account Owner xác nhận `2026-08-13T14:40:01Z`); local-only, không mở external venue/ledger/AI execution.
 - OD-001 — external venue/testnet: **OPEN**; local simulator không thay thế quyết định venue.
 - Không có card `READY` phù hợp thì AI không sửa implementation file (master §16).
 
