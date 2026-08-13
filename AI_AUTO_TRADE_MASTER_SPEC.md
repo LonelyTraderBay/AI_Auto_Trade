@@ -37,6 +37,7 @@
 | Thay đổi chính v2.4.0 | Account Owner phê duyệt amendment ADR-0003 lúc 2026-08-12T11:15:53Z, chuyển PostgreSQL system of record từ 16.x sang 17.x để tương thích Supabase Local CLI; giữ nguyên transaction, audit, recovery, type và safety invariants; Task 1.3 chỉ mở sau khi Supabase Local tạo được `DATABASE_URL` và migration/concurrency test chạy no-skip |
 | Thay đổi chính v2.4.1 | Hoàn tất implementation/evidence Task 1.3 durable submit/fake venue trên branch `task/1.3-durable-submit-fake-venue-after-redaction`; self-check Docker/Supabase/PostgreSQL no-skip đạt PASS=23, INFO=2, BLOCKED=0, FAIL=0 lúc 2026-08-13T14:19:42Z; chuyển card sang `REVIEW`, chờ Account Owner nghiệm thu, giữ local-only/no venue/no ledger/no AI execution |
 | Thay đổi chính v2.4.2 | Account Owner xác nhận Task 1.3 `DONE` lúc 2026-08-13T14:40:01Z sau khi review implementation/evidence; chuyển card vào `tasks/completed/`; giữ local-only/no venue/no ledger/no AI execution và không mở OD-001 |
+| Thay đổi chính v2.4.3 | Revalidate control references sau khi Task 1.3 chuyển vào `tasks/completed/`: đồng bộ `AGENTS.md`, README và self-check path/status; xác nhận không có card `READY` cho implementation mới, Task 1.3.1 vẫn `REVIEW`, không mở runtime scope mới |
 
 ---
 
@@ -75,7 +76,7 @@
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
 | Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2 và 1.3 DONE; Task 1.3.1 còn REVIEW chờ Account Owner nghiệm thu; không có card `BLOCKED` trong `tasks/active/`; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, [Task 1.3 DONE decision](docs/governance/evidence/tasks/1.3/account-owner-done-2026-08-13.md), [Task 1.3 implementation review](docs/governance/evidence/tasks/1.3/task-1.3-implementation-review-2026-08-13.md) |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-13 | Account Owner | v2.4.2; Account Owner xác nhận Task 1.3 DONE `2026-08-13T14:40:01Z`; Task 1.3.1 REVIEW; local simulator/no venue; ledger annex và OD-001 vẫn gated |
+| Lần rà soát | 2026-08-13 | Account Owner | v2.4.3; control references revalidated sau Task 1.3 DONE; Task 1.3.1 REVIEW; no READY card for new implementation; local simulator/no venue; ledger annex và OD-001 vẫn gated |
 
 ### 0.1 Cách bắt đầu đúng
 

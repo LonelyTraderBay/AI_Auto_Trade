@@ -10,7 +10,9 @@ $ErrorActionPreference = "Stop"
 
 $evidenceRoot = $PSScriptRoot
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $evidenceRoot "..\..\..\..\.."))
-$cardPath = Join-Path $repoRoot "tasks\active\1.3-durable-submit-fake-venue.yaml"
+$activeCardPath = Join-Path $repoRoot "tasks\active\1.3-durable-submit-fake-venue.yaml"
+$completedCardPath = Join-Path $repoRoot "tasks\completed\1.3-durable-submit-fake-venue.yaml"
+$cardPath = if (Test-Path -LiteralPath $activeCardPath) { $activeCardPath } else { $completedCardPath }
 $results = [System.Collections.Generic.List[object]]::new()
 
 function Add-Check {
@@ -142,7 +144,7 @@ try {
 
     $statusLine = Select-String -LiteralPath $cardPath -Pattern '^status:\s*"([^"]+)"$'
     $cardStatus = $statusLine.Matches[0].Groups[1].Value
-    if ($cardStatus -in @("READY", "IN_PROGRESS", "REVIEW")) {
+    if ($cardStatus -in @("READY", "IN_PROGRESS", "REVIEW", "DONE")) {
         Add-Check "task-card-status" "PASS" $cardStatus
     }
     else {
