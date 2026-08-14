@@ -15,6 +15,7 @@
 - Task đã DONE: **1.3 — durable submit/fake venue** (`tasks/completed/1.3-durable-submit-fake-venue.yaml`), Account Owner xác nhận `2026-08-13T14:40:01Z`; local-only/no venue/no ledger/no AI execution.
 - Task đã DONE: **1.3.1 — evidence redaction cleanup** (`tasks/completed/1.3.1-evidence-secret-redaction.yaml`), Account Owner xác nhận `2026-08-14T04:48:21Z`.
 - Task gần nhất đã DONE: **1.3.2 — durable-submit hardening** (`tasks/completed/1.3.2-durable-submit-hardening.yaml`, `DONE`); Account Owner xác nhận `REVIEW → DONE` lúc `2026-08-14T17:03:06Z` trên branch `task/1.3.2-durable-submit-hardening`; scope local-only, không ledger/venue/AI.
+- Enterprise-Grade one-time approval packet đang chờ bounded Account Owner review: `docs/governance/evidence/tasks/1.3.2/enterprise-grade-one-time-approval-packet-2026-08-15.md`; packet không mở ledger, venue, live hoặc AI execution.
 - DOM-OMS-001, DATA-TXN-001 và DOM-ACC-001 đã được Account Owner phê duyệt baseline `2026-08-11T19:52:15Z`; accounting annex chưa chọn vẫn chặn ledger activation.
 - OD-001 vẫn `OPEN` cho external venue/testnet; không được coi local simulator là venue approval hoặc mở Phase 3.
 - Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận. Task 1.3.2 đã được Account Owner xác nhận `DONE` và chuyển vào `tasks/completed/`.
