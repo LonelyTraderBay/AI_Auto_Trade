@@ -1,6 +1,6 @@
 task_id: "1.3.2"
 phase: "1"
-status: "BLOCKED"
+status: "READY"
 owner: "Technical Operator"
 reviewer: "Account Owner"
 expiry_at: "2026-09-30T00:00:00Z"
@@ -40,8 +40,7 @@ preconditions:
   - "PostgreSQL/Supabase Local is available through process-only DATABASE_URL and integration tests do not skip."
   - "A clean branch matching task/1.3.2-* is checked out before implementation."
   - "Account Owner has explicitly approved the BLOCKED -> READY transition recorded in the evidence path."
-blockers:
-  - "Awaiting Account Owner approval of this bounded corrective task and the BLOCKED -> READY transition."
+blockers: []
 allowed_globs:
   - "AI_AUTO_TRADE_MASTER_SPEC.md"
   - "AGENTS.md"

@@ -13,11 +13,11 @@
 - Task đã DONE: **1.1 — deterministic primitives** (`tasks/completed/1.1-deterministic-primitives.yaml`), Account Owner xác nhận `2026-08-11T19:41:38Z`.
 - Task đã DONE: **1.2 — OMS deterministic state machine** (`tasks/completed/1.2-oms-state-machine.yaml`), Account Owner xác nhận `2026-08-11T20:06:59Z`.
 - Task đã DONE: **1.3 — durable submit/fake venue** (`tasks/completed/1.3-durable-submit-fake-venue.yaml`), Account Owner xác nhận `2026-08-13T14:40:01Z`; local-only/no venue/no ledger/no AI execution.
-- Task hiện hành kế tiếp: **1.3.1 — evidence redaction cleanup** (`tasks/active/1.3.1-evidence-secret-redaction.yaml`, `REVIEW`); chưa có card `READY` cho implementation mới.
-- Task chuẩn bị tiếp theo: **1.3.2 — durable-submit hardening** (`tasks/active/1.3.2-durable-submit-hardening.yaml`, `BLOCKED` chờ Account Owner quyết định `READY`); scope local-only, không ledger/venue/AI.
+- Task đã DONE: **1.3.1 — evidence redaction cleanup** (`tasks/completed/1.3.1-evidence-secret-redaction.yaml`), Account Owner xác nhận `2026-08-14T04:48:21Z`.
+- Task hiện hành: **1.3.2 — durable-submit hardening** (`tasks/active/1.3.2-durable-submit-hardening.yaml`, `READY`); Account Owner xác nhận `BLOCKED → READY` lúc `2026-08-14T04:48:21Z`; scope local-only, không ledger/venue/AI.
 - DOM-OMS-001, DATA-TXN-001 và DOM-ACC-001 đã được Account Owner phê duyệt baseline `2026-08-11T19:52:15Z`; accounting annex chưa chọn vẫn chặn ledger activation.
 - OD-001 vẫn `OPEN` cho external venue/testnet; không được coi local simulator là venue approval hoặc mở Phase 3.
-- Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận. Hiện chỉ còn Task 1.3.1 ở `REVIEW`; chưa có card `READY` cho implementation mới.
+- Không có card `READY` phù hợp trong `tasks/active/` thì AI chỉ được đọc/phân tích, **không được sửa implementation file** (master §16). Card `BLOCKED` không được tự chuyển sang `READY`; chỉ Account Owner/reviewer có quyền xác nhận. Task 1.3.2 hiện đã `READY` theo owner decision riêng.
 - Với mọi card READY: làm đúng và chỉ đúng `allowed_globs` của card đó; `forbidden_globs` thắng khi xung đột.
 - Trạng thái sống luôn ở master §0 control panel — kiểm tra lại mỗi phiên làm việc, đừng tin file này nếu hai bên lệch nhau.
 

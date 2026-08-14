@@ -39,6 +39,7 @@
 | Thay đổi chính v2.4.2 | Account Owner xác nhận Task 1.3 `DONE` lúc 2026-08-13T14:40:01Z sau khi review implementation/evidence; chuyển card vào `tasks/completed/`; giữ local-only/no venue/no ledger/no AI execution và không mở OD-001 |
 | Thay đổi chính v2.4.3 | Revalidate control references sau khi Task 1.3 chuyển vào `tasks/completed/`: đồng bộ `AGENTS.md`, README và self-check path/status; xác nhận không có card `READY` cho implementation mới, Task 1.3.1 vẫn `REVIEW`, không mở runtime scope mới |
 | Thay đổi chính v2.4.4 | Chuẩn bị Task 1.3.2 durable-submit hardening ở `BLOCKED` với one-time owner approval packet; scope chỉ local persistence/recovery/fault-injection, không mở ledger, external venue, API, dependency hoặc AI execution |
+| Thay đổi chính v2.4.5 | Account Owner xác nhận `Task 1.3.1 REVIEW → DONE` và `Task 1.3.2 BLOCKED → READY` lúc 2026-08-14T04:48:21Z; mở implementation branch `task/1.3.2-*` trong đúng scope local-only hardening |
 
 ---
 
@@ -71,13 +72,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
-| Việc kế tiếp | Task 1.3.1 — evidence redaction cleanup **REVIEW**; sau đó Task 1.3.2 hardening **BLOCKED** chờ `READY` | Account Owner | Task 1.3 đã DONE; one-time packet cho Task 1.3.2 đã chuẩn bị tại `docs/governance/evidence/tasks/1.3.2/one-time-owner-approval-packet-2026-08-14.md`; không bắt đầu code mới trước owner decision |
+| Việc kế tiếp | Task 1.3.2 — durable-submit hardening **READY** trên branch `task/1.3.2-*` | Account Owner | Account Owner xác nhận Task 1.3.1 `DONE` và Task 1.3.2 `READY` lúc `2026-08-14T04:48:21Z`; implementation vẫn local-only/no venue/no ledger/no AI |
 | Môi trường đang chạy | Supabase Local `AI_Auto_Trade` trên Docker, PostgreSQL 17.6 | Technical Operator | Local-only; không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2 và 1.3 DONE; Task 1.3.1 REVIEW; Task 1.3.2 BLOCKED chờ Account Owner `BLOCKED → READY`; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, [Task 1.3.2 card](tasks/active/1.3.2-durable-submit-hardening.yaml), [one-time approval packet](docs/governance/evidence/tasks/1.3.2/one-time-owner-approval-packet-2026-08-14.md) |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2, 1.3 và 1.3.1 DONE; Task 1.3.2 READY; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, [Task 1.3.2 card](tasks/active/1.3.2-durable-submit-hardening.yaml), [Account Owner decision](docs/governance/evidence/tasks/1.3.2/account-owner-approval-2026-08-14.md) |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-14 | Account Owner | v2.4.4; Task 1.3.2 approval packet prepared; card vẫn BLOCKED chờ owner decision; Task 1.3.1 REVIEW; local simulator/no venue; ledger annex và OD-001 vẫn gated |
+| Lần rà soát | 2026-08-14 | Account Owner | v2.4.5; Account Owner transitions recorded `2026-08-14T04:48:21Z`; Task 1.3.1 DONE, Task 1.3.2 READY; local simulator/no venue; ledger annex và OD-001 vẫn gated |
 
 ### 0.1 Cách bắt đầu đúng
 
