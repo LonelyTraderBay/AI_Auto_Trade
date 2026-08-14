@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Document ID | GOV-ENTERPRISE-ONE-TIME-APPROVAL-20260815 |
-| Version | 0.1.0 |
-| Status | IN_REVIEW — Account Owner decision required |
+| Version | 0.2.0 |
+| Status | APPROVED — bounded Local Phase 1 decision |
 | Owner | Technical Operator |
-| Approver | Account Owner |
+| Approver | Account Owner — approved 2026-08-14T21:24:41Z |
 | Review UTC | 2026-08-15 |
 | Scope | Local Phase 1 core-safety continuation and governance closure only |
 | Runtime boundary | Supabase Local/PostgreSQL only; no external venue, testnet, ledger posting, live execution or AI execution |
@@ -53,9 +53,9 @@ The implementation details and prior command evidence remain in [Task 1.3.2 impl
 | Live/canary execution | BLOCKED | Keep blocked; Phase 4 decisions and dual-review requirements remain unmet |
 | AI-to-execution | FORBIDDEN | Keep permanently outside this scope; no waiver |
 
-## Account Owner single decision
+## Account Owner single decision — APPROVED
 
-The Account Owner may approve this packet with the following bounded decision:
+The Account Owner approved this packet with the following bounded decision at `2026-08-14T21:24:41Z`:
 
 > Approve the governance synchronization and the current Task 1.3.2 local-only evidence for continued Phase 1 preparation. Keep ledger runtime, external venue/testnet, canary/live execution and AI-to-execution blocked. Do not treat this packet as approval of any unresolved OD, accounting value, credential, venue, migration, phase gate or live capability.
 
@@ -77,8 +77,8 @@ No default or “reasonable” value is inserted for these items. Until separate
 | Role | Actor | Decision | UTC | Signature/evidence |
 |---|---|---|---|---|
 | Technical Operator | Technical Operator | LOCAL_PASS — evidence collected; no gate self-approved | 2026-08-15 | This packet |
-| Account Owner | Account Owner | PENDING — approve bounded local-only decision above or provide changes | — | — |
+| Account Owner | Account Owner | APPROVED — bounded local-only decision above | 2026-08-14T21:24:41Z | [Owner approval evidence](enterprise-grade-owner-approval-2026-08-14.md) |
 
 ## Final recommendation
 
-Approve this packet only for the bounded local-only continuation. Do not mark the repository “Enterprise-Grade fully approved” until the unresolved decisions and dedicated phase gate records are closed with their own evidence.
+This packet is approved for bounded local-only continuation. The repository is not marked “Enterprise-Grade fully approved”; unresolved decisions and dedicated phase gate records still require their own evidence.

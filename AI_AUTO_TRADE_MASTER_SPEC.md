@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Phiên bản | 2.4.9 |
+| Phiên bản | 2.5.0 |
 | Trạng thái | Phase 1 — Core safety (IN_PROGRESS) |
 | Chủ sở hữu | Chủ tài khoản giao dịch / người vận hành |
 | Phạm vi đầu tiên | Một sàn crypto spot, một account, paper/testnet trước |
@@ -44,6 +44,7 @@
 | Thay đổi chính v2.4.7 | Hoàn tất implementation và evidence Task 1.3.2; card `REVIEW` chờ Account Owner duyệt `DONE`, giữ nguyên scope local-only hardening |
 | Thay đổi chính v2.4.8 | Account Owner xác nhận Task 1.3.2 `REVIEW → DONE` lúc 2026-08-14T17:03:06Z; chuyển card vào `tasks/completed/`, giữ nguyên scope/allowlist/ADR/contract/non-goals và không mở ledger, external venue hoặc AI execution |
 | Thay đổi chính v2.4.9 | Chuẩn bị Enterprise-Grade one-time approval packet; đồng bộ ADR registry với content status và ghi nhận quality/PostgreSQL no-skip evidence; không mở Phase 1 gate, ledger, external venue hoặc AI execution |
+| Thay đổi chính v2.5.0 | Account Owner approve Enterprise-Grade one-time approval packet bounded Local Phase 1 lúc 2026-08-14T21:24:41Z; giữ nguyên ledger/external venue/live/AI locks và yêu cầu task card READY riêng cho implementation tiếp theo |
 
 ---
 
@@ -76,13 +77,13 @@
 | Field | Giá trị hiện tại | Owner | Evidence / ghi chú |
 |---|---|---|---|
 | Current phase | Phase 1 — Core safety (IN_PROGRESS) | Account Owner | Code chỉ trong `allowed_globs` của task card hiện hành |
-| Việc kế tiếp | Account Owner review [Enterprise-Grade one-time approval packet](docs/governance/evidence/tasks/1.3.2/enterprise-grade-one-time-approval-packet-2026-08-15.md); sau đó chỉ mở task card mới với allowlist riêng | Account Owner | Task 1.3.2 đã DONE; packet chỉ cho local-only/no venue/no ledger/no AI |
+| Việc kế tiếp | Chưa có card `READY`; mở task card tiếp theo với allowlist riêng nếu có scope được phê duyệt | Account Owner | Enterprise-Grade packet đã APPROVED bounded Local Phase 1; không mở venue/ledger/live/AI |
 | Môi trường đang chạy | Supabase Local `AI_Auto_Trade` trên Docker, PostgreSQL 17.6 | Technical Operator | Local-only; không dùng credential venue |
 | Deployment manifest | Chưa có | Technical Operator | Chỉ tạo từ Phase 2 |
 | Gate gần nhất | Phase 0.0 — **APPROVED / REVALIDATED** 2026-08-10T20:07:02Z | Account Owner | Gate record v0.5.0 + evidence Task 0.0.7 |
-| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2, 1.3, 1.3.1 và 1.3.2 DONE; Enterprise-Grade packet chờ Account Owner bounded review; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, [one-time approval packet](docs/governance/evidence/tasks/1.3.2/enterprise-grade-one-time-approval-packet-2026-08-15.md), [Task 1.3.2 card](tasks/completed/1.3.2-durable-submit-hardening.yaml), [Task 1.3.2 implementation evidence](docs/governance/evidence/tasks/1.3.2/task-1.3.2-implementation-review-2026-08-14.md), [Account Owner DONE decision](docs/governance/evidence/tasks/1.3.2/account-owner-done-2026-08-14.md) |
+| Blocker code | Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2, 1.3, 1.3.1 và 1.3.2 DONE; Enterprise-Grade packet APPROVED bounded Local Phase 1; ledger runtime còn gated bởi accounting annex; external venue vẫn BLOCKED bởi OD-001 | Account Owner | §14, §16, [approved one-time packet](docs/governance/evidence/tasks/1.3.2/enterprise-grade-one-time-approval-packet-2026-08-15.md), [Account Owner packet approval](docs/governance/evidence/tasks/1.3.2/enterprise-grade-owner-approval-2026-08-14.md), [Task 1.3.2 card](tasks/completed/1.3.2-durable-submit-hardening.yaml) |
 | Blocker live | Venue, jurisdiction, account, risk cap chưa chốt | Account Owner | §15.2 và Open Decision Register |
-| Lần rà soát | 2026-08-15 | Technical Operator | v2.4.9; quality/PostgreSQL no-skip verification passed; Enterprise-Grade packet awaits bounded Account Owner review; local simulator/no venue; ledger annex và OD-001 vẫn gated |
+| Lần rà soát | 2026-08-15 | Technical Operator | v2.5.0; Account Owner approved bounded Local Phase 1 packet at 2026-08-14T21:24:41Z; local simulator/no venue; ledger annex và OD-001 vẫn gated |
 
 ### 0.1 Cách bắt đầu đúng
 
