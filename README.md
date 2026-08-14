@@ -4,7 +4,7 @@ Nền tảng giao dịch thuật toán crypto spot (Python 3.12 / PostgreSQL 17 
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Trạng thái | **Phase 1 — Core safety (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2, 1.3 và 1.3.1 DONE; Task 1.3.2 durable-submit hardening REVIEW, chờ Account Owner duyệt DONE trên branch `task/1.3.2-durable-submit-hardening`. OD-001 vẫn OPEN cho external venue; ledger activation còn gated bởi accounting annex. |
+| Trạng thái | **Phase 1 — Core safety (IN_PROGRESS)** — Gate Phase 0.0 APPROVED/REVALIDATED 2026-08-10T20:07:02Z. Task 0.1–0.4, 0.0.7, 0.5.1, 0.5.2, 0.6, 1.1, 1.2, 1.3, 1.3.1 và 1.3.2 DONE; Task 1.3.2 đã được Account Owner xác nhận `REVIEW → DONE` lúc `2026-08-14T17:03:06Z` và chuyển vào `tasks/completed/`. OD-001 vẫn OPEN cho external venue; ledger activation còn gated bởi accounting annex. |
 | Hiến pháp kỹ thuật | [AI_AUTO_TRADE_MASTER_SPEC.md](AI_AUTO_TRADE_MASTER_SPEC.md) |
 | Gate gần nhất | Phase 0.0 — PASSED 2026-08-06 ([gate record](docs/governance/evidence/gates/phase-0.0/gate-record.md)) |
 | Quy tắc an toàn | Không có lệnh live trước khi vượt toàn bộ Go/No-Go gate |
@@ -57,7 +57,7 @@ tasks/                         # task card YAML — authority phạm vi thực t
 - Phase 1 — Task 1.2 OMS deterministic state machine: **DONE**, card trong `tasks/completed/`; chưa durable DB submit/ledger runtime.
 - Phase 1 — Task 1.3 durable submit/fake venue: **DONE** (Account Owner xác nhận `2026-08-13T14:40:01Z`); local-only, không mở external venue/ledger/AI execution.
 - Phase 1 — Task 1.3.1 evidence redaction cleanup: **DONE** (Account Owner xác nhận `2026-08-14T04:48:21Z`).
-- Phase 1 — Task 1.3.2 durable-submit hardening: **REVIEW**; chỉ local persistence/recovery/fault-injection, không mở external venue/ledger/AI execution; chờ Account Owner duyệt DONE.
+- Phase 1 — Task 1.3.2 durable-submit hardening: **DONE** (Account Owner xác nhận `2026-08-14T17:03:06Z`); chỉ local persistence/recovery/fault-injection, không mở external venue/ledger/AI execution.
 - OD-001 — external venue/testnet: **OPEN**; local simulator không thay thế quyết định venue.
 - Không có card `READY` phù hợp thì AI không sửa implementation file (master §16).
 
