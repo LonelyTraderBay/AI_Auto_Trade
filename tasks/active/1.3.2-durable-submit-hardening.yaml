@@ -1,0 +1,108 @@
+task_id: "1.3.2"
+phase: "1"
+status: "BLOCKED"
+owner: "Technical Operator"
+reviewer: "Account Owner"
+expiry_at: "2026-09-30T00:00:00Z"
+branch_pattern: "task/1.3.2-*"
+references:
+  requirements:
+    - "FR-EXEC-001"
+    - "FR-RSK-001"
+    - "FR-REC-001"
+    - "NFR-AUD-001"
+    - "NFR-SAFE-001"
+    - "NFR-SEC-001"
+    - "NFR-OPS-001"
+  adrs:
+    - "ADR-0002"
+    - "ADR-0004"
+    - "ADR-0005"
+    - "ADR-0007"
+    - "ADR-0012"
+    - "ADR-0014"
+  contracts:
+    - "contracts/commands/execution/submit-order.v1.schema.json"
+    - "contracts/events/execution/order-event.v1.schema.json"
+    - "contracts/config/task-card.v1.schema.json"
+goal: "Close the local-only durable-submit persistence and recovery gaps identified after Task 1.3 while preserving the approved no-venue, no-ledger and no-AI boundary."
+non_goals:
+  - "No external venue, exchange SDK, network, credential, testnet or live trading."
+  - "No LLM/AI execution path, strategy write, risk bypass or direct venue write from AI."
+  - "No portfolio ledger runtime, valuation, journal/posting or accounting annex activation."
+  - "No public API, OpenAPI, provider integration or deployment configuration change."
+  - "No new migration or contract version; an independently approved schema gap becomes a separate task/ADR."
+  - "No blind retry after UNKNOWN/TIMEOUT and no mutation of immutable financial/audit history."
+preconditions:
+  - "Task 1.3 is DONE and its approved migration, fake venue and local risk fixture remain unchanged."
+  - "Task 1.3.1 redaction cleanup has an Account Owner decision recorded before this card enters READY."
+  - "ADR-0002, ADR-0004, ADR-0005, ADR-0007, ADR-0012 and ADR-0014 remain approved for local Phase 1 scope."
+  - "PostgreSQL/Supabase Local is available through process-only DATABASE_URL and integration tests do not skip."
+  - "A clean branch matching task/1.3.2-* is checked out before implementation."
+  - "Account Owner has explicitly approved the BLOCKED -> READY transition recorded in the evidence path."
+blockers:
+  - "Awaiting Account Owner approval of this bounded corrective task and the BLOCKED -> READY transition."
+allowed_globs:
+  - "AI_AUTO_TRADE_MASTER_SPEC.md"
+  - "AGENTS.md"
+  - "README.md"
+  - "docs/governance/DOCS_INDEX.md"
+  - "docs/governance/evidence/tasks/1.3.2/**"
+  - "tasks/active/1.3.2-durable-submit-hardening.yaml"
+  - "src/ai_auto_trade/contexts/execution/**"
+  - "src/ai_auto_trade/contexts/risk/**"
+  - "src/ai_auto_trade/adapters/persistence/**"
+  - "src/ai_auto_trade/adapters/venues/fake/**"
+  - "tests/unit/contexts/execution/**"
+  - "tests/unit/contexts/risk/**"
+  - "tests/integration/contexts/execution/**"
+  - "tests/integration/contexts/risk/**"
+  - "tests/integration/test_task_1_3_2_postgres.py"
+forbidden_globs:
+  - "src/ai_auto_trade/apps/**"
+  - "src/ai_auto_trade/adapters/venues/real/**"
+  - "src/ai_auto_trade/adapters/venues/**/ccxt/**"
+  - "src/ai_auto_trade/contexts/portfolio_ledger/**"
+  - "migrations/**"
+  - "configs/**"
+  - "infra/**"
+  - ".github/**"
+  - ".env"
+  - "uv.lock"
+  - "pyproject.toml"
+  - "contracts/**"
+impact:
+  database: true
+  api: false
+  event: true
+  config: false
+  dependency: false
+  security: true
+acceptance_criteria:
+  - "A SERIALIZABLE TradingSubmissionUnitOfWork persists approved risk decision/reservation, execution order, first submission attempt, immutable lifecycle event and platform outbox/delivery state atomically before any venue call."
+  - "The application boundary rejects expired or mismatched risk approval/reservation and fails closed when the kill switch or lease/fencing precondition is invalid."
+  - "Replay by venue/account/client_order_id and request hash returns the canonical prior result without a second side effect; a hash conflict is a deterministic contract failure."
+  - "UNKNOWN and TIMEOUT are durably linked to reconciliation evidence and cannot trigger a blind resubmit; only an explicit reconciliation path can advance recovery."
+  - "Duplicate or out-of-order lifecycle/fill/outbox delivery evidence is deduplicated by the approved constraints/CAS path; partial progression never resubmits the order."
+  - "Fault-injection tests cover crash-after-commit, crash-after-apply-before-ack, duplicate outbox publish/consume, lease loss and restart/recovery with zero duplicate order effects."
+  - "Domain/application code remains framework/vendor independent at the domain boundary and preserves Decimal, UTC and UUIDv7 rules."
+  - "No external network, credential, API, migration, dependency, ledger or AI execution path is introduced."
+  - "All required quality, contract, PostgreSQL no-skip, secret and allowlist checks pass with evidence."
+required_commands:
+  - "uv sync --locked"
+  - "uv run ruff format --check ."
+  - "uv run ruff check ."
+  - "uv run pyright"
+  - "uv run pytest"
+  - "uv run pytest tests/integration/test_task_1_3_2_postgres.py -q"
+  - "uv run pytest tests/integration -q"
+  - "uv run python scripts/validate_contracts.py"
+  - "git diff --check"
+evidence_path: "docs/governance/evidence/tasks/1.3.2/"
+gate_impact: "Phase 1 local core-safety hardening only; does not open Phase 3, external venue, ledger or AI gates."
+rollback_or_forward_fix: "Revert only the task commits if review rejects behavior; preserve immutable order/event/audit history and use an approved forward-fix migration/ADR if a schema gap is discovered."
+known_risks:
+  - "Fencing protects internal claim/write safety but cannot prove an external-looking request was not received; UNKNOWN remains reconciliation-bound."
+  - "The existing Task 1.3 migration is treated as approved input; schema changes are out of scope and require a separate approved task/ADR."
+  - "Fault-injection evidence must remain deterministic and secret-free."
+waiver_id: null
