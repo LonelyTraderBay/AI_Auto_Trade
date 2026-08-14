@@ -11,6 +11,7 @@ from ai_auto_trade.contexts.execution.application.durable_submit import (
 from ai_auto_trade.contexts.execution.domain.submit_contract import (
     DurableSubmitRequest,
     SubmissionOutcome,
+    SubmissionSafetyContext,
 )
 from ai_auto_trade.contexts.risk.domain.risk_gate import (
     RiskDecision,
@@ -50,14 +51,24 @@ def _approved() -> RiskDecision:
     )
 
 
+def _safety() -> SubmissionSafetyContext:
+    """Build a valid local execution lease for one unit test."""
+    return SubmissionSafetyContext(
+        now=datetime(2026, 8, 13, 14, 10, tzinfo=UTC),
+        lease_owner="test-execution-leader",
+        lease_expires_at=datetime(2026, 8, 13, 14, 11, tzinfo=UTC),
+        fencing_token=1,
+    )
+
+
 def test_duplicate_submit_returns_same_response_without_second_side_effect() -> None:
     """Replay of one client identity is idempotent."""
     venue = FakeVenue(default_scenarios())
     boundary = DurableSubmitBoundary(venue)
     request = _request()
 
-    first = boundary.submit(request, _approved())
-    second = boundary.submit(request, _approved())
+    first = boundary.submit(request, _approved(), safety=_safety())
+    second = boundary.submit(request, _approved(), safety=_safety())
 
     assert first.outcome is SubmissionOutcome.ACCEPTED
     assert second == first
@@ -70,13 +81,13 @@ def test_unknown_outcome_blocks_blind_retry() -> None:
     boundary = DurableSubmitBoundary(venue)
     request = _request("unknown")
 
-    result = boundary.submit(request, _approved())
+    result = boundary.submit(request, _approved(), safety=_safety())
 
     assert result.outcome is SubmissionOutcome.UNKNOWN
     assert result.state == "UNKNOWN"
     assert result.retry_forbidden is True
     with pytest.raises(SubmissionBlocked, match="reconciliation"):
-        boundary.submit(request, _approved(), previous_outcome=result.outcome)
+        boundary.submit(request, _approved(), previous_outcome=result.outcome, safety=_safety())
 
 
 def test_partial_fill_progression_is_not_a_resubmit() -> None:
@@ -85,7 +96,7 @@ def test_partial_fill_progression_is_not_a_resubmit() -> None:
     boundary = DurableSubmitBoundary(venue)
     request = _request("partial_then_fill")
 
-    first = boundary.submit(request, _approved())
+    first = boundary.submit(request, _approved(), safety=_safety())
     response = venue.advance(request)
 
     assert first.outcome is SubmissionOutcome.PARTIAL_FILL

@@ -59,6 +59,10 @@ class RiskDecision:
     decided_at: datetime
     expires_at: datetime
     reservation_id: str | None
+    decision_id: str | None = None
+    policy_id: str | None = None
+    portfolio_snapshot_hash: str | None = None
+    market_snapshot_hash: str | None = None
 
 
 def evaluate_local_simulator_order(
